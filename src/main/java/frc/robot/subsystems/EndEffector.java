@@ -35,6 +35,8 @@ public class EndEffector extends SubsystemBase {
   final double I = 0.000;
   final double D = 0.000;
 
+  double targetAngle = 0;
+
   public EndEffector() {
     AlgaeArmPID = new PIDController(P, I, D);
 
@@ -61,5 +63,10 @@ public class EndEffector extends SubsystemBase {
 
     algaeIntakeRotateMotorN.configure(breakModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
-
+  @Override
+  public void periodic() {
+    AlgaeArmPID.setSetpoint(targetAngle);
+    algaeIntakeRotateMotorN.setVoltage(AlgaeArmPID.calculate(AlgaeArmEncoder.get()));
+  }
+  
 }
