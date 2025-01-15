@@ -4,16 +4,135 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.config.RobotConfig;
+
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
+
 /**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
+ * The Constants class provides a convenient place for teams to hold robot-wide
+ * numerical or boolean
+ * constants. This class should not be used for any other purpose. All constants
+ * should be declared
  * globally (i.e. public static). Do not put anything functional in this class.
  *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
+ * <p>
+ * It is advised to statically import this class (or one of its inner classes)
+ * wherever the
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
+  public static class MotorID {
+    /* Swerve Drive Motors: */
+    // FL
+    public static final int FLNeo = 0;
+    public static final int FLVortex = 1;
+
+    // FR
+    public static final int FRNeo = 2;
+    public static final int FRVortex = 3;
+
+    // BL
+    public static final int BLNeo = 4;
+    public static final int BLVortex = 5;
+
+    // BR
+    public static final int BRNeo = 6;
+    public static final int BRVortex = 7;
+
+    // Elevator
+    public static final int ElevLNeo = 8;
+    public static final int ElevRNeo = 9;
+
+    // End Effector
+    public static final int EELeft = 10;
+    public static final int EERight = 11;
+    public static final int EETop = 12;
+
+    // Algae Intake
+    public static final int AIRotate = 13;
+    public static final int AIIntake = 14;
+
+    // Ground Intake
+    public static final int GILeft = 15;
+    public static final int GIRight = 16;
+    public static final int GILift = 17;
+  }
+
+  public static class EncoderID {
+    // Elevator
+    public static final int ElevEncoder = 0;
+
+    // Algae Intake
+    public static final int AIEncoder = 1;
+
+    // Ground Intake
+    public static final int GIEncoder = 2;
+  }
+
+  public static class Bot {
+    public static final double gearRatio = 6.12; // TODO: Figure out what this is for (Swerve Module?)
+    public static final double botMass = 24.4; // TODO: Update Bot Mass
+    public static final double wheelDiameter = .10;// .1016; //TODO: Update!
+    public static final double botLength = Units.inchesToMeters(29);
+
+    // In meters per second, determined from the free speed of the bot via
+    // SwerveDriveSpecialties
+    public static final double maxChassisSpeed = 5.05968; // * 1.4044;
+    public static final double maxModuleSpeed = maxChassisSpeed / wheelDiameter / Math.PI;
+    public static final double maxTurnSpeed = Double.MAX_VALUE; // These are basically infinite for our purposes
+    public static final double maxAcceleration = 4000;
+    public static final double botRadius = Math.hypot(botLength, botLength);
+    // Max Speed divided by the circumference a circle determined by the distance of
+    // the module from the center, divided by 2 pi to convert to radians
+    public static final double maxChassisTurnSpeed = maxChassisSpeed / botRadius;
+    public static final double encoderRotationToMeters = 2 * Math.PI * ((wheelDiameter / 2) / gearRatio) / 42;
+  }
+
+  public static class Limits {
+    // Elevator
+    public static final double ElevMovement = 0.03;
+
+    // Ground Intake
+    public static final double GIMinAngle = 0;
+
+    public static final double GIMaxAngle = 180;
+
+    public static final double GICoralDetectionCurrentThreshold = 10;
+  }
+
+  public static class Controller {
+    public static final int DriverControllerPort = 0;
+  }
+
+  public static class Constraints {
+    // Elevator
+    public static final TrapezoidProfile.Constraints ElevConstraints = new TrapezoidProfile.Constraints(1, 1);
+
+    // Ground Intake
+    public static final TrapezoidProfile.Constraints GIConstraints = new TrapezoidProfile.Constraints(1, 1);
+  }
+
+  public static class Voltage {
+    // Ground Intake
+    public static final double GIVoltage = 8;
+  }
+
+  public static class CameraConstants {
+    public static final double maxAmbiguity = 0.1;
+  }
+
+  public static class PathplannerConstants {
+    public static RobotConfig config;
+
+    // Translation PID Values
+    public static final double TransP = 5.0;
+    public static final double TransI = 0.0;
+    public static final double TransD = 0.0;
+
+    // Rotation PID Values
+    public static final double RotP = 5.0;
+    public static final double RotI = 0.0;
+    public static final double RotD = 0.0;
   }
 }
