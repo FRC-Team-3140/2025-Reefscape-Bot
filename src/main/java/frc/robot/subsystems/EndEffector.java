@@ -15,6 +15,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class EndEffector extends SubsystemBase {
 
@@ -37,24 +38,28 @@ public class EndEffector extends SubsystemBase {
 
   double targetAngle = 0;
 
+  double armAngle = 0;
+
+  DigitalInput coralSensor = new DigitalInput(Constants.SensorIDs.EECoralSensor);
+
   public EndEffector() {
     AlgaeArmPID = new PIDController(P, I, D);
 
     breakModeConfig.idleMode(IdleMode.kBrake);
     coastModeConfig.idleMode(IdleMode.kCoast);
 
-    AlgaeArmEncoder = new DutyCycleEncoder(Constants.EncoderID.AIEncoder);
+    AlgaeArmEncoder = new DutyCycleEncoder(Constants.SensorIDs.AIEncoder);
 
-    beltMotorMN = new SparkMax(Constants.MotorID.EETop, MotorType.kBrushless);
-    leftManipulatorMotorMN = new SparkMax(Constants.MotorID.EELeft, MotorType.kBrushless);
-    rightManipulatorMotorMN = new SparkMax(Constants.MotorID.EERight, MotorType.kBrushless);
+    beltMotorMN = new SparkMax(Constants.MotorIDs.EETop, MotorType.kBrushless);
+    leftManipulatorMotorMN = new SparkMax(Constants.MotorIDs.EELeft, MotorType.kBrushless);
+    rightManipulatorMotorMN = new SparkMax(Constants.MotorIDs.EERight, MotorType.kBrushless);
 
-    algaeIntakeMotorN = new SparkMax(Constants.MotorID.AIIntake, MotorType.kBrushless);
-    algaeIntakeRotateMotorN = new SparkMax(Constants.MotorID.AIIntake, MotorType.kBrushless);
+    algaeIntakeMotorN = new SparkMax(Constants.MotorIDs.AIIntake, MotorType.kBrushless);
+    algaeIntakeRotateMotorN = new SparkMax(Constants.MotorIDs.AIIntake, MotorType.kBrushless);
 
     SparkMaxConfig config = new SparkMaxConfig();
 
-    config.inverted(true).idleMode(IdleMode.kCoast).follow(Constants.MotorID.EERight);
+    config.inverted(true).idleMode(IdleMode.kCoast).follow(Constants.MotorIDs.EERight);
     leftManipulatorMotorMN.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     rightManipulatorMotorMN.configure(coastModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -63,10 +68,22 @@ public class EndEffector extends SubsystemBase {
 
     algaeIntakeRotateMotorN.configure(breakModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
+
   @Override
   public void periodic() {
-    AlgaeArmPID.setSetpoint(targetAngle);
-    algaeIntakeRotateMotorN.setVoltage(AlgaeArmPID.calculate(AlgaeArmEncoder.get()));
+    armAngle = AlgaeArmEncoder.get();
+    algaeIntakeRotateMotorN.set(AlgaeArmPID.calculate(armAngle, targetAngle));
   }
-  
+
+  public void setAlgaeIntakeAngle(double angle) {
+    targetAngle = angle;
+  }
+
+  public double getAlgaeIntakeAngle() {
+    return armAngle;
+  }
+
+  public boolean hasCoral() {
+    return !coralSensor.get();
+  }
 }

@@ -8,6 +8,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.libs.Controller;
 import frc.robot.subsystems.*;
 
 /**
@@ -21,7 +22,8 @@ import frc.robot.subsystems.*;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  public Elevator m_Elevator;
+  public SwerveDrive swerveDrive;
+  public Elevator elevator;
 
   private static RobotContainer container = null;
 
@@ -35,14 +37,14 @@ public class RobotContainer {
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
 
-  private final CommandXboxController m_driverController = new CommandXboxController(
-      Constants.Controller.DriverControllerPort);
+  public final static Controller m_driverController = new Controller(Constants.Controller.DriverControllerPort);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   private RobotContainer() {
-    m_Elevator = new Elevator();
+    swerveDrive = new SwerveDrive();
+    elevator = Elevator.getInstance();
 
     // Configure the trigger bindings
     configureBindings();

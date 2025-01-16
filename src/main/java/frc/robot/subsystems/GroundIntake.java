@@ -21,6 +21,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 public class GroundIntake extends SubsystemBase {
+  private static GroundIntake instance;
+
   private final SparkMax leftMN;
   private final SparkMax rightMN;
   private final SparkMax liftN;
@@ -48,14 +50,22 @@ public class GroundIntake extends SubsystemBase {
   public class setPoint {
     public static final double stow = 0;
     public static final double intake = 0;
-    public static final double maintainance = 0; 
+    public static final double maintainance = 0;
+  }
+
+  public GroundIntake getInstance() {
+    if (instance == null) {
+      instance = new GroundIntake();
+    }
+
+    return new GroundIntake();
   }
 
   /** Creates a new GroundIntake. */
-  public GroundIntake() {
-    leftMN = new SparkMax(Constants.MotorID.GILeft, MotorType.kBrushless);
-    rightMN = new SparkMax(Constants.MotorID.GIRight, MotorType.kBrushless);
-    liftN = new SparkMax(Constants.MotorID.GILift, MotorType.kBrushless);
+  private GroundIntake() {
+    leftMN = new SparkMax(Constants.MotorIDs.GILeft, MotorType.kBrushless);
+    rightMN = new SparkMax(Constants.MotorIDs.GIRight, MotorType.kBrushless);
+    liftN = new SparkMax(Constants.MotorIDs.GILift, MotorType.kBrushless);
 
     leftMNCoast.idleMode(IdleMode.kCoast).inverted(false);
     leftMNBrake.idleMode(IdleMode.kBrake).inverted(false);
@@ -71,7 +81,7 @@ public class GroundIntake extends SubsystemBase {
 
     liftN.configure(liftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    liftPos = new DutyCycleEncoder(Constants.EncoderID.GIEncoder);
+    liftPos = new DutyCycleEncoder(Constants.SensorIDs.GIEncoder);
 
     pEntry = inst.getTable("Ground Intake").getSubTable("PID Values").getEntry("P: ");
     iEntry = inst.getTable("Ground Intake").getSubTable("PID Values").getEntry("I: ");
@@ -91,11 +101,12 @@ public class GroundIntake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    liftPID.setGoal(new TrapezoidProfile.State(
-        (Math.min(Math.max(Constants.Limits.GIMinAngle, setPoint), Constants.Limits.GIMaxAngle)),
-        0));
-
-    liftN.set(liftPID.calculate(liftPos.get()));
+    liftN.set(liftPID.calculate(
+        liftPos.get(),
+        new TrapezoidProfile.State(
+            (Math.min(Math.max(Constants.Limits.GIMinAngle, setPoint),
+                Constants.Limits.GIMaxAngle)),
+            0)));
 
     if (intakeActive) {
       if (leftMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold
@@ -111,8 +122,8 @@ public class GroundIntake extends SubsystemBase {
     leftMN.configure(leftMNCoast, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     rightMN.configure(leftMNCoast, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    leftMN.setVoltage(Constants.Voltage.GIVoltage);
-    rightMN.setVoltage(Constants.Voltage.GIVoltage);
+    leftMN.setVoltage(Constants.Voltages.GIVoltage);
+    rightMN.setVoltage(Constants.Voltages.GIVoltage);
   }
 
   public void outtake() {
@@ -121,8 +132,8 @@ public class GroundIntake extends SubsystemBase {
     leftMN.configure(leftMNCoast, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     rightMN.configure(leftMNCoast, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    leftMN.setVoltage(-Constants.Voltage.GIVoltage);
-    rightMN.setVoltage(-Constants.Voltage.GIVoltage);
+    leftMN.setVoltage(-Constants.Voltages.GIVoltage);
+    rightMN.setVoltage(-Constants.Voltages.GIVoltage);
   }
 
   public void stopIntake() {

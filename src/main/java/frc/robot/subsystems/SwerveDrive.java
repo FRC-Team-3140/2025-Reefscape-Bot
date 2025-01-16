@@ -41,7 +41,6 @@ import frc.robot.sensors.Camera;
 
 /** Represents a swerve drive style drivetrain. */
 public class SwerveDrive extends SubsystemBase {
-
   private static SwerveDrive instance = new SwerveDrive();
   ProfiledPIDController thetaController = new ProfiledPIDController(2, 0, .1, new Constraints(360, 720));
   SwerveModuleState[] swerveModuleStates = new SwerveModuleState[4];
@@ -57,18 +56,43 @@ public class SwerveDrive extends SubsystemBase {
   };
 
   SwerveModule[] modules = {
-      new SwerveModule("frontLeft", 3, 8, 7, 0.701239),
-      new SwerveModule("frontRight", 2, 6, 5, 0.707867),
-      new SwerveModule("backLeft", 0, 2, 1, 0.219279),
-      new SwerveModule("backRight", 1, 4, 3, 0.447409),
-
+      new SwerveModule(
+          "frontLeft",
+          Constants.SensorIDs.FL,
+          Constants.MotorIDs.FLVortex,
+          Constants.MotorIDs.FLNeo,
+          Constants.Bot.FLBaseAngle),
+      new SwerveModule(
+          "frontRight",
+          Constants.SensorIDs.FR,
+          Constants.MotorIDs.FRVortex,
+          Constants.MotorIDs.FRNeo,
+          Constants.Bot.FRBaseAngle),
+      new SwerveModule("backLeft",
+          Constants.SensorIDs.BL,
+          Constants.MotorIDs.BLVortex,
+          Constants.MotorIDs.BLNeo,
+          Constants.Bot.BLBaseAngle),
+      new SwerveModule("backRight",
+          Constants.SensorIDs.BR,
+          Constants.MotorIDs.BRVortex,
+          Constants.MotorIDs.BRNeo,
+          Constants.Bot.BRBaseAngle)
   };
+
   double odometryOffset = 0;
 
   private ChassisSpeeds botSpeeds = new ChassisSpeeds(0, 0, 0);
 
   private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
       locations[0], locations[1], locations[2], locations[3]);
+
+  public static SwerveDrive getInstance() {
+    if (instance == null) {
+      instance = new SwerveDrive();
+    }
+    return instance;
+  }
 
   /*
    * Here we use SwerveDrivePoseEstimator so that we can fuse odometry readings.
@@ -122,12 +146,6 @@ public class SwerveDrive extends SubsystemBase {
     Logger.recordOutput("Odometry", poseEstimator.getEstimatedPosition());
   }
 
-  // var alliance = DriverStation.getAlliance();
-  // if (alliance.isPresent() && allowPathMirroring) {
-  // return alliance.get() == DriverStation.Alliance.Red;
-  // }
-  // return false;
-
   // WPILib
   StructArrayPublisher<SwerveModuleState> actualStates = NetworkTableInstance.getDefault()
       .getStructArrayTopic("Actual States", SwerveModuleState.struct).publish();
@@ -141,10 +159,10 @@ public class SwerveDrive extends SubsystemBase {
   SwerveModuleState[] states = new SwerveModuleState[4];
 
   public void periodic() {
-
     for (int i = 0; i < 4; i++) {
       states[i] = modules[i].getState();
     }
+
     updateOdometry();
     actualStates.set(swerveModuleStates);
     setStates.set(states);
@@ -158,7 +176,6 @@ public class SwerveDrive extends SubsystemBase {
     // poseEstimator.addVisionMeasurement(camera.getEstimatedGlobalPose(),
     // camera.getTimestamp());
     odometryStruct.set(getPose());
-
   }
 
   /**
@@ -272,13 +289,6 @@ public class SwerveDrive extends SubsystemBase {
         new Translation2d(botSpeeds.vxMetersPerSecond * .05, botSpeeds.vyMetersPerSecond * .05), new Rotation2d()));
   }
 
-  public static SwerveDrive getInstance() {
-    if (instance == null) {
-      instance = new SwerveDrive();
-    }
-    return instance;
-  }
-
   public void setVisionStdDeviations(double deviation) {
     poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(deviation, deviation, Units.degreesToRadians(30)));
   }
@@ -317,5 +327,4 @@ public class SwerveDrive extends SubsystemBase {
   public void resetPose(Pose2d pose) {
     poseEstimator.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
   }
-
 }

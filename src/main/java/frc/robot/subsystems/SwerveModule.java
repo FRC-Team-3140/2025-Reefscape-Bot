@@ -1,6 +1,6 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.AbsoluteEncoder;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -20,7 +20,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -39,7 +38,7 @@ public class SwerveModule extends SubsystemBase {
   public SparkFlex driveMotor;
   public PIDController turnPID;
   public ProfiledPIDController drivePID;
-  public AnalogEncoder turnEncoder;
+  public CANcoder turnEncoder;
   public RelativeEncoder driveEncoder;
 
   public double botMass = 24.4;
@@ -83,11 +82,10 @@ public class SwerveModule extends SubsystemBase {
     turnMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     // TODO: CTRE CANcoder Fixy
-    turnEncoder = new AbsoluteEncoder(analogID);
-    turnEncoder.setPositionOffset(baseAngle);
+    turnEncoder = new CANcoder(analogID);
+    turnEncoder.setPosition(baseAngle);
+    
     driveEncoder = driveMotor.getEncoder();
-    driveEncoder.setVelocityConversionFactor(Constants.Bot.encoderRotationToMeters);
-    driveEncoder.setPositionConversionFactor(42 * Constants.Bot.encoderRotationToMeters);
 
     turnPID = new PIDController(P, 0, 0);
     // we don't use I or D since P works well enough
@@ -107,7 +105,7 @@ public class SwerveModule extends SubsystemBase {
   SlewRateLimiter accelerationLimiter = new SlewRateLimiter(30.0, -Constants.Bot.maxAcceleration, 0);
 
   public void setStates(SwerveModuleState state, boolean locked) {
-    state = SwerveModuleState.optimize(state, Rotation2d.fromDegrees(turnEncoder.getAbsolutePosition()));
+    state.optimize(Rotation2d.fromDegrees(turnEncoder.getAbsolutePosition().getValueAsDouble()));
     setAngle(state.angle.getDegrees());
     setDriveSpeed(accelerationLimiter.calculate(state.speedMetersPerSecond));
     NetworkTableInstance.getDefault().getTable("Speed").getEntry(moduleID).setDouble(state.speedMetersPerSecond);
@@ -115,16 +113,16 @@ public class SwerveModule extends SubsystemBase {
 
   public void setAngle(double angle) {
     turnPID.setSetpoint(angle);
-    turnMotor.set(-turnPID.calculate(turnEncoder.getAbsolutePosition()));
+    turnMotor.set(-turnPID.calculate(turnEncoder.getAbsolutePosition().getValueAsDouble()));
   }
 
   public void setDriveSpeed(double velocity) {
     drivePID.setGoal(new State(velocity, 0));
-    driveMotor.setVoltage(driveFeedforward.calculate(velocity) + drivePID.calculate(driveEncoder.getVelocity()));
+    driveMotor.setVoltage(driveFeedforward.calculate(velocity) + drivePID.calculate(driveEncoder.getVelocity()*Constants.Bot.encoderRotationToMeters));
     NetworkTableInstance.getDefault().getTable(moduleID).getEntry("Set Speed").setDouble(velocity);
     NetworkTableInstance.getDefault().getTable(moduleID).getEntry("Actual Speed")
-        .setDouble(driveEncoder.getVelocity());
-    // drivePID.calculate(driveEncoder.getVelocity())); ///drivePID added too much
+        .setDouble(driveEncoder.getVelocity()*Constants.Bot.encoderRotationToMeters);
+    // drivePID.calculate(driveEncoder.getVelocity()*Constants.Bot.encoderRotationToMeters)); ///drivePID added too much
     // instability
   }
 
@@ -134,16 +132,17 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public SwerveModulePosition getSwerveModulePosition() {
-    double angle = turnEncoder.getAbsolutePosition();
-    double distance = driveEncoder.getPosition();
+    double angle = turnEncoder.getAbsolutePosition().getValueAsDouble();
+    double distance = driveEncoder.getPosition()*Constants.Bot.encoderRotationToMeters;
     return new SwerveModulePosition(distance, new Rotation2d(3.14 * angle / 180));
   }
 
-  public RelativeEncoder getDriveEncoder() {
-    return this.driveEncoder;
-  }
+  // public RelativeEncoder getDriveEncoder() {
+  //   return this.driveEncoder;
+  // }
+  // ^ Dangerous since values need to be manually multiplied by Constants.Bot.encoderRotationToMeters
 
-  public AnalogEncoder getTurnEncoder() {
+  public CANcoder getTurnEncoder() {
     return this.turnEncoder;
   }
 
@@ -152,7 +151,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public SwerveModuleState getState() {
-    return new SwerveModuleState(driveEncoder.getVelocity(),
-        Rotation2d.fromDegrees(turnEncoder.getAbsolutePosition()));
+    return new SwerveModuleState(driveEncoder.getVelocity()*Constants.Bot.encoderRotationToMeters,
+        Rotation2d.fromDegrees(turnEncoder.getAbsolutePosition().getValueAsDouble()));
   }
 }

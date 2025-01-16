@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Elevator extends SubsystemBase {
+  private static Elevator instance = null;
+
   private final SparkMax LMot;
   private final SparkMax RMot;
   private final DutyCycleEncoder Enc;
@@ -23,16 +25,23 @@ public class Elevator extends SubsystemBase {
   private final NetworkTable ElevatorPIDs;
   private double target;
 
+  public static Elevator getInstance() {
+    if (instance == null) {
+      instance = new Elevator();
+    }
+    return instance;
+  }
+
   /** Creates a new Elevator. */
-  public Elevator() {
+  private Elevator() {
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     NetworkTable PIDsTable = inst.getTable("PIDs");
     ElevatorPIDs = PIDsTable.getSubTable("Elevator");
 
-    LMot = new SparkMax(Constants.MotorID.ElevLNeo, MotorType.kBrushless);
-    RMot = new SparkMax(Constants.MotorID.ElevRNeo, MotorType.kBrushless);
+    LMot = new SparkMax(Constants.MotorIDs.ElevLNeo, MotorType.kBrushless);
+    RMot = new SparkMax(Constants.MotorIDs.ElevRNeo, MotorType.kBrushless);
 
-    Enc = new DutyCycleEncoder(Constants.EncoderID.ElevEncoder);
+    Enc = new DutyCycleEncoder(Constants.SensorIDs.ElevEncoder);
 
     pid = new ProfiledPIDController(
         ElevatorPIDs.getEntry("P").getDouble(0),

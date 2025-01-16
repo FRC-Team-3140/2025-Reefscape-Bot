@@ -16,7 +16,7 @@ public class SetHeight extends Command {
   /** Creates a new SetHeight. */
   public SetHeight(double height) {
     this.height = height;
-    elev = RobotContainer.getInstance().m_Elevator;
+    elev = RobotContainer.getInstance().elevator;
 
     addRequirements(elev);
     // Use addRequirements() here to declare subsystem dependencies.

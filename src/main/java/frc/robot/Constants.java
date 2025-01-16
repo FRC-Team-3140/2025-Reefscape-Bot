@@ -22,7 +22,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static class MotorID {
+  public static class MotorIDs {
     /* Swerve Drive Motors: */
     // FL
     public static final int FLNeo = 0;
@@ -59,15 +59,26 @@ public final class Constants {
     public static final int GILift = 17;
   }
 
-  public static class EncoderID {
+  public static class SensorIDs {
+    // Swerve Modules
+    public static final int FL = 0;
+
+    public static final int FR = 1;
+
+    public static final int BL = 2;
+
+    public static final int BR = 3;
+
     // Elevator
-    public static final int ElevEncoder = 0;
+    public static final int ElevEncoder = 4;
 
     // Algae Intake
-    public static final int AIEncoder = 1;
+    public static final int AIEncoder = 5;
 
     // Ground Intake
-    public static final int GIEncoder = 2;
+    public static final int GIEncoder = 6;
+
+    public static final int EECoralSensor = 7;
   }
 
   public static class Bot {
@@ -86,7 +97,16 @@ public final class Constants {
     // Max Speed divided by the circumference a circle determined by the distance of
     // the module from the center, divided by 2 pi to convert to radians
     public static final double maxChassisTurnSpeed = maxChassisSpeed / botRadius;
-    public static final double encoderRotationToMeters = 2 * Math.PI * ((wheelDiameter / 2) / gearRatio) / 42;
+    public static final double encoderRotationToMeters = 2 * Math.PI * ((wheelDiameter / 2) / gearRatio);
+
+    // Swerve Module Base Angles
+    public static final double FLBaseAngle = 0.701239;
+
+    public static final double FRBaseAngle = 0.707867;
+
+    public static final double BLBaseAngle = 0.219279;
+
+    public static final double BRBaseAngle = 0.447409;
   }
 
   public static class Limits {
@@ -113,7 +133,7 @@ public final class Constants {
     public static final TrapezoidProfile.Constraints GIConstraints = new TrapezoidProfile.Constraints(1, 1);
   }
 
-  public static class Voltage {
+  public static class Voltages {
     // Ground Intake
     public static final double GIVoltage = 8;
   }
@@ -134,5 +154,13 @@ public final class Constants {
     public static final double RotP = 5.0;
     public static final double RotI = 0.0;
     public static final double RotD = 0.0;
+  }
+
+  public static class AlgaeIntakeAngles {
+    public static final double stowed = 0;
+    public static final double groundIntake = 0;
+    public static final double reefIntake = 0;
+    public static final double processorScoreBottom = 0;
+    public static final double processorScoreTop = 0;
   }
 }
