@@ -22,6 +22,8 @@ public class Elevator extends SubsystemBase {
   private final SparkMax RMot;
   private final DutyCycleEncoder Enc;
   private final ProfiledPIDController pid;
+  private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
+  private final NetworkTable ElevatorTable;
   private final NetworkTable ElevatorPIDs;
   private double target;
 
@@ -34,9 +36,8 @@ public class Elevator extends SubsystemBase {
 
   /** Creates a new Elevator. */
   private Elevator() {
-    NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    NetworkTable PIDsTable = inst.getTable("PIDs");
-    ElevatorPIDs = PIDsTable.getSubTable("Elevator");
+    ElevatorTable = inst.getTable("Elevator");
+    ElevatorPIDs = ElevatorTable.getSubTable("PID");
 
     LMot = new SparkMax(Constants.MotorIDs.ElevLNeo, MotorType.kBrushless);
     RMot = new SparkMax(Constants.MotorIDs.ElevRNeo, MotorType.kBrushless);
@@ -63,6 +64,9 @@ public class Elevator extends SubsystemBase {
     pid.setP(ElevatorPIDs.getEntry("P").getDouble(0));
     pid.setI(ElevatorPIDs.getEntry("I").getDouble(0));
     pid.setD(ElevatorPIDs.getEntry("D").getDouble(0));
+
+    // TODO: Add way to get current height instead of target height
+    ElevatorTable.getEntry("Current Height").setDouble(target);
 
     double speed = calculateSpeed();
     LMot.set(speed);

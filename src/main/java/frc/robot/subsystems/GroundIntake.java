@@ -47,13 +47,13 @@ public class GroundIntake extends SubsystemBase {
 
   private SparkMaxConfig liftConfig = new SparkMaxConfig();
 
-  public class setPoint {
+  public static class SetPoints {
     public static final double stow = 0;
     public static final double intake = 0;
     public static final double maintainance = 0;
   }
 
-  public GroundIntake getInstance() {
+  public static GroundIntake getInstance() {
     if (instance == null) {
       instance = new GroundIntake();
     }
@@ -100,6 +100,10 @@ public class GroundIntake extends SubsystemBase {
 
   @Override
   public void periodic() {
+    liftPID.setP(inst.getTable("Ground Intake").getSubTable("PID Values").getEntry("P: ").getDouble(0));
+    liftPID.setP(inst.getTable("Ground Intake").getSubTable("PID Values").getEntry("I: ").getDouble(0));
+    liftPID.setP(inst.getTable("Ground Intake").getSubTable("PID Values").getEntry("D: ").getDouble(0));
+
     // This method will be called once per scheduler run
     liftN.set(liftPID.calculate(
         liftPos.get(),
@@ -121,6 +125,8 @@ public class GroundIntake extends SubsystemBase {
 
     leftMN.configure(leftMNCoast, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     rightMN.configure(leftMNCoast, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+
+    setAngle(GroundIntake.SetPoints.intake);
 
     leftMN.setVoltage(Constants.Voltages.GIVoltage);
     rightMN.setVoltage(Constants.Voltages.GIVoltage);

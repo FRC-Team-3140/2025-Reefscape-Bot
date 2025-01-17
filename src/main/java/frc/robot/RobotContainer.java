@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.XboxController.Button;
 //import frc.robot.commands.Autos;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.libs.Controller;
 import frc.robot.subsystems.*;
@@ -65,7 +68,8 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-
+    new JoystickButton(m_driverController, Button.kLeftBumper.value).onTrue(new InstantCommand(() -> GroundIntake.getInstance().intake()));
+    new JoystickButton(m_driverController, Button.kLeftBumper.value).onFalse(new InstantCommand(() -> GroundIntake.getInstance().stopIntake()));
   }
 
   /**
