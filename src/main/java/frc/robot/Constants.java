@@ -79,6 +79,9 @@ public final class Constants {
     public static final int GIEncoder = 6;
 
     public static final int EECoralSensor = 7;
+
+    // Reef Alignment
+    public static final int[] distanceSensorArray = { 8, 9, 10, 11 };
   }
 
   public static class Bot {
