@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 public class EndEffector extends SubsystemBase {
 
+  static EndEffector instance = null;
+
   SparkMax beltMotorMN;
   SparkMax leftManipulatorMotorMN;
   SparkMax rightManipulatorMotorMN;
@@ -41,6 +43,13 @@ public class EndEffector extends SubsystemBase {
   double armAngle = 0;
 
   DigitalInput coralSensor = new DigitalInput(Constants.SensorIDs.EECoralSensor);
+
+  public static EndEffector getInstance() {
+    if (instance == null) {
+      instance = new EndEffector();
+    }
+    return instance;
+  }
 
   public EndEffector() {
     AlgaeArmPID = new PIDController(P, I, D);
@@ -85,5 +94,20 @@ public class EndEffector extends SubsystemBase {
 
   public boolean hasCoral() {
     return !coralSensor.get();
+  }
+
+  public void algaeBreakMode() {
+    algaeIntakeMotorN.configure(breakModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+  } 
+  public void algaeCoastMode() {
+    algaeIntakeMotorN.configure(coastModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+  }
+  public void coralBreakMode() {
+    leftManipulatorMotorMN.configure(breakModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+    rightManipulatorMotorMN.configure(breakModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+  }
+  public void coralCoastMode() {
+    leftManipulatorMotorMN.configure(coastModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+    rightManipulatorMotorMN.configure(coastModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
   }
 }
