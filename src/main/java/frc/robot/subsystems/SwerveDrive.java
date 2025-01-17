@@ -231,7 +231,8 @@ public class SwerveDrive extends SubsystemBase {
     try {
 
       if (Camera.getInstance().getStatus()) {
-        Optional<EstimatedRobotPose> sidePose = Camera.getInstance().getSideEstimatedGlobalPose();
+        // TODO: The following line was from the main branch but was not in the latest camera vesrion
+        // Optional<EstimatedRobotPose> sidePose = Camera.getInstance().getSideEstimatedGlobalPose();
         Optional<EstimatedRobotPose> pose = Camera.getInstance().getEstimatedGlobalPose();
         // DistAmb reading = Camera.getInstance().getApriltagDistX();
         if (pose.isPresent()) {
@@ -242,11 +243,11 @@ public class SwerveDrive extends SubsystemBase {
         } else {
           System.out.println("No Pose");
         }
-        if (sidePose.isPresent()) {
-          poseEstimator.addVisionMeasurement(sidePose.get().estimatedPose.toPose2d(),
-              Timer.getFPGATimestamp() - .04);
+        // if (sidePose.isPresent()) {
+        //   poseEstimator.addVisionMeasurement(sidePose.get().estimatedPose.toPose2d(),
+        //       Timer.getFPGATimestamp() - .04);
 
-        }
+        // }
       } else {
         System.out.println("Camera not detected");
       }

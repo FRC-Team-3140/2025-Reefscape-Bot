@@ -9,8 +9,8 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.PhotonVersion;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -20,8 +20,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -33,37 +33,39 @@ public class Camera extends SubsystemBase {
 
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
-  private long programStartTime = System.currentTimeMillis();
+  private NetworkTable status = inst.getTable("Vision").getSubTable("Status");
+
+  private double lastAttemptReconnectIterration = Timer.getFPGATimestamp();
 
   // Gets initial instantiation of Cameras - TK
   public PhotonCamera april = aprilGetInstance();
-  public PhotonCamera sideApril = new PhotonCamera("Side April");
-  public PhotonCamera notes = notesGetInstance();
+  public PhotonCamera shape = shapeGetInstance();
+
+  /******************************************************************************
+   * Update the following variables to ensure that the cameras are instanciated *
+   * properly! *
+   ******************************************************************************/
+  private final String aprilTagCameraName = "april";
+  private final String shapeCameraName = "shape";
 
   // Measurements to Cameras
-  private Transform3d robotToApril = new Transform3d(new Translation3d(-Constants.Bot.botLength / 2, 0.0, .42),
-      new Rotation3d(0, -Math.PI / 120, Math.PI));
-  private Transform3d sideRobotToApril = new Transform3d(new Translation3d(0, -Constants.Bot.botLength / 2, 0.5),
-      new Rotation3d(0, 0, -Math.PI / 2));
+  private Transform3d robotToApril = new Transform3d(new Translation3d(-Constants.Bot.botLength / 2, 0.0, 0.5),
+      new Rotation3d(0, 0, Math.PI));
 
-  // TODO: get measurements for note cam - TK : private Transform3d robotToNote =
-  // new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+  // private Transform3d robotToNote = new Transform3d(new Translation3d(0.5, 0.0,
+  // 0.5), new Rotation3d(0, 0, 0));
 
+  /******************************************************************************
+   * Update the following variables to ensure that the pose is calculated *
+   * properly! *
+   ******************************************************************************/
   private AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+
   private PhotonPoseEstimator aprilTagPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
       PoseStrategy.CLOSEST_TO_REFERENCE_POSE, robotToApril);
 
-  private PhotonPoseEstimator sideAprilTagPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
-      PoseStrategy.CLOSEST_TO_REFERENCE_POSE, sideRobotToApril);
-
   private boolean connected = false;
   private int connectionAttempts = 2;
-
-  private static boolean versionMatches = false;
-
-  // This thread allows this connection check to run in the background and not
-  // block other Subsystems.
-  private Thread attemptReconnection = null;
 
   // Time to delay periodic method Networktable connection check. IN
   // Seconds!!
@@ -72,49 +74,29 @@ public class Camera extends SubsystemBase {
   // Time to delay connection attempts is in SECONDS! - TK
   private double attemptDelay;
 
-  // TODO: Determine if we need the pathfind to apriltag code
-  /*
-   * // Global variables for updating Pathplanner poses - TK
-   * private SwerveDrive swerveDrive;
-   * private Pose2d currentSwervePose2d;
-   * private double currentX;
-   * private double currentY;
-   * private double newX;
-   * private double newY;
-   *
-   * 
-   * // percentage of forward distance you want to drive before stopping (to
-   * prevent
-   * // crashing). - TK
-   * private double percentTravelDist = 0.8; // Must be < 1
+  // minAmbiguity is a percent expressed as a decimal - TK
+  private double minAmbiguity;
+
+  /**
+   * Represents data related to an AprilTag detection.
    */
-
-  // Global fiducial ids for important landmark apriltags - TK
-  public aprilTagLayout aprilTagLayout;
-  private int speakerAprilTagC;
-  private int ampAprilTag;
-  private int sourceAprilTag;
-
-  public class aprilTagLayout {
-    public final int speakerAprilTag;
-    public final int ampAprilTag;
-    public final int sourceAprilTag;
-
-    public aprilTagLayout(int speaker, int amp, int source) {
-      this.speakerAprilTag = speaker;
-      this.ampAprilTag = amp;
-      this.sourceAprilTag = source;
-    }
-  }
-
-  public class aprilTagLocation {
+  public class aprilTagData {
     public final boolean isDetected;
     public final double distance;
     public final double ambiguity;
     public final double angle;
     public final int id;
 
-    public aprilTagLocation(boolean isDetected, double dist, double ambiguity, double angle, int id) {
+    /**
+     * Constructs an instance of the AprilTag data.
+     *
+     * @param isDetected true if an AprilTag is detected, false otherwise
+     * @param dist       the distance to the AprilTag
+     * @param ambiguity  the ambiguity of the AprilTag detection
+     * @param angle      the angle to the AprilTag
+     * @param id         the ID of the AprilTag
+     */
+    public aprilTagData(boolean isDetected, double dist, double ambiguity, double angle, int id) {
       this.isDetected = isDetected;
       this.distance = dist;
       this.ambiguity = ambiguity;
@@ -123,358 +105,462 @@ public class Camera extends SubsystemBase {
     }
   }
 
-  public class NoteLocation {
-    public final boolean isDetected;
-    public final double distance;
+  /**
+   * Represents data about a detected shape.
+   */
+  public class ShapeData {
+    public final double area;
     public final double angle;
 
-    public NoteLocation(boolean isDetected, double dist, double angle) {
-      this.isDetected = isDetected;
-      this.distance = dist;
+    /**
+     * Constructs a new ShapeData object.
+     * 
+     * @param area  the distance to the detected shape
+     * @param angle the angle to the detected shape
+     */
+    public ShapeData(double area, double angle) {
+      this.area = area;
       this.angle = angle;
     }
   }
 
-  public class DistAmb {
-    public final double distance;
+  /**
+   * Represents a distance measurement obtained from a camera sensor.
+   */
+  public class AprilTagMeasurement {
+    public final double Xdistance;
+    public final double Ydistance;
+    public final double yaw;
     public final double ambiguity;
+    public final int id;
 
-    public DistAmb(double distance, double ambiguity) {
-      this.distance = distance;
+    /**
+     * Constructs a new DistMeasurement object with the specified distance and
+     * ambiguity values.
+     * 
+     * @param Xdistance the measured distance in the X axis
+     * @param Ydistance the measured distance in the Y axis
+     * @param yaw       the measured yaw
+     * @param ambiguity the ambiguity of the distance measurement
+     * @param id        the fiducial id of the detected apriltag
+     */
+    public AprilTagMeasurement(double Xdistance, double Ydistance, double yaw, double ambiguity, int id) {
+      this.Xdistance = Xdistance;
+      this.Ydistance = Ydistance;
+      this.yaw = yaw;
       this.ambiguity = ambiguity;
+      this.id = id;
     }
   }
 
-  private Camera(SwerveDrive swerve, int PhotonvisionConnectionAttempts, double delayBetweenAttempts) {
+  /**
+   * Represents a camera used for vision processing.
+   * This class handles the connection and configuration of the camera.
+   *
+   * @param PhotonvisionConnectionAttempts The number of connection attempts to
+   *                                       make to PhotonVision.
+   * @param delayBetweenAttempts           The delay in seconds between each
+   *                                       connection attempt.
+   * @param minAmbiguity                   The minimum ambiguity value for
+   *                                       AprilTags.
+   */
+  private Camera(int PhotonvisionConnectionAttempts, double delayBetweenAttempts, double minAmbiguity) {
     attemptDelay = delayBetweenAttempts;
+
+    this.minAmbiguity = minAmbiguity;
 
     aprilTagPoseEstimator.setReferencePose(new Pose2d(0, 0, new Rotation2d()));
 
-    while (!connected && connectionAttempts <= PhotonvisionConnectionAttempts) {
-      if (inst.getTable("photonvision").getSubTables().contains("april")) {
-        connected = true;
-        versionMatches = checkVersion();
-        aprilGetInstance();
-        notesGetInstance();
-        System.out.println("PhotonVision is connected and is probably working as expected...");
-        break;
-      } else {
-        System.err.println("Photonvision Not Connected Properly!");
-        connected = false;
-        System.out.println("Attempt: " + connectionAttempts + "\nChecking for PhotonVision connection in "
-            + attemptDelay + " seconds.");
-        Timer.delay(attemptDelay);
-        connectionAttempts++;
-      }
+    aprilGetInstance();
+    shapeGetInstance();
+
+    while (!testConnection() && connectionAttempts <= PhotonvisionConnectionAttempts) {
+      System.err.println("Photonvision Not Connected Properly!");
+      System.out.println("Attempt: " + connectionAttempts + "\nChecking for PhotonVision connection in "
+          + attemptDelay + " seconds.");
+      Timer.delay(attemptDelay);
+      connectionAttempts++;
+
+      aprilGetInstance();
+      shapeGetInstance();
     }
 
     setNetworktableStatus();
-
-    // swerveDrive = swerve;
-
-    // Will create a field layout object and set global variables for landmark
-    // apriltags as mentioned earlier. This is not to be confused with the
-    // Photonvision apriltag layout class! - TK
-    configureTeam();
   }
 
+  /**
+   * Represents a camera used for vision processing.
+   * 
+   * @return instance of Camera class
+   */
   public static Camera getInstance() {
     if (instance == null) {
-      instance = new Camera(SwerveDrive.getInstance(), 5, 1);
+      instance = new Camera(5, 1, 0.1);
     }
     return instance;
   }
 
-  // Attempt reconnection method attempts to reinstantiate cameras on
-  // reconnection.
-  // The "singleton" is just here to return the already created instance if there
-  // is one - TK
+  /**
+   * This method attempts to get an instance of the PhotonCamera for AprilTag
+   * detection. You must update the camera name variable at the top of the class
+   * for this method to work. If an instance already exists, it returns that
+   * instance. If not, it creates a new instance. Before creating a new instance,
+   * it checks if the version of the library matches the expected version. It will
+   * be reinstated if it loses connection.
+   * 
+   * @return The existing or newly created PhotonCamera instance for AprilTag
+   *         detection.
+   */
   private PhotonCamera aprilGetInstance() {
-    checkVersion();
-    if (versionMatches && april == null) {
-      april = new PhotonCamera(inst, "april");
+    if (april == null) {
+      april = new PhotonCamera(inst, aprilTagCameraName);
     }
     return april;
   }
 
-  // Attempt reconnection method attempts to reinstantiate cameras on
-  // reconnection.
-  // The "singleton" is just here to return the already created instance if there
-  // is one - TK
-  private PhotonCamera notesGetInstance() {
-    checkVersion();
-    if (versionMatches && notes == null) {
-      notes = new PhotonCamera(inst, "notes");
+  /**
+   * This method attempts to get an instance of the PhotonCamera for AprilTag
+   * detection. You must update the camera name variable at the top of the class
+   * for this method to work. If an instance already exists, it returns that
+   * instance. If not, it creates a new instance. Before creating a new instance,
+   * it checks if the version of the library matches the expected version. It will
+   * be reinstated if it loses connection.
+   * 
+   * @return The existing or newly created PhotonCamera instance for shape
+   *         detection.
+   */
+  private PhotonCamera shapeGetInstance() {
+    if (shape == null) {
+      shape = new PhotonCamera(inst, shapeCameraName);
     }
-    return notes;
+    return shape;
   }
 
-  private void configureTeam() {
-    if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-      speakerAprilTagC = 4; // Apriltag on left
-      ampAprilTag = 5;
-      sourceAprilTag = 10; // Apriltag on left
-
-      aprilTagLayout = new aprilTagLayout(speakerAprilTagC, ampAprilTag, sourceAprilTag);
-    } else {
-      speakerAprilTagC = 7; // Apriltag on left
-      ampAprilTag = 6;
-      sourceAprilTag = 2; // Apriltag on left
-
-      aprilTagLayout = new aprilTagLayout(speakerAprilTagC, ampAprilTag, sourceAprilTag);
-    }
-  }
-
+  /**
+   * Checks the version of the connected PhotonVision camera.
+   * 
+   * @return true if the version matches the expected version, false otherwise.
+   */
   private boolean checkVersion() {
-    Timer timeout = new Timer();
     String version = "";
 
-    timeout.start();
+    version = inst.getTable("photonvision").getEntry("version").getString("");
 
-    while (connected && version == "" && !timeout.hasElapsed(delayTime)) {
-      version = inst.getTable("photonvision").getEntry("version").getString("");
-      if (version == "") {
-        System.err.println("Photon version not available yet...");
-      }
-      if (timeout.hasElapsed(delayTime)) {
-        System.err.println("checkVersion loop Timedout for safety!");
-      }
+    if (version == "") {
+      System.err.println("Photon version not available yet...");
     }
+
+    // Update Networktable Value
+    status.getEntry("Version Matches: ").setBoolean(PhotonVersion.versionMatches(version));
 
     return PhotonVersion.versionMatches(version);
   }
 
+  /**
+   * Checks the connection status of the cameras.
+   * If either camera is working or connected, sets the 'connected' flag to true.
+   * Otherwise, sets the 'connected' flag to false.
+   * 
+   * @return the connection status of the cameras as boolean
+   */
   private boolean testConnection() {
-    // If either camera is working connected == true
-    if (april.isConnected() || notes.isConnected()) {
-      connected = true;
+    // TODO: look into other alternative ways to check connection because there is
+    // an issue where the .isConnected() method doesn't update even if the camera is
+    // disconnected
+
+    // If either camera is working || connected == true
+    if (april != null && shape != null) {
+      if (april.isConnected() && shape.isConnected() && checkVersion()) {
+        connected = true;
+      } else {
+        connected = false;
+        april = null;
+        shape = null;
+      }
     } else {
+      if (connected) {
+        april = null;
+        shape = null;
+      }
+
       connected = false;
     }
 
     return connected;
   }
 
+  /**
+   * Attempts to reconnect to PhotonVision if the connection is lost.
+   * This method continuously checks for a connection until it is successfully
+   * established.
+   */
   private void attemptToReconnect() {
     System.err.println(
         "!!!!!!!!!!!!!!!!!!!!\nPhotonvision is no longer connected properly.\nAttempting reconnection\n!!!!!!!!!!!!!!!!!!!!");
-    while (!connected) {
-      if (testConnection()) {
-        connected = true;
-        versionMatches = checkVersion();
-        aprilGetInstance();
-        notesGetInstance();
-        System.out.println("PhotonVision is connected and is probably working as expected...");
-        break;
-      } else {
-        System.err.println("Photonvision Not Connected Properly!");
-        connected = false;
-        System.out.println("Checking for PhotonVision connection in " + attemptDelay + " seconds.");
-        Timer.delay(attemptDelay);
-      }
-    }
+
+    // System.out.println(april + " " + shape);
+
+    aprilGetInstance();
+    shapeGetInstance();
+
+    System.out.println("Reconnecting");
+
+    // if (connected) {
+    // versionMatches = checkVersion();
+    // System.out.println("PhotonVision is connected and is probably working as
+    // expected...");
+    // } else {
+    // System.err.println("Photonvision Not Connected Properly!");
+    // connected = false;
+    // System.out.println("Checking for PhotonVision connection in " + attemptDelay
+    // + " seconds.");
+    // Timer.delay(attemptDelay);
+    // testConnection(;
+    // }
   }
 
+  /**
+   * Sets the status of the network table.
+   * This method updates various entries in the network table to reflect the
+   * current status of the camera and its connections.
+   * If an error occurs while updating the network table, an error message is
+   * printed to the console.
+   */
   private void setNetworktableStatus() {
     try {
-      inst.getTable("Vision").getSubTable("Status").getEntry("Version Matches: ").setBoolean(versionMatches);
-      inst.getTable("Vision").getSubTable("Status").getSubTable("Version Info").getEntry("Photon Version: ")
+      status.getSubTable("Version Info").getEntry("Photon Version: ")
           .setString(inst.getTable("photonvision").getEntry("version").getString("Version not available..."));
-      inst.getTable("Vision").getSubTable("Status").getSubTable("Version Info").getEntry("Photon Lib Version: ")
+      status.getSubTable("Version Info").getEntry("Photon Lib Version: ")
           .setString(PhotonVersion.versionString);
-      inst.getTable("Vision").getSubTable("Status").getEntry("Connection: ").setBoolean(connected);
+      status.getEntry("Connection: ").setBoolean(connected);
 
-      if (connected && versionMatches && april != null) {
-        inst.getTable("Vision").getSubTable("Status").getSubTable("Camera Status").getEntry("April Connection: ")
+      if (april != null) {
+        status.getSubTable("Camera Status").getEntry("April Connection: ")
             .setBoolean(april.isConnected());
-        inst.getTable("Vision").getSubTable("Status").getSubTable("Camera Status").getEntry("Notes Connection: ")
-            .setBoolean(notes.isConnected());
+      } else {
+        status.getSubTable("Camera Status").getEntry("April Connection: ").setBoolean(false);
+      }
+
+      if (shape != null) {
+        status.getSubTable("Camera Status").getEntry("Shape Connection: ")
+            .setBoolean(shape.isConnected());
+      } else {
+        status.getSubTable("Camera Status").getEntry("Shape Connection: ").setBoolean(false);
       }
     } catch (Error e) {
       System.out.println("An error occured in Camera: \nUnable to publish status to Networktables:\n" + e);
     }
   }
 
+  /**
+   * This method is called periodically to perform camera-related tasks.
+   * It checks if a certain amount of time has passed and if the camera connection
+   * is still active. If necessary, it attempts to reconnect to the camera.
+   * It also updates the network table information periodically.
+   */
   @Override
   public void periodic() {
     try {
       // Was using Timer.delay() function here, but this caused issues with the other
       // subsystems...
-      if ((System.currentTimeMillis() - programStartTime / 1000) % delayTime == 0 && attemptReconnection != null
-          && !attemptReconnection.isAlive() && !testConnection()) {
+
+      // test connection will update the
+      if (((Timer.getFPGATimestamp() - lastAttemptReconnectIterration)) > delayTime) {
+        // connected variable and return it
+        // System.out.println((april == null ? "NO_APRIL" : april.isConnected()) + " " +
+        // (shape == null ? "NO_SHAPE" : shape.isConnected()) + " " + connected);
+        if (!testConnection()) {
+          attemptToReconnect();
+        }
+
+        lastAttemptReconnectIterration = Timer.getFPGATimestamp();
+
         // Update Networktable information periodically - TK
         setNetworktableStatus();
-
-        try {
-          if (attemptReconnection == null || !attemptReconnection.isAlive()) {
-            attemptReconnection = new Thread(() -> this.attemptToReconnect());
-
-            attemptReconnection.start();
-          }
-        } catch (IllegalThreadStateException e) {
-          System.out
-              .println("Exception occured in Camera: \n" + e + "\nThread state: " + attemptReconnection.getState());
-        }
+        System.out.println("Network Tables Updated!");
       }
-
-      // Debugging Networktable Entries
-      // aprilTagLocation tag = getAprilTagLocation(speakerAprilTag);
-      // inst.getTable("Vision").getSubTable("Camera").getEntry("ID:
-      // ").setInteger(tag.id);
-      // inst.getTable("Vision").getSubTable("Camera").getEntry("Detected:
-      // ").setBoolean(tag.isDetected);
-      // inst.getTable("Vision").getSubTable("Camera").getEntry("Dist:
-      // ").setDouble(tag.distance);
-      // inst.getTable("Vision").getSubTable("Camera").getEntry("Ambiguity").setDouble(tag.ambiguity);
-      // inst.getTable("Vision").getSubTable("Camera").getEntry("Degrees:
-      // ").setDouble(tag.angle);
     } catch (Error e) {
       System.out.println("An error occured in Camera: \n" + e);
     }
   }
 
+  /**
+   * Gets the status of the camera.
+   * 
+   * @return true if the camera is connected and the version matches, false
+   *         otherwise.
+   */
   public boolean getStatus() {
     setNetworktableStatus();
 
     // Just returns the boolean that shows connction status - TK
-    if (versionMatches && connected) {
+    if (connected) {
       return true;
     } else {
       return false;
     }
   }
 
-  public PhotonTrackedTarget latestAprilTagDetection(int tag_id) {
-    // Check if hasTargets is true, then check if the tag_id is equal to the
-    if (april.getLatestResult().hasTargets()) {
-      for (PhotonTrackedTarget target : april.getLatestResult().getTargets()) {
-        if (target != null && target.getFiducialId() == tag_id) {
-          System.out.println("Tag ID: " + target.getFiducialId() + " X: " + target.getBestCameraToTarget().getX()
-              + " Y: " + target.getBestCameraToTarget().getY());
-          return target;
-        }
-      }
-    }
-
-    return null;
-  }
-
+  /**
+   * Checks if an AprilTag is detected by the camera.
+   * 
+   * @return true if an AprilTag is detected, false otherwise.
+   */
   public boolean getAprilTagDetected() {
-    if (connected && versionMatches && april != null && april.getLatestResult().hasTargets()) {
-      return notes.getLatestResult().hasTargets();
+    if (connected && april != null && april.getLatestResult().hasTargets()) {
+      return true;
     }
     return false;
   }
 
-  public int getApriltagID() {
-    // If this function returns a 0, that means there is not any detected targets
-    PhotonTrackedTarget target = april.getLatestResult().getBestTarget();
+  /**
+   * Returns the ID of the detected AprilTag.
+   * If the function returns null, it means that no targets were detected.
+   *
+   * @return The ID of the detected AprilTag, or null if no targets were detected.
+   */
+  public Integer getBestApriltagID() {
+    if (connected && april != null && april.getLatestResult().hasTargets()) {
+      PhotonTrackedTarget target = april.getLatestResult().getBestTarget();
 
-    if (connected && versionMatches && april != null && april.getLatestResult().hasTargets()) {
       return target.getFiducialId();
     } else {
-      return -1;
+      return null;
     }
   }
 
-  public double getApriltagYaw() {
-    // If this function returns a 999, that means there is not any detected targets
-    PhotonTrackedTarget target = april.getLatestResult().getBestTarget();
+  /**
+   * If the camera is connected, version matches, and it has targets, this class
+   * will compile all of the important apriltag information into one object.
+   * 
+   * @param xDist     the distance along the x axis
+   * @param yDist     the distance along the y axis
+   * @param yaw       the relative yaw to the target
+   * @param ambiguity the ambiguity of the measurement
+   * @param id        the fiducial id of the associated apriltag
+   * 
+   * @return ApriltagMeasurement object
+   */
+  public AprilTagMeasurement getBestAprilTagData() {
+    PhotonTrackedTarget target = null;
 
-    if (connected && versionMatches && april != null && april.getLatestResult().hasTargets()) {
-      return target.getYaw();
+    try {
+      target = april.getLatestResult().getBestTarget();
+    } catch (NullPointerException e) {
+      System.out.println("There are no Apriltags in frame.");
+    }
+
+    double xDist;
+    double yDist;
+    double yaw;
+    double ambiguity;
+    int id;
+
+    if (connected && april != null && april.getLatestResult().hasTargets() && target != null) {
+      // Get X distance
+      xDist = target.getBestCameraToTarget().getY();
+
+      // Get Y distance
+      yDist = target.getBestCameraToTarget().getX();
+
+      // Get Yaw
+      yaw = target.getYaw();
+
+      // Get ambiguity of measurements
+      ambiguity = target.getPoseAmbiguity();
+
+      // Get fiducial ID of tracked Apriltag
+      id = target.getFiducialId();
+
+      return new AprilTagMeasurement(xDist, yDist, yaw, ambiguity, id);
     } else {
-      return 999;
+      return null;
     }
   }
 
-  public double getApriltagYaw(int id) {
-    // If this function returns a 999, that means there is not any detected targets
-    if (connected && versionMatches && april != null && april.getLatestResult().hasTargets()) {
+  /**
+   * If the camera is connected, version matches, and it has targets, this class
+   * will compile all of the important apriltag information into one object.
+   * 
+   * @param xDist     the distance along the x axis
+   * @param yDist     the distance along the y axis
+   * @param yaw       the relative yaw to the target
+   * @param ambiguity the ambiguity of the measurement
+   * 
+   * @return ApriltagMeasurement object
+   */
+  public AprilTagMeasurement getAprilTagData(int id) {
+    double xDist;
+    double yDist;
+    double yaw;
+    double ambiguity;
+
+    if (connected && april != null && april.getLatestResult().hasTargets()) {
       for (PhotonTrackedTarget target : april.getLatestResult().getTargets()) {
         if (target != null && target.getFiducialId() == id) {
-          return target.getYaw();
+          // Get X distance
+          xDist = target.getBestCameraToTarget().getY();
+
+          // Get Y distance
+          yDist = target.getBestCameraToTarget().getX();
+
+          // Get Yaw
+          yaw = target.getYaw();
+
+          // Get ambiguity of measurements
+          ambiguity = target.getPoseAmbiguity();
+
+          return new AprilTagMeasurement(xDist, yDist, yaw, ambiguity, target.getFiducialId());
         }
       }
-      return 0;
+
+      return null;
     } else {
-      return 999;
+      return null;
     }
   }
 
-  public double getApriltagPitch() {
-    // If this function returns a 999, that means there is not any detected targets
-    PhotonTrackedTarget target = april.getLatestResult().getBestTarget();
+  /**
+   * Returns the pitch angle of the detected AprilTag target.
+   * If no targets are detected, it returns null.
+   *
+   * @return The pitch angle of the detected AprilTag target, or null if no
+   *         targets
+   *         are detected.
+   */
+  public Double getApriltagPitch() {
+    // If this function returns a null, that means there is not any detected targets
+    PhotonTrackedTarget target = null;
 
-    if (connected && versionMatches && april != null && april.getLatestResult().hasTargets()) {
+    try {
+      target = april.getLatestResult().getBestTarget();
+    } catch (NullPointerException e) {
+      System.out.println("No Apriltags in frame.");
+    }
+
+    if (connected && april != null && april.getLatestResult().hasTargets() && target != null) {
       return target.getPitch();
     } else {
-      return 999;
+      return null;
     }
   }
 
-  public double getApriltagPitch(int id) {
-    // If this function returns a 999, that means there is not any detected targets
-    if (connected && versionMatches && april != null && april.getLatestResult().hasTargets()) {
+  /**
+   * Returns the pitch angle of the specified AprilTag target.
+   * If no targets are detected, it returns null.
+   *
+   * @param id The ID of the AprilTag target.
+   *
+   * @return The pitch angle of the target, or null if no targets are detected.
+   */
+  public Double getApriltagPitch(int id) {
+    if (connected && april != null && april.getLatestResult().hasTargets()) {
       for (PhotonTrackedTarget target : april.getLatestResult().getTargets()) {
         if (target != null && target.getFiducialId() == id) {
           return target.getPitch();
         }
       }
-      return 0;
-    } else {
-      return 999;
-    }
-  }
 
-  public DistAmb getApriltagDistX() {
-    // This coordinate is relative to the robot w/t the Photonvision axis 90* out of
-    // phase.
-    PhotonTrackedTarget target = april.getLatestResult().getBestTarget();
-
-    if (connected && versionMatches && april != null && april.getLatestResult().hasTargets() && target != null) {
-      return new DistAmb(target.getBestCameraToTarget().getY(), target.getPoseAmbiguity());
-    } else {
-      return null;
-    }
-  }
-
-  public DistAmb getApriltagDistX(int id) {
-    // This coordinate is relative to the robot w/t the Photonvision axis 90* out of
-    // phase.
-    if (connected && versionMatches && april != null && april.getLatestResult().hasTargets()) {
-      for (PhotonTrackedTarget target : april.getLatestResult().getTargets()) {
-        if (target != null && target.getFiducialId() == id) {
-          return new DistAmb(target.getBestCameraToTarget().getY(), target.getPoseAmbiguity());
-        }
-      }
-      return null;
-    } else {
-      return null;
-    }
-  }
-
-  public DistAmb getApriltagDistY() {
-    // This coordinate is relative to the robot w/t the Photonvision axis 90* out of
-    // phase.
-    PhotonTrackedTarget target = april.getLatestResult().getBestTarget();
-
-    if (connected && versionMatches && april != null && april.getLatestResult().hasTargets() && target != null) {
-      return new DistAmb(target.getBestCameraToTarget().getX(), target.getPoseAmbiguity());
-    } else {
-      return null;
-    }
-  }
-
-  public DistAmb getApriltagDistY(int id) {
-    // This coordinate is relative to the robot w/t the Photonvision axis 90* out of
-    // phase.
-    if (connected && versionMatches && april != null && april.getLatestResult().hasTargets()) {
-      for (PhotonTrackedTarget target : april.getLatestResult().getTargets()) {
-        if (target != null && target.getFiducialId() == id) {
-          return new DistAmb(target.getBestCameraToTarget().getX(), target.getPoseAmbiguity());
-        }
-      }
       return null;
     } else {
       return null;
@@ -483,210 +569,160 @@ public class Camera extends SubsystemBase {
 
   /**************************************************************************************/
 
-  public double getAprilTagDist() {
-    DistAmb distX = getApriltagDistX();
-    DistAmb distY = getApriltagDistY();
+  /**
+   * Calculates the distance to an AprilTag using the best available measurements.
+   * If both the X and Y distances are available and the average ambiguity is
+   * below the minimum ambiguity threshold,
+   * the distance is calculated using the Pythagorean theorem.
+   * If any of the measurements are missing or the average ambiguity is above the
+   * threshold, the distance is considered 0.
+   *
+   * @return The calculated distance to the AprilTag.
+   */
+  public Double getBestAprilTagDist() {
+    AprilTagMeasurement measurement = getBestAprilTagData();
 
-    return Math.sqrt(
-        (Math.pow(distX.distance, 2) + Math.pow(distY.distance, 2)));
-  }
-
-  public double getAprilTagDist(int id) {
-    DistAmb distX = getApriltagDistX(id);
-    DistAmb distY = getApriltagDistY(id);
-
-    return Math.sqrt((Math.pow(distX.distance, 2)
-        + Math.pow(distY.distance, 2)));
-  }
-
-  public double getDegToApriltag() {
-    // Usable range of values with best consistancy: -50 - 50 With respect to
-    // camera. - TK
-    if (connected && versionMatches && april != null && april.getLatestResult().hasTargets()) {
-      // double targetYaw = getApriltagYaw();
-      double requiredTurnDegrees;
-
-      /*
-       * Takes Photonvision Z angle theta value (3D processing mode on camera) and
-       * gets sign, if sign is negative (aprilTag is on left of frame), it will turn
-       * left the # of degs. that arcTan or inverse tan returns from the X & Y
-       * coorinates. Else it turns right by the arcTan or inverse tan of the X & Y
-       * coordinates. - TK
-       */
-
-      // Need to use the getX method that we wrote for Y in atan because it returns
-      // the Photon Y. - TK
-      requiredTurnDegrees = Math
-          .toDegrees(Math.atan2(getApriltagDistX().distance, getApriltagDistY().distance));
-
-      return requiredTurnDegrees;
+    if (connected && measurement != null && measurement.ambiguity <= minAmbiguity) {
+      return Math.sqrt((Math.pow(measurement.Xdistance, 2) + Math.pow(measurement.Ydistance, 2)));
     } else {
-      return 999;
+      return null;
     }
   }
 
-  public double getDegToApriltag(int id) {
-    // Usable range of values with best consistancy: -50 - 50 With respect to
-    // camera. - TK
-    if (connected && versionMatches && april != null && april.getLatestResult().hasTargets()) {
-      for (PhotonTrackedTarget target : april.getLatestResult().getTargets()) {
-        if (target.getFiducialId() == id) {
-          double requiredTurnDegrees;
+  /**
+   * Calculates the distance to an AprilTag based on its ID.
+   * 
+   * @param id The ID of the AprilTag.
+   * 
+   * @return The distance to the AprilTag, or 0 if the distance cannot be
+   *         determined.
+   */
+  public Double getAprilTagDist(int id) {
+    AprilTagMeasurement measurement = getAprilTagData(id);
 
-          /*
-           * Takes Photonvision Z angle theta value (3D processing mode on camera) and
-           * gets sign, if sign is negative (aprilTag is on left of frame), it will turn
-           * left the # of degs. that arcTan or inverse tan returns from the X & Y
-           * coorinates. Else it turns right by the arcTan or inverse tan of the X & Y
-           * coordinates. - TK
-           */
-
-          // Need to use the getX method that we wrote for Y in atan because it returns
-          // the Photon Y. - TK
-          requiredTurnDegrees = Math
-              .toDegrees(Math.atan2(getApriltagDistX(id).distance, getApriltagDistY(id).distance));
-
-          return requiredTurnDegrees;
-        }
-      }
-      return 999;
+    if (connected && measurement != null && measurement.ambiguity <= minAmbiguity) {
+      return Math.sqrt((Math.pow(measurement.Xdistance, 2) + Math.pow(measurement.Ydistance, 2)));
     } else {
-      return 9999;
+      return null;
     }
   }
 
-  public aprilTagLocation getAprilTagLocation(int id) {
-    if (connected && versionMatches && april != null && april.getLatestResult().hasTargets()) {
-      for (PhotonTrackedTarget target : april.getLatestResult().getTargets()) {
-        if (target.getFiducialId() == id) {
-          DistAmb measurement = getApriltagDistY(id);
-          if (measurement != null) {
-            double deg = getDegToApriltag(id);
+  /**
+   * Calculates the angle in degrees to the Apriltag.
+   * 
+   * @return The angle in degrees to the Apriltag. Returns null if the Apriltag is
+   *         not detected or if the version does not match.
+   */
+  public Double getDegToApriltag() {
+    AprilTagMeasurement measurement = getBestAprilTagData();
 
-            return new aprilTagLocation(true, measurement.distance, measurement.ambiguity, deg, id);
-          } else {
-            return new aprilTagLocation(false, 0, 0, 0, 0);
-          }
-        }
-      }
+    if (connected && measurement != null && measurement.ambiguity <= minAmbiguity) {
+      // Need to use the X distance for Y because we are calculating from the
+      // Photonvision relative measurements - TK
+      return Math.toDegrees(Math.atan2(measurement.Xdistance, measurement.Ydistance));
+    } else {
+      return null;
     }
-    return new aprilTagLocation(false, 0, 0, 0, -1);
   }
 
-  public aprilTagLayout getAprilTagLayout() {
-    // TODO: Check to see if this variable matches the one I just added for the
-    // photonvision pose estimator - TK
-    return aprilTagLayout;
+  /**
+   * Calculates the angle in degrees to an Apriltag based on its ID.
+   * 
+   * @param id The ID of the Apriltag.
+   * 
+   * @return The angle in degrees to the Apriltag. Returns null if the Apriltag is
+   *         not found or if the distance measurements are ambiguous. Returns null
+   *         if the camera is not connected or the version does not match.
+   */
+  public Double getDegToApriltag(int id) {
+    AprilTagMeasurement measurement = getAprilTagData(id);
+
+    if (connected && measurement != null && measurement.ambiguity <= minAmbiguity) {
+      // Need to use the X distance for Y because we are calculating from the
+      // Photonvision relative measurements - TK
+      return Math.toDegrees(Math.atan2(measurement.Xdistance, measurement.Ydistance));
+    } else {
+      return null;
+    }
   }
 
-  public boolean getNoteDetected() {
-    if (connected && versionMatches && notes != null && notes.getLatestResult().hasTargets()) {
-      return notes.getLatestResult().hasTargets();
+  /**
+   * Retrieves the layout of the AprilTag.
+   *
+   * @return the layout of the AprilTag
+   */
+  public AprilTagFieldLayout getAprilTagLayout() {
+    return aprilTagFieldLayout;
+  }
+
+  /**
+   * Returns whether a shape is detected by the camera.
+   * 
+   * @return true if a shape is detected, false otherwise.
+   */
+  public boolean getShapeDetected() {
+    if (connected && shape != null && shape.getLatestResult().hasTargets()) {
+      return shape.getLatestResult().hasTargets();
     }
     return false;
   }
 
-  public double getNoteAngle() {
-    PhotonTrackedTarget target = notes.getLatestResult().getBestTarget();
+  /**
+   * Returns the angle of the detected shape relative to the robot.
+   * 
+   * @return The angle of the shape relative to the robot, or null if no shape is
+   *         detected.
+   */
+  public ShapeData getShapeData() {
+    PhotonTrackedTarget target = null;
+
+    try {
+      target = shape.getLatestResult().getBestTarget();
+    } catch (NullPointerException e) {
+      System.out.println("No shape detected");
+    }
+
+    double yaw;
+    double area;
 
     // Robot relative angle
-    if (connected && versionMatches && notes != null && notes.getLatestResult().hasTargets() && target != null) {
-      return target.getYaw();
+    if (connected && shape != null && shape.getLatestResult().hasTargets() && target != null) {
+      // realative yaw to the shape
+      yaw = target.getYaw();
+
+      // area of the shape
+      area = target.getArea();
+
+      return new ShapeData(area, yaw);
+    } else {
+      return null;
     }
-    return 999;
   }
 
-  public double getNoteArea() {
-    PhotonTrackedTarget target = notes.getLatestResult().getBestTarget();
-
-    if (connected && versionMatches && notes != null && notes.getLatestResult().hasTargets() && target != null) {
-      return target.getArea();
-    }
-    return 0.0;
-  }
-
-  public double getTimestamp() {
-    return inst.getTable("photonvision").getSubTable("april").getEntry("heartbeat").getDouble(0);
-  }
-
+  /**
+   * Returns the current time in milliseconds since the program started.
+   *
+   * @return the current time in milliseconds
+   */
   public double getCurrentTime() {
-    // Shouldn't need to typecast here, but JIC :) - TK
-    return (double) (System.currentTimeMillis() - programStartTime);
+    return (Timer.getFPGATimestamp() - lastAttemptReconnectIterration);
   }
 
-  public double getLatencySeconds() {
-    return april.getLatestResult().getTimestampSeconds() / 1000;
-  }
-
+  /**
+   * Returns an optional EstimatedRobotPose object representing the estimated
+   * global pose of the robot.
+   * The estimated global pose is obtained by setting the reference pose of the
+   * AprilTagPoseEstimator
+   * to the current pose of the SwerveDrive instance and updating it with the
+   * latest result from the AprilTag.
+   * 
+   * @return an optional EstimatedRobotPose object representing the estimated
+   *         global pose of the robot,
+   *         or an empty optional if the pose cannot be estimated.
+   */
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
+    // Update this method accordingly to get the pose of the swerveDrive
     aprilTagPoseEstimator.setReferencePose(SwerveDrive.getInstance().getPose());
     return aprilTagPoseEstimator.update(april.getLatestResult());
   }
-
-  public Optional<EstimatedRobotPose> getSideEstimatedGlobalPose() {
-    sideAprilTagPoseEstimator.setReferencePose(SwerveDrive.getInstance().getPose());
-    return sideAprilTagPoseEstimator.update(sideApril.getLatestResult());
-  }
-
-  // public SequentialCommandGroup pathfindToAprilTag() {
-  // SequentialCommandGroup goToAprilTag = new SequentialCommandGroup(
-  // new turnToFaceApriltag(speakerAprilTag, RobotContainer.swerve,
-  // Camera.getInstance()),
-  // new InstantCommand(() -> {
-  // currentSwervePose2d = RobotContainer.swerve.getPose();
-  // currentX = currentSwervePose2d.getX();
-  // currentY = currentSwervePose2d.getY();
-  // newX = getApriltagDistX(speakerAprilTag);
-  // newY = percentTravelDist * getApriltagDistY(speakerAprilTag);
-  // }),
-  // new pathfindToApriltag(new Pose2d((currentX - newX), (currentY - newY), new
-  // Rotation2d(0)),
-  // Camera.getInstance(),
-  // RobotContainer.swerve),
-  // new turnToFaceApriltag(speakerAprilTag, RobotContainer.swerve,
-  // Camera.getInstance()));
-
-  // Fallback code. NOT tested!!!!! - TK
-  // SequentialCommandGroup goToAprilTag = new SequentialCommandGroup(
-  // new InstantCommand(() -> swerveDrive.resetPose(new Pose2d(4.5, 6.5, new
-  //
-  // Rotation2d(Math.toRadians(swerveDrive.getPose().getRotation().getDegrees()))))),
-  // new InstantCommand(() -> System.out.println("X: " +
-  // swerveDrive.getPose().getX() + " Y: " + swerveDrive.getPose().getY())),
-  // // new Pathfinding(new Pose2d((swerveDrive.getPose().getX()/* + 0.25*/),
-  // (swerveDrive.getPose().getY()/* + 0.25*/), new
-  // Rotation2d(Math.toRadians(swerveDrive.getPose().getRotation().getDegrees()
-  // +
-  // 45))), Camera.getInstance(), swerveDrive),
-  // new InstantCommand(() -> System.out.println("DistX to Target:
-  // "+getApriltagDistX(2))),
-  // // new InstantCommand(() -> RobotContainer.m_robotDrive.drive(0,
-  // Math.signum(getApriltagDistX(2)), getDegToApriltag(2), false)),
-  // new InstantCommand(() ->
-  // RobotContainer.swerve.drive(0,1.0*Math.signum(getApriltagDistX(2)), 0,
-  // false)),
-  // new InstantCommand(() -> System.out.println("DONE"))
-  // );
-
-  // return goToAprilTag;
-  // }
-
-  // public SequentialCommandGroup pathfindToAprilTag(int id) {
-  // SequentialCommandGroup goToAprilTag = new SequentialCommandGroup(
-  // new turnToFaceApriltag(id, swerveDrive, Camera.getInstance()),
-  // new InstantCommand(() -> {
-  // currentSwervePose2d = swerveDrive.getPose();
-  // currentX = currentSwervePose2d.getX();
-  // currentY = currentSwervePose2d.getY();
-  // newX = getApriltagDistX(id);
-  // newY = percentTravelDist * getApriltagDistY(id);
-  // }),
-  // new pathfindToApriltag(new Pose2d((currentX - newX), (currentY - newY), new
-  // Rotation2d(0)),
-  // Camera.getInstance(),
-  // swerveDrive),
-  // new turnToFaceApriltag(swerveDrive, Camera.getInstance()));
-
-  // return goToAprilTag;
-  // }
 }
