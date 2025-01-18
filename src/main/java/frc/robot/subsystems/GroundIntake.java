@@ -116,6 +116,7 @@ public class GroundIntake extends SubsystemBase {
       if (leftMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold
           || rightMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold) {
         stopIntake();
+        setAngle(SetPoints.stow);
       }
     }
   }
@@ -126,7 +127,7 @@ public class GroundIntake extends SubsystemBase {
     leftMN.configure(leftMNCoast, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     rightMN.configure(leftMNCoast, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    setAngle(GroundIntake.SetPoints.intake);
+    setAngle(SetPoints.intake);
 
     leftMN.setVoltage(Constants.Voltages.GIVoltage);
     rightMN.setVoltage(Constants.Voltages.GIVoltage);

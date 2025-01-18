@@ -6,17 +6,20 @@ package frc.robot.commands.endeffector;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
 
 public class IntakeAlgaeReef extends Command {
   EndEffector endEffector = EndEffector.getInstance();
-
-  public IntakeAlgaeReef() {
+  double height = Constants.ElevatorHeights.minimum;
+  public IntakeAlgaeReef(double intakeHeight) {
+    height = intakeHeight;
     addRequirements(endEffector);
   }
 
   @Override
   public void initialize() {
+    Elevator.getInstance().setHeight(height);
     endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.reefIntake);
   }
 

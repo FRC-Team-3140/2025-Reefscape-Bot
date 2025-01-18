@@ -4,8 +4,12 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -27,6 +31,9 @@ public class Elevator extends SubsystemBase {
   private final NetworkTable ElevatorPIDs;
   private double target;
 
+  private final SparkMaxConfig lConfig;
+  private final SparkMaxConfig rConfig;
+
   public static Elevator getInstance() {
     if (instance == null) {
       instance = new Elevator();
@@ -41,6 +48,16 @@ public class Elevator extends SubsystemBase {
 
     LMot = new SparkMax(Constants.MotorIDs.ElevLNeo, MotorType.kBrushless);
     RMot = new SparkMax(Constants.MotorIDs.ElevRNeo, MotorType.kBrushless);
+
+    lConfig = new SparkMaxConfig();
+    lConfig.idleMode(IdleMode.kBrake);
+
+    rConfig = new SparkMaxConfig();
+    rConfig.idleMode(IdleMode.kBrake);
+    rConfig.follow(LMot, true);
+
+    LMot.configure(lConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    RMot.configure(rConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     Enc = new DutyCycleEncoder(Constants.SensorIDs.ElevEncoder);
 
@@ -65,16 +82,15 @@ public class Elevator extends SubsystemBase {
     pid.setI(ElevatorPIDs.getEntry("I").getDouble(0));
     pid.setD(ElevatorPIDs.getEntry("D").getDouble(0));
 
-    // TODO: Add way to get current height instead of target height
-    ElevatorTable.getEntry("Current Height").setDouble(target);
+    ElevatorTable.getEntry("Current Height").setDouble(Enc.get());
+    ElevatorTable.getEntry("Target Height").setDouble(target);
 
     double speed = calculateSpeed();
     LMot.set(speed);
-    RMot.set(-speed);
   }
 
   public void setHeight(double height) {
-    target = height; // TODO: DO MATH
+    target = Math.max(Math.min(height, Constants.ElevatorHeights.maxiumum), Constants.ElevatorHeights.minimum); // TODO: DO MATH
   }
 
   public boolean isMoving() {

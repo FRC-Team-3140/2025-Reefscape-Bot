@@ -166,4 +166,20 @@ public final class Constants {
     public static final double processorScoreBottom = 0;
     public static final double processorScoreTop = 0;
   }
+
+  public static class ElevatorHeights {
+    public static final double minimum = 0;
+    public static final double maxiumum = 100;
+
+    public static final double reefAlgaeL1Height = 0;
+    public static final double reefAlgaeL2Height = 0;
+    public static final double reefCoralL1Height = 0;
+    public static final double reefCoralL2Height = 0;
+    public static final double reefCoralL3Height = 0;
+    public static final double reefCoralL4Height = 0;
+    
+    public static final double sourceIntake = 0;
+    public static final double groundIntake = Constants.ElevatorHeights.minimum;
+ 
+  }
 }
