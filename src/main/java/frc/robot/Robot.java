@@ -12,7 +12,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.commands.test.TestRunner;
 
 /**
@@ -152,6 +151,10 @@ public class Robot extends TimedRobot {
     NetworkTableEntry effectorButton = devBoard.getEntry("End Effector");
     NetworkTableEntry groundButton = devBoard.getEntry("Ground Intake");
     NetworkTableEntry elevatorButton = devBoard.getEntry("Elevator");
+    NetworkTableEntry handoffButton = devBoard.getEntry("Ground Handoff");
+    NetworkTableEntry sourceButton = devBoard.getEntry("Source Handoff");
+    NetworkTableEntry reefButton = devBoard.getEntry("Algae Reef");
+    NetworkTableEntry algaeGroundButton = devBoard.getEntry("Algae Ground");
 
     if (testCommand != null) {
       testCommand.setRunning(TestRunner.TestType.SWERVE, swerveButton.getBoolean(false));
@@ -159,6 +162,10 @@ public class Robot extends TimedRobot {
       testCommand.setRunning(TestRunner.TestType.END_EFFECTOR, effectorButton.getBoolean(false));
       testCommand.setRunning(TestRunner.TestType.GROUND_INTAKE, groundButton.getBoolean(false));
       testCommand.setRunning(TestRunner.TestType.ELEVATOR, elevatorButton.getBoolean(false));
+      testCommand.setRunning(TestRunner.TestType.GROUND_HANDOFF, handoffButton.getBoolean(false));
+      testCommand.setRunning(TestRunner.TestType.SOURCE_HANDOFF, sourceButton.getBoolean(false));
+      testCommand.setRunning(TestRunner.TestType.ALGAE_REEF, reefButton.getBoolean(false));
+      testCommand.setRunning(TestRunner.TestType.ALGAE_GROUND, algaeGroundButton.getBoolean(false));
     }
   }
 
