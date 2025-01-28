@@ -147,7 +147,7 @@ public class Robot extends TimedRobot {
     NetworkTable table = inst.getTable("Dashboard");
     NetworkTable devBoard = table.getSubTable("Dev");
     NetworkTableEntry swerveButton = devBoard.getEntry("Swerve");
-    NetworkTableEntry algaeButton = devBoard.getEntry("AlgaeIntake");
+    NetworkTableEntry algaeButton = devBoard.getEntry("Algae Intake");
     NetworkTableEntry effectorButton = devBoard.getEntry("End Effector");
     NetworkTableEntry groundButton = devBoard.getEntry("Ground Intake");
     NetworkTableEntry elevatorButton = devBoard.getEntry("Elevator");
