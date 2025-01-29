@@ -182,4 +182,8 @@ public final class Constants {
     public static final double groundIntake = Constants.ElevatorHeights.minimum;
  
   }
+
+  public static class Odometry {
+    public static final double TagCorrectionSpeed = 0.75;
+  }
 }
