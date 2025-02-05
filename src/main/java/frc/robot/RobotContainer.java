@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.swerveDrive.SwerveDriveManualControl;
 import frc.robot.libs.Controller;
 import frc.robot.subsystems.*;
 
@@ -25,8 +26,8 @@ import frc.robot.subsystems.*;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  public SwerveDrive swerveDrive;
-  public Elevator elevator;
+  public static SwerveDrive swerveDrive;
+  public static Elevator elevator;
 
   private static RobotContainer container = null;
 
@@ -46,8 +47,18 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   private RobotContainer() {
-    swerveDrive = new SwerveDrive();
-    elevator = Elevator.getInstance();
+    RobotContainer.swerveDrive = SwerveDrive.getInstance();
+
+    // swerveDrive.setDefaultCommand(new SwerveDriveManualControl(swerveDrive,
+    // Constants.Bot.maxChassisSpeed, Constants.Bot.maxTurnSpeed));
+    swerveDrive.setDefaultCommand(
+        swerveDrive.run(() -> RobotContainer.swerveDrive.drive(
+            -Constants.Bot.maxChassisSpeed * m_driverController.getLeftY(),
+            Constants.Bot.maxChassisSpeed * m_driverController.getLeftX(),
+            -Constants.Bot.maxChassisSpeed * m_driverController.getRightX(),
+            false)));
+
+    RobotContainer.elevator = Elevator.getInstance();
 
     // Configure the trigger bindings
     configureBindings();
@@ -68,8 +79,10 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    new JoystickButton(m_driverController, Button.kLeftBumper.value).onTrue(new InstantCommand(() -> GroundIntake.getInstance().intake()));
-    new JoystickButton(m_driverController, Button.kLeftBumper.value).onFalse(new InstantCommand(() -> GroundIntake.getInstance().stopIntake()));
+    new JoystickButton(m_driverController, Button.kLeftBumper.value)
+        .onTrue(new InstantCommand(() -> GroundIntake.getInstance().intake()));
+    new JoystickButton(m_driverController, Button.kLeftBumper.value)
+        .onFalse(new InstantCommand(() -> GroundIntake.getInstance().stopIntake()));
   }
 
   /**

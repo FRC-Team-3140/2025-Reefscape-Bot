@@ -4,19 +4,11 @@
 
 package frc.robot.subsystems;
 
-import java.util.Optional;
-
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.EstimatedRobotPose;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -34,14 +26,12 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.sensors.Camera;
 
 /** Represents a swerve drive style drivetrain. */
 public class SwerveDrive extends SubsystemBase {
-  private static SwerveDrive instance = new SwerveDrive();
+  private static SwerveDrive instance = null;
   ProfiledPIDController thetaController = new ProfiledPIDController(2, 0, .1, new Constraints(360, 720));
   SwerveModuleState[] swerveModuleStates = new SwerveModuleState[4];
   private final SwerveDrivePoseEstimator poseEstimator;
@@ -58,26 +48,24 @@ public class SwerveDrive extends SubsystemBase {
   SwerveModule[] modules = {
       new SwerveModule(
           "frontLeft",
-          Constants.SensorIDs.FL,
-          Constants.MotorIDs.FLVortex,
-          Constants.MotorIDs.FLNeo,
-          Constants.Bot.FLBaseAngle),
+          Constants.CANIDs.FL,
+          Constants.CANIDs.FLVortex,
+          Constants.CANIDs.FLNeo),
       new SwerveModule(
           "frontRight",
-          Constants.SensorIDs.FR,
-          Constants.MotorIDs.FRVortex,
-          Constants.MotorIDs.FRNeo,
-          Constants.Bot.FRBaseAngle),
-      new SwerveModule("backLeft",
-          Constants.SensorIDs.BL,
-          Constants.MotorIDs.BLVortex,
-          Constants.MotorIDs.BLNeo,
-          Constants.Bot.BLBaseAngle),
-      new SwerveModule("backRight",
-          Constants.SensorIDs.BR,
-          Constants.MotorIDs.BRVortex,
-          Constants.MotorIDs.BRNeo,
-          Constants.Bot.BRBaseAngle)
+          Constants.CANIDs.FR,
+          Constants.CANIDs.FRVortex,
+          Constants.CANIDs.FRNeo),
+      new SwerveModule(
+          "backLeft",
+          Constants.CANIDs.BL,
+          Constants.CANIDs.BLVortex,
+          Constants.CANIDs.BLNeo),
+      new SwerveModule(
+          "backRight",
+          Constants.CANIDs.BR,
+          Constants.CANIDs.BRVortex,
+          Constants.CANIDs.BRNeo)
   };
 
   double odometryOffset = 0;
@@ -100,7 +88,7 @@ public class SwerveDrive extends SubsystemBase {
    * below are robot specific, and should be tuned.
    */
 
-  public SwerveDrive() {
+  private SwerveDrive() {
     NetworkTableInstance.getDefault().getTable("VisionStdDev").getEntry("VisionstdDev").setDouble(.01);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     thetaController.setTolerance(Math.PI / 45); // 4 degrees
@@ -108,24 +96,30 @@ public class SwerveDrive extends SubsystemBase {
     gyro.reset();
 
     // Autobuilder for Pathplanner Goes last in constructor! TK
-    AutoBuilder.configure(
-        this::getPose, // Robot pose supplier
-        this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-        this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE
-                                                              // ChassisSpeeds. Also optionally outputs individual
-                                                              // module feedforwards
-        new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic
-                                        // drive trains
-            new PIDConstants(Constants.PathplannerConstants.TransP, Constants.PathplannerConstants.TransI,
-                Constants.PathplannerConstants.TransD), // Translation PID constants
-            new PIDConstants(Constants.PathplannerConstants.RotP, Constants.PathplannerConstants.RotI,
-                Constants.PathplannerConstants.RotD) // Rotation PID constants
-        ),
-        Constants.PathplannerConstants.config, // The robot configuration
-        this::shouldFlipPath,
-        this // Reference to this subsystem to set requirements
-    );
+    // AutoBuilder.configure(
+    // this::getPose, // Robot pose supplier
+    // this::resetPose, // Method to reset odometry (will be called if your auto has
+    // a starting pose)
+    // this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT
+    // RELATIVE
+    // (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will
+    // drive the robot given ROBOT RELATIVE
+    // // ChassisSpeeds. Also optionally outputs individual
+    // // module feedforwards
+    // new PPHolonomicDriveController( // PPHolonomicController is the built in path
+    // following controller for holonomic
+    // // drive trains
+    // new PIDConstants(Constants.PathplannerConstants.TransP,
+    // Constants.PathplannerConstants.TransI,
+    // Constants.PathplannerConstants.TransD), // Translation PID constants
+    // new PIDConstants(Constants.PathplannerConstants.RotP,
+    // Constants.PathplannerConstants.RotI,
+    // Constants.PathplannerConstants.RotD) // Rotation PID constants
+    // ),
+    // Constants.PathplannerConstants.config, // The robot configuration
+    // this::shouldFlipPath,
+    // this // Reference to this subsystem to set requirements
+    // );
     // std deviation taken from examples
     poseEstimator = new SwerveDrivePoseEstimator(
         kinematics,
@@ -159,9 +153,9 @@ public class SwerveDrive extends SubsystemBase {
   SwerveModuleState[] states = new SwerveModuleState[4];
 
   public void periodic() {
-    for (int i = 0; i < 4; i++) {
-      states[i] = modules[i].getState();
-    }
+    // for (int i = 0; i < 4; i++) {
+    //   states[i] = modules[i].getState();
+    // }
 
     updateOdometry();
     actualStates.set(swerveModuleStates);
@@ -230,27 +224,29 @@ public class SwerveDrive extends SubsystemBase {
 
     try {
 
-      if (Camera.getInstance().getStatus()) {
-        // TODO: The following line was from the main branch but was not in the latest camera vesrion
-        // Optional<EstimatedRobotPose> sidePose = Camera.getInstance().getSideEstimatedGlobalPose();
-        Optional<EstimatedRobotPose> pose = Camera.getInstance().getEstimatedGlobalPose();
-        // DistAmb reading = Camera.getInstance().getApriltagDistX();
-        if (pose.isPresent()) {
-          System.out.println("Updating as expected");
-          poseEstimator.addVisionMeasurement(pose.get().estimatedPose.toPose2d(),
-              Timer.getFPGATimestamp() - .04);
-          // System.out.println("Target Detected");
-        } else {
-          System.out.println("No Pose");
-        }
-        // if (sidePose.isPresent()) {
-        //   poseEstimator.addVisionMeasurement(sidePose.get().estimatedPose.toPose2d(),
-        //       Timer.getFPGATimestamp() - .04);
+      // if (Camera.getInstance().getStatus()) {
+      //   // TODO: The following line was from the main branch but was not in the latest
+      //   // camera vesrion
+      //   // Optional<EstimatedRobotPose> sidePose =
+      //   // Camera.getInstance().getSideEstimatedGlobalPose();
+      //   Optional<EstimatedRobotPose> pose = Camera.getInstance().getEstimatedGlobalPose();
+      //   // DistAmb reading = Camera.getInstance().getApriltagDistX();
+      //   if (pose.isPresent()) {
+      //     System.out.println("Updating as expected");
+      //     poseEstimator.addVisionMeasurement(pose.get().estimatedPose.toPose2d(),
+      //         Timer.getFPGATimestamp() - .04);
+      //     // System.out.println("Target Detected");
+      //   } else {
+      //     System.out.println("No Pose");
+      //   }
+      //   // if (sidePose.isPresent()) {
+      //   // poseEstimator.addVisionMeasurement(sidePose.get().estimatedPose.toPose2d(),
+      //   // Timer.getFPGATimestamp() - .04);
 
-        // }
-      } else {
-        System.out.println("Camera not detected");
-      }
+      //   // }
+      // } else {
+      //   System.out.println("Camera not detected");
+      // }
 
     } catch (Error test) {
       System.err.println(test);
@@ -294,27 +290,27 @@ public class SwerveDrive extends SubsystemBase {
     poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(deviation, deviation, Units.degreesToRadians(30)));
   }
 
-  private PIDController turnController = new PIDController(0.025, 0, 0.0025);
+  // private PIDController turnController = new PIDController(0.025, 0, 0.0025);
 
-  public void turnToAprilTag(int ID) {
-    // TODO: Potential null error unhandled here
-    // turnPID.enableContinuousInput(0, 360);
-    try {
-      double botAngle = getPose().getRotation().getDegrees();
-      double offsetAngle = Camera.getInstance().getDegToApriltag(ID);
-      double setpoint = 0;
-      if (botAngle - offsetAngle <= 0)
-        setpoint = botAngle + offsetAngle;
-      else
-        setpoint = botAngle - offsetAngle;
+  // public void turnToAprilTag(int ID) {
+  //   // TODO: Potential null error unhandled here
+  //   // turnPID.enableContinuousInput(0, 360);
+  //   try {
+  //     double botAngle = getPose().getRotation().getDegrees();
+  //     double offsetAngle = Camera.getInstance().getDegToApriltag(ID);
+  //     double setpoint = 0;
+  //     if (botAngle - offsetAngle <= 0)
+  //       setpoint = botAngle + offsetAngle;
+  //     else
+  //       setpoint = botAngle - offsetAngle;
 
-      turnController.setSetpoint(setpoint);
-      drive(0, 0, turnController.calculate(botAngle), false);
+  //     turnController.setSetpoint(setpoint);
+  //     drive(0, 0, turnController.calculate(botAngle), false);
 
-    } catch (Exception e) {
-      System.err.println(e.getLocalizedMessage());
-    }
-  }
+  //   } catch (Exception e) {
+  //     System.err.println(e.getLocalizedMessage());
+  //   }
+  // }
 
   public void resetGyro() {
     odometryOffset += gyro.getAngle();

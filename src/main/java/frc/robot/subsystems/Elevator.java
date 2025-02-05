@@ -46,8 +46,8 @@ public class Elevator extends SubsystemBase {
     ElevatorTable = inst.getTable("Elevator");
     ElevatorPIDs = ElevatorTable.getSubTable("PID");
 
-    LMot = new SparkMax(Constants.MotorIDs.ElevLNeo, MotorType.kBrushless);
-    RMot = new SparkMax(Constants.MotorIDs.ElevRNeo, MotorType.kBrushless);
+    LMot = new SparkMax(Constants.CANIDs.ElevLNeo, MotorType.kBrushless);
+    RMot = new SparkMax(Constants.CANIDs.ElevRNeo, MotorType.kBrushless);
 
     lConfig = new SparkMaxConfig();
     lConfig.idleMode(IdleMode.kBrake);

@@ -13,7 +13,7 @@ public class SwerveDriveManualControl extends Command {
     private final SwerveDrive swerveDrive; // The swerve drive subsystem
     private final double maxSpeed; // The maximum speed for the swerve drive
     private final double maxChassisTurnSpeed; // The maximum turn speed for the chassis
-    public static boolean fieldRelative = true;
+    public static boolean fieldRelative = false;
 
     /**
      * Creates a new BasicSwerveControlL2 command.
@@ -42,13 +42,13 @@ public class SwerveDriveManualControl extends Command {
         // }
 
         // Calculate the x speed based on the joystick input
-        final var xSpeed = -RobotContainer.m_driverController.getLeftY() * maxSpeed; 
+        double xSpeed = -RobotContainer.m_driverController.getLeftY() * maxSpeed; 
         
         // Calculate the y speed based on the joystick input
-        final var ySpeed = -RobotContainer.m_driverController.getLeftX() * maxSpeed; 
+        double ySpeed = -RobotContainer.m_driverController.getLeftX() * maxSpeed; 
         
         // Calculate the rotation speed based on the joystick input
-        final var rot = -RobotContainer.m_driverController.getRightX() * maxChassisTurnSpeed; 
+        double rot = -RobotContainer.m_driverController.getRightX() * maxChassisTurnSpeed; 
         
         swerveDrive.drive(xSpeed, ySpeed, rot, fieldRelative); // Drive the swerve drive
     }

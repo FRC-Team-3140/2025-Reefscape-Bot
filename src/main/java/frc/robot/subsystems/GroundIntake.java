@@ -63,9 +63,9 @@ public class GroundIntake extends SubsystemBase {
 
   /** Creates a new GroundIntake. */
   private GroundIntake() {
-    leftMN = new SparkMax(Constants.MotorIDs.GILeft, MotorType.kBrushless);
-    rightMN = new SparkMax(Constants.MotorIDs.GIRight, MotorType.kBrushless);
-    liftN = new SparkMax(Constants.MotorIDs.GILift, MotorType.kBrushless);
+    leftMN = new SparkMax(Constants.CANIDs.GILeft, MotorType.kBrushless);
+    rightMN = new SparkMax(Constants.CANIDs.GIRight, MotorType.kBrushless);
+    liftN = new SparkMax(Constants.CANIDs.GILift, MotorType.kBrushless);
 
     leftMNCoast.idleMode(IdleMode.kCoast).inverted(false);
     leftMNBrake.idleMode(IdleMode.kBrake).inverted(false);
@@ -116,7 +116,7 @@ public class GroundIntake extends SubsystemBase {
       if (leftMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold
           || rightMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold) {
         stopIntake();
-        setAngle(SetPoints.stow);
+        setGroundIntakeAngle(SetPoints.stow);
       }
     }
   }
@@ -127,7 +127,7 @@ public class GroundIntake extends SubsystemBase {
     leftMN.configure(leftMNCoast, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     rightMN.configure(leftMNCoast, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    setAngle(SetPoints.intake);
+    setGroundIntakeAngle(SetPoints.intake);
 
     leftMN.setVoltage(Constants.Voltages.GIVoltage);
     rightMN.setVoltage(Constants.Voltages.GIVoltage);
@@ -152,7 +152,7 @@ public class GroundIntake extends SubsystemBase {
   }
 
   // Set Angle
-  public void setAngle(double degree) {
+  public void setGroundIntakeAngle(double degree) {
     setPoint = degree;
   }
 }

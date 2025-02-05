@@ -59,16 +59,16 @@ public class EndEffector extends SubsystemBase {
 
     AlgaeArmEncoder = new DutyCycleEncoder(Constants.SensorIDs.AIEncoder);
 
-    beltMotorMN = new SparkMax(Constants.MotorIDs.EETop, MotorType.kBrushless);
-    leftManipulatorMotorMN = new SparkMax(Constants.MotorIDs.EELeft, MotorType.kBrushless);
-    rightManipulatorMotorMN = new SparkMax(Constants.MotorIDs.EERight, MotorType.kBrushless);
+    beltMotorMN = new SparkMax(Constants.CANIDs.EETop, MotorType.kBrushless);
+    leftManipulatorMotorMN = new SparkMax(Constants.CANIDs.EELeft, MotorType.kBrushless);
+    rightManipulatorMotorMN = new SparkMax(Constants.CANIDs.EERight, MotorType.kBrushless);
 
-    algaeIntakeMotorN = new SparkMax(Constants.MotorIDs.AIIntake, MotorType.kBrushless);
-    algaeIntakeRotateMotorN = new SparkMax(Constants.MotorIDs.AIIntake, MotorType.kBrushless);
+    algaeIntakeMotorN = new SparkMax(Constants.CANIDs.AIIntake, MotorType.kBrushless);
+    algaeIntakeRotateMotorN = new SparkMax(Constants.CANIDs.AIIntake, MotorType.kBrushless);
 
     SparkMaxConfig config = new SparkMaxConfig();
 
-    config.inverted(true).idleMode(IdleMode.kCoast).follow(Constants.MotorIDs.EERight);
+    config.inverted(true).idleMode(IdleMode.kCoast).follow(Constants.CANIDs.EERight);
     leftManipulatorMotorMN.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     rightManipulatorMotorMN.configure(coastModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
