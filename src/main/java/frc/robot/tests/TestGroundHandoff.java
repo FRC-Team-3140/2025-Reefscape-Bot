@@ -4,21 +4,25 @@
 
 package frc.robot.tests;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+
 /** Add your docs here. */
-public class TestGroundHandoff implements TestBase {
-    public TestGroundHandoff() {
-        
+public class TestGroundHandoff extends Test {
+    public TestGroundHandoff(NetworkTableEntry entry) {
+        super(entry);
     }
 
+    @Override
     public void Start() {
-
+        super.Start();
     }
 
     public void Periodic() {
 
     }
 
+    @Override
     public void Stop() {
-
+        super.Stop();
     }
 }

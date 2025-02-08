@@ -4,21 +4,25 @@
 
 package frc.robot.tests;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+
 /** Add your docs here. */
-public class TestEndEffector implements TestBase {
-    public TestEndEffector() {
-        
+public class TestEndEffector extends Test {
+    public TestEndEffector(NetworkTableEntry entry) {
+        super(entry);
     }
 
+    @Override
     public void Start() {
-
+        super.Start();
     }
 
     public void Periodic() {
 
     }
 
+    @Override
     public void Stop() {
-
+        super.Stop();
     }
 }

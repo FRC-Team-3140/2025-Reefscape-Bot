@@ -4,21 +4,25 @@
 
 package frc.robot.tests;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+
 /** Add your docs here. */
-public class TestAlgaeReef implements TestBase {
-    public TestAlgaeReef() {
-        
+public class TestAlgaeReef extends Test {
+    public TestAlgaeReef(NetworkTableEntry entry) {
+        super(entry);
     }
 
+    @Override
     public void Start() {
-
+        super.Start();
     }
 
     public void Periodic() {
 
     }
 
+    @Override
     public void Stop() {
-
+        super.Stop();
     }
 }

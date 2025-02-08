@@ -6,13 +6,10 @@ package frc.robot;
 
 import com.pathplanner.lib.config.RobotConfig;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.test.TestRunner;
+import frc.robot.subsystems.TestRunner;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -25,7 +22,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
-  private TestRunner testCommand = null;
+  private final TestRunner m_testRunner;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -36,6 +33,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.
+    m_testRunner = TestRunner.getInstance();
     m_robotContainer = RobotContainer.getInstance();
   }
 
@@ -59,15 +57,13 @@ public class Robot extends TimedRobot {
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    // TODO: publish voltage and pose. - TK
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    if (testCommand != null) {
-      testCommand.cancel();
-      testCommand = null;
-    }
+
   }
 
   @Override
@@ -81,11 +77,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    if (testCommand != null) {
-      testCommand.cancel();
-      testCommand = null;
-    }
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -107,11 +98,6 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-
-    if (testCommand != null) {
-      testCommand.cancel();
-      testCommand = null;
-    }
   }
 
   /** This function is called periodically during operator control. */
@@ -131,42 +117,12 @@ public class Robot extends TimedRobot {
       e.printStackTrace();
     }
 
-    if (testCommand != null) {
-      testCommand.cancel();
-      testCommand = null;
-    }
-    testCommand = new TestRunner();
-    CommandScheduler.getInstance().schedule(testCommand);
   }
 
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    // dashboard stuff
-    NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    NetworkTable table = inst.getTable("Dashboard");
-    NetworkTable devBoard = table.getSubTable("Dev");
-    NetworkTableEntry swerveButton = devBoard.getEntry("Swerve");
-    NetworkTableEntry algaeButton = devBoard.getEntry("Algae Intake");
-    NetworkTableEntry effectorButton = devBoard.getEntry("End Effector");
-    NetworkTableEntry groundButton = devBoard.getEntry("Ground Intake");
-    NetworkTableEntry elevatorButton = devBoard.getEntry("Elevator");
-    NetworkTableEntry handoffButton = devBoard.getEntry("Ground Handoff");
-    NetworkTableEntry sourceButton = devBoard.getEntry("Source Handoff");
-    NetworkTableEntry reefButton = devBoard.getEntry("Algae Reef");
-    NetworkTableEntry algaeGroundButton = devBoard.getEntry("Algae Ground");
-
-    if (testCommand != null) {
-      testCommand.setRunning(TestRunner.TestType.SWERVE, swerveButton.getBoolean(false));
-      testCommand.setRunning(TestRunner.TestType.ALGAE_INTAKE, algaeButton.getBoolean(false));
-      testCommand.setRunning(TestRunner.TestType.END_EFFECTOR, effectorButton.getBoolean(false));
-      testCommand.setRunning(TestRunner.TestType.GROUND_INTAKE, groundButton.getBoolean(false));
-      testCommand.setRunning(TestRunner.TestType.ELEVATOR, elevatorButton.getBoolean(false));
-      testCommand.setRunning(TestRunner.TestType.GROUND_HANDOFF, handoffButton.getBoolean(false));
-      testCommand.setRunning(TestRunner.TestType.SOURCE_HANDOFF, sourceButton.getBoolean(false));
-      testCommand.setRunning(TestRunner.TestType.ALGAE_REEF, reefButton.getBoolean(false));
-      testCommand.setRunning(TestRunner.TestType.ALGAE_GROUND, algaeGroundButton.getBoolean(false));
-    }
+    m_testRunner.updateStates();
   }
 
   /** This function is called once when the robot is first started up. */

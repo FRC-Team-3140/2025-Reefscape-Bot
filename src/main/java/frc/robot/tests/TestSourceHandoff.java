@@ -4,21 +4,25 @@
 
 package frc.robot.tests;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+
 /** Add your docs here. */
-public class TestSourceHandoff implements TestBase {
-    public TestSourceHandoff() {
-        
+public class TestSourceHandoff extends Test {
+    public TestSourceHandoff(NetworkTableEntry entry) {
+        super(entry);
     }
 
+    @Override
     public void Start() {
-
+        super.Start();
     }
 
     public void Periodic() {
 
     }
 
+    @Override
     public void Stop() {
-
+        super.Stop();
     }
 }

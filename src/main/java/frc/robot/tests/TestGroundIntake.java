@@ -4,21 +4,25 @@
 
 package frc.robot.tests;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+
 /** Add your docs here. */
-public class TestGroundIntake implements TestBase {
-    public TestGroundIntake() {
-        
+public class TestGroundIntake extends Test {
+    public TestGroundIntake(NetworkTableEntry entry) {
+        super(entry);
     }
 
+    @Override
     public void Start() {
-
+        super.Start();
     }
 
     public void Periodic() {
 
     }
 
+    @Override
     public void Stop() {
-
+        super.Stop();
     }
 }

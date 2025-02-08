@@ -46,7 +46,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   private RobotContainer() {
-    swerveDrive = new SwerveDrive();
+    swerveDrive = SwerveDrive.getInstance();
     elevator = Elevator.getInstance();
 
     // Configure the trigger bindings
@@ -70,6 +70,7 @@ public class RobotContainer {
   private void configureBindings() {
     new JoystickButton(m_driverController, Button.kLeftBumper.value).onTrue(new InstantCommand(() -> GroundIntake.getInstance().intake()));
     new JoystickButton(m_driverController, Button.kLeftBumper.value).onFalse(new InstantCommand(() -> GroundIntake.getInstance().stopIntake()));
+    new JoystickButton(m_driverController, Button.kRightBumper.value).onTrue(new InstantCommand(() -> GroundIntake.getInstance().outtake()));
   }
 
   /**

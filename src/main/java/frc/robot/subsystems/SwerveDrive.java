@@ -100,30 +100,30 @@ public class SwerveDrive extends SubsystemBase {
    * below are robot specific, and should be tuned.
    */
 
-  public SwerveDrive() {
+  private SwerveDrive() {
     NetworkTableInstance.getDefault().getTable("VisionStdDev").getEntry("VisionstdDev").setDouble(.01);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     thetaController.setTolerance(Math.PI / 45); // 4 degrees
 
     // Autobuilder for Pathplanner Goes last in constructor! TK
-    AutoBuilder.configure(
-        Odometry.getInstance()::getPose, // Robot pose supplier
-        Odometry.getInstance()::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-        this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE
-                                                              // ChassisSpeeds. Also optionally outputs individual
-                                                              // module feedforwards
-        new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic
-                                        // drive trains
-            new PIDConstants(Constants.PathplannerConstants.TransP, Constants.PathplannerConstants.TransI,
-                Constants.PathplannerConstants.TransD), // Translation PID constants
-            new PIDConstants(Constants.PathplannerConstants.RotP, Constants.PathplannerConstants.RotI,
-                Constants.PathplannerConstants.RotD) // Rotation PID constants
-        ),
-        Constants.PathplannerConstants.config, // The robot configuration
-        this::shouldFlipPath,
-        this // Reference to this subsystem to set requirements
-    );
+    // AutoBuilder.configure(
+    //     Odometry.getInstance()::getPose, // Robot pose supplier
+    //     Odometry.getInstance()::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+    //     this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+    //     (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE
+    //                                                           // ChassisSpeeds. Also optionally outputs individual
+    //                                                           // module feedforwards
+    //     new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic
+    //                                     // drive trains
+    //         new PIDConstants(Constants.PathplannerConstants.TransP, Constants.PathplannerConstants.TransI,
+    //             Constants.PathplannerConstants.TransD), // Translation PID constants
+    //         new PIDConstants(Constants.PathplannerConstants.RotP, Constants.PathplannerConstants.RotI,
+    //             Constants.PathplannerConstants.RotD) // Rotation PID constants
+    //     ),
+    //     Constants.PathplannerConstants.config, // The robot configuration
+    //     this::shouldFlipPath,
+    //     this // Reference to this subsystem to set requirements
+    // );
     // std deviation taken from examples
     // poseEstimator = new SwerveDrivePoseEstimator(
     //     kinematics,

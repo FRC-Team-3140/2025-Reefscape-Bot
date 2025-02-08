@@ -10,11 +10,7 @@ import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -50,7 +46,11 @@ public class Odometry extends SubsystemBase {
     if (angle == null) {
       return 0;
     }
-    return angle % (Math.PI * 2);
+    double a = angle % (Math.PI * 2);
+    if (a < 0) {
+      a += Math.PI * 2;
+    }
+    return a;
   }
   public Rotation2d getRotation() {return new Rotation2d(getAngle());}
   public Vector2 GetPosition() {return position == null ? new Vector2() : position;}

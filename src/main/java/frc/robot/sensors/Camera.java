@@ -720,9 +720,9 @@ public class Camera extends SubsystemBase {
    *         global pose of the robot,
    *         or an empty optional if the pose cannot be estimated.
    */
-  public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
-    // Update this method accordingly to get the pose of the swerveDrive
-    aprilTagPoseEstimator.setReferencePose(SwerveDrive.getInstance().getPose());
-    return aprilTagPoseEstimator.update(april.getLatestResult());
-  }
+  // public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
+  //   // Update this method accordingly to get the pose of the swerveDrive
+  //   aprilTagPoseEstimator.setReferencePose(SwerveDrive.getInstance().getPose());
+  //   return aprilTagPoseEstimator.update(april.getLatestResult());
+  // }
 }

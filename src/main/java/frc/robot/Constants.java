@@ -71,7 +71,7 @@ public final class Constants {
 
     // Elevator
     public static final int ElevEncoder = 4;
-
+ 
     // Algae Intake
     public static final int AIEncoder = 5;
 
@@ -185,5 +185,16 @@ public final class Constants {
 
   public static class Odometry {
     public static final double TagCorrectionSpeed = 0.75;
+  }
+
+  public static class NetworktablePaths {
+    public static final String Dashboard = "Dashboard";
+
+    // Subtables of Dashboard
+    public static final String GamePhase = "GamePhase";
+    public static final String Voltage = "Voltage";
+    public static final String Pose = "Pose";
+    public static final String Reef = "Reef";
+    public static final String Test = "Test";
   }
 }
