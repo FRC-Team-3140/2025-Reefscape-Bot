@@ -16,7 +16,7 @@ import frc.robot.tests.TestGroundHandoff;
 import frc.robot.tests.TestGroundIntake;
 import frc.robot.tests.TestSwerve;
 
-// TODO: make a stop all command to run in telep and auto init
+
 public class TestRunner extends SubsystemBase {
   private static TestRunner instance = null;
 
@@ -41,9 +41,7 @@ public class TestRunner extends SubsystemBase {
     return instance;
   }
 
-  /** Creates a new TestRunner. */
   private TestRunner() {
-
     tests.put(TestType.SWERVE, new TestSwerve(NetworkTables.swerveButton_b));
     tests.put(TestType.ALGAE_INTAKE, new TestAlgaeIntake(NetworkTables.algaeButton_b));
     tests.put(TestType.END_EFFECTOR, new TestEndEffector(NetworkTables.effectorButton_b));
@@ -56,13 +54,9 @@ public class TestRunner extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    for (TestType type : tests.keySet()) { // loop through every test types
-      if (!tests.get(type).running) { // skip it if its not running
-        continue;
-      }
-
-      // periodic if its running
+    for (TestType type : tests.keySet()) { 
+      if (!tests.get(type).running) continue;
+      
       tests.get(type).Periodic();
     }
   }
@@ -72,8 +66,7 @@ public class TestRunner extends SubsystemBase {
   }
 
   public void setState(TestType type, boolean run) {
-    if (tests.get(type).running == run)
-      return;
+    if (tests.get(type).running == run) return;
 
     if (run) {
       tests.get(type).Start();
@@ -83,8 +76,13 @@ public class TestRunner extends SubsystemBase {
   }
 
   public void updateStates() {
-    for (TestType type : tests.keySet()) { // loop through every test types
+    for (TestType type : tests.keySet()) { 
       setState(type, tests.get(type).ntEntry.getBoolean(false));
+    }
+  }
+  public void stopAll() {
+    for (TestType type : tests.keySet()) { 
+      setState(type, false);
     }
   }
 }

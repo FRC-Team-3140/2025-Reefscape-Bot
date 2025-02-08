@@ -23,6 +23,5 @@ public class Test {
         running = false;
     }
 
-    public void Periodic() {
-    }
+    public void Periodic() { }
 }
