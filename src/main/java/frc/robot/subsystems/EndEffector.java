@@ -68,12 +68,12 @@ public class EndEffector extends SubsystemBase {
 
     SparkMaxConfig config = new SparkMaxConfig();
 
-    config.inverted(true).idleMode(IdleMode.kCoast).follow(Constants.MotorIDs.EERight);
+    config.inverted(true).idleMode(IdleMode.kBrake).follow(Constants.MotorIDs.EERight);
     leftManipulatorMotorMN.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    rightManipulatorMotorMN.configure(coastModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    rightManipulatorMotorMN.configure(breakModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    algaeIntakeMotorN.configure(coastModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    algaeIntakeMotorN.configure(breakModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     algaeIntakeRotateMotorN.configure(breakModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
@@ -88,26 +88,19 @@ public class EndEffector extends SubsystemBase {
     targetAngle = angle;
   }
 
+  public void setManipulatorVoltage(double speed) {
+    rightManipulatorMotorMN.set(speed);
+  }
+  
+  public void setBeltVoltage(double speed) {
+    beltMotorMN.set(speed);
+  }
+
   public double getAlgaeIntakeAngle() {
     return armAngle;
   }
 
   public boolean hasCoral() {
     return !coralSensor.get();
-  }
-
-  public void algaeBreakMode() {
-    algaeIntakeMotorN.configure(breakModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-  } 
-  public void algaeCoastMode() {
-    algaeIntakeMotorN.configure(coastModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-  }
-  public void coralBreakMode() {
-    leftManipulatorMotorMN.configure(breakModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-    rightManipulatorMotorMN.configure(breakModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-  }
-  public void coralCoastMode() {
-    leftManipulatorMotorMN.configure(coastModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-    rightManipulatorMotorMN.configure(coastModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
   }
 }

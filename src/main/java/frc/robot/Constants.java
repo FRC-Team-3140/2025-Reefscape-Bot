@@ -197,4 +197,12 @@ public final class Constants {
     public static final String Reef = "Reef";
     public static final String Test = "Test";
   }
+
+  public static class MotorSpeeds {
+    public static class EndEffector {
+      public static final double beltIntake = 0.75;
+      public static final double manipulatorIntake = 0.75;
+      public static final double manipulatorOuttake = 0.25;
+    }
+  }
 }
