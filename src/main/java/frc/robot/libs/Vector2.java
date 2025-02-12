@@ -26,6 +26,14 @@ public class Vector2 {
         return new Vector2(X - other.X, Y - other.Y);
     }
 
+    public Vector2 mult(double factor) {
+        return new Vector2(X * factor, Y * factor);
+    }
+
+    public Vector2 div(double divisor) {
+        return new Vector2(X / divisor, Y / divisor);
+    }
+
     public Vector2 lerp(Vector2 other, double alpha) {
         return new Vector2((other.X - X)*alpha + X, (other.Y - Y)*alpha + Y);
     }

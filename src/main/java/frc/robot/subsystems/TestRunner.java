@@ -16,7 +16,6 @@ import frc.robot.tests.TestGroundHandoff;
 import frc.robot.tests.TestGroundIntake;
 import frc.robot.tests.TestSwerve;
 
-
 public class TestRunner extends SubsystemBase {
   private static TestRunner instance = null;
 
@@ -54,9 +53,10 @@ public class TestRunner extends SubsystemBase {
 
   @Override
   public void periodic() {
-    for (TestType type : tests.keySet()) { 
-      if (!tests.get(type).running) continue;
-      
+    for (TestType type : tests.keySet()) {
+      if (!tests.get(type).running)
+        continue;
+
       tests.get(type).Periodic();
     }
   }
@@ -66,7 +66,8 @@ public class TestRunner extends SubsystemBase {
   }
 
   public void setState(TestType type, boolean run) {
-    if (tests.get(type).running == run) return;
+    if (tests.get(type).running == run)
+      return;
 
     if (run) {
       tests.get(type).Start();
@@ -76,12 +77,13 @@ public class TestRunner extends SubsystemBase {
   }
 
   public void updateStates() {
-    for (TestType type : tests.keySet()) { 
+    for (TestType type : tests.keySet()) {
       setState(type, tests.get(type).ntEntry.getBoolean(false));
     }
   }
+
   public void stopAll() {
-    for (TestType type : tests.keySet()) { 
+    for (TestType type : tests.keySet()) {
       setState(type, false);
     }
   }

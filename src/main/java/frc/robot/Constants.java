@@ -191,7 +191,7 @@ public final class Constants {
     public static final String Dashboard = "Dashboard";
 
     // Subtables of Dashboard
-    public static final String GamePhase = "GamePhase";
+    public static final String DS = "DS";
     public static final String Voltage = "Voltage";
     public static final String Pose = "Pose";
     public static final String Reef = "Reef";

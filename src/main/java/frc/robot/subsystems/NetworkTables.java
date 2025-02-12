@@ -10,11 +10,12 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants;
 
 public class NetworkTables {
+  // TODO: Creating getting algae entry??
   private static NetworkTableInstance inst = NetworkTableInstance.getDefault();
   
   private static NetworkTable dash = inst.getTable(Constants.NetworktablePaths.Dashboard);
   
-  private static NetworkTable dsInfo = dash.getSubTable(Constants.NetworktablePaths.GamePhase);
+  private static NetworkTable dsInfo = dash.getSubTable(Constants.NetworktablePaths.DS);
     public static NetworkTableEntry state_s = dsInfo.getEntry("state_s");
     public static NetworkTableEntry voltage_d = dsInfo.getEntry("voltage_d");
 

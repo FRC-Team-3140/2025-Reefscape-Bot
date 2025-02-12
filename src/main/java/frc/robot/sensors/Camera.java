@@ -4,9 +4,6 @@
 
 package frc.robot.sensors;
 
-import java.util.Optional;
-
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonVersion;
@@ -25,7 +22,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.SwerveDrive;
 
 public class Camera extends SubsystemBase {
 
@@ -721,8 +717,8 @@ public class Camera extends SubsystemBase {
    *         or an empty optional if the pose cannot be estimated.
    */
   // public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
-  //   // Update this method accordingly to get the pose of the swerveDrive
-  //   aprilTagPoseEstimator.setReferencePose(SwerveDrive.getInstance().getPose());
-  //   return aprilTagPoseEstimator.update(april.getLatestResult());
+  // // Update this method accordingly to get the pose of the swerveDrive
+  // aprilTagPoseEstimator.setReferencePose(SwerveDrive.getInstance().getPose());
+  // return aprilTagPoseEstimator.update(april.getLatestResult());
   // }
 }

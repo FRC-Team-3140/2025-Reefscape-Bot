@@ -13,15 +13,19 @@ public class Test {
 
     public Test(NetworkTableEntry ntEntry) {
         this.ntEntry = ntEntry;
+        ntEntry.setBoolean(false);
     }
 
     public void Start() {
         running = true;
+        ntEntry.setBoolean(true);
     }
 
     public void Stop() {
         running = false;
+        ntEntry.setBoolean(false);
     }
 
-    public void Periodic() { }
+    public void Periodic() {
+    }
 }
