@@ -147,6 +147,11 @@ public final class Constants {
   public static class Voltages {
     // Ground Intake
     public static final double GIVoltage = 8;
+
+    // End Effector
+    public static final double EEManipulatorIntakeVoltage = 8;
+    public static final double EEBeltVolrage = 8;
+    public static final double EEManipulatorScoreVoltage = 8;
   }
 
   public static class CameraConstants {
