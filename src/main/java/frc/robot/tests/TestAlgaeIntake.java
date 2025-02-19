@@ -11,7 +11,7 @@ import frc.robot.subsystems.EndEffector;
 public class TestAlgaeIntake extends Test {
     private final EndEffector algaeIntake = EndEffector.getInstance();
 
-    private final double voltage = 0.25 * 12;
+    private final double voltage = 0.4;
 
     public TestAlgaeIntake(NetworkTableEntry entry) {
         super(entry);
@@ -23,7 +23,7 @@ public class TestAlgaeIntake extends Test {
     }
 
     public void Periodic() {
-        algaeIntake.setBeltVoltage(voltage);
+        algaeIntake.setBeltSpeed(voltage);
     }
 
     @Override

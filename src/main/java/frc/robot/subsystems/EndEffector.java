@@ -88,16 +88,20 @@ public class EndEffector extends SubsystemBase {
     targetAngle = angle;
   }
 
-  public void setManipulatorVoltage(double speed) {
+  public void setManipulatorSpeed(double speed) {
     rightManipulatorMotorMN.set(speed);
   }
   
-  public void setBeltVoltage(double speed) {
+  public void setBeltSpeed(double speed) {
     beltMotorMN.set(speed);
   }
 
   public double getAlgaeIntakeAngle() {
     return armAngle;
+  }
+
+  public double getAlgaeIntakeCurrent() {
+    return algaeIntakeMotorN.getOutputCurrent();
   }
 
   public boolean hasCoral() {

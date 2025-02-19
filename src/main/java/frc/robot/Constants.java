@@ -111,8 +111,6 @@ public final class Constants {
 
     public static final double BRBaseAngle = 0.447409;
 
-    // Endeffector
-    public static final double coralManipulatorVoltage = .4 * 12;
   }
 
   public static class Limits {
@@ -127,6 +125,11 @@ public final class Constants {
     public static final double GIMaxAngle = 180;
 
     public static final double GICoralDetectionCurrentThreshold = 10;
+
+    // End Effector TODO: Update these values
+    public static final double EEIntakeAngleMin = 0;
+    public static final double EEIntakeAngleMax = 180;
+    public static final double EEIntakeCurrentThreshold = 10;
   }
 
   public static class Controller {
@@ -148,11 +151,8 @@ public final class Constants {
     // Ground Intake
     public static final double GIVoltage = 8;
 
-    // End Effector
-    public static final double EEManipulatorIntakeVoltage = 8;
-    public static final double EEBeltVolrage = 8;
-    public static final double EEManipulatorScoreVoltage = 8;
   }
+
 
   public static class CameraConstants {
     public static final double maxAmbiguity = 0.1;
@@ -215,7 +215,8 @@ public final class Constants {
     public static class EndEffector {
       public static final double beltIntake = 0.75;
       public static final double manipulatorIntake = 0.75;
-      public static final double manipulatorOuttake = 0.25;
+      public static final double manipulatorScore = 0.25;
+      public static final double manipulatorScoreL4 = 0.1;
     }
   }
 }

@@ -11,7 +11,7 @@ import frc.robot.subsystems.EndEffector;
 public class TestEndEffector extends Test {
     private final EndEffector endEffector = EndEffector.getInstance();
 
-    private final double voltage = 0.25 * 12;
+    private final double voltage = 0.25;
 
     public TestEndEffector(NetworkTableEntry entry) {
         super(entry);
@@ -23,7 +23,7 @@ public class TestEndEffector extends Test {
     }
 
     public void Periodic() {
-        endEffector.setManipulatorVoltage(voltage);
+        endEffector.setManipulatorSpeed(voltage);
     }
 
     @Override

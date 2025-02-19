@@ -197,9 +197,9 @@ public class Controller extends SubsystemBase {
 
     if (secondaryController.getRightTriggerAxis() > Constants.Controller.triggerThreshold) {
       // Score coral
-      endEffector.setManipulatorVoltage(Constants.Bot.coralManipulatorVoltage);
+      endEffector.setManipulatorSpeed(Constants.MotorSpeeds.EndEffector.manipulatorScore);
     } else {
-      endEffector.setManipulatorVoltage(0);
+      endEffector.setManipulatorSpeed(0);
     }
 
     if (secondaryController.getLeftBumperButton()) {

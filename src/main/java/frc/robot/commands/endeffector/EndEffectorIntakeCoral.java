@@ -22,8 +22,8 @@ public class EndEffectorIntakeCoral extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    endEffector.setBeltVoltage(Constants.MotorSpeeds.EndEffector.beltIntake);
-    endEffector.setManipulatorVoltage(Constants.MotorSpeeds.EndEffector.manipulatorIntake);
+    endEffector.setBeltSpeed(Constants.MotorSpeeds.EndEffector.beltIntake);
+    endEffector.setManipulatorSpeed(Constants.MotorSpeeds.EndEffector.manipulatorIntake);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -34,8 +34,8 @@ public class EndEffectorIntakeCoral extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    endEffector.setBeltVoltage(0);
-    endEffector.setManipulatorVoltage(0);
+    endEffector.setBeltSpeed(0);
+    endEffector.setManipulatorSpeed(0);
   }
 
   // Returns true when the command should end.

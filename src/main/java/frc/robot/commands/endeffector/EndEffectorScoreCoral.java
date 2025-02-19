@@ -16,8 +16,9 @@ import frc.robot.subsystems.EndEffector;
 public class EndEffectorScoreCoral extends Command {
 
   private EndEffector endEffector = null;
+  private double speed = Constants.MotorSpeeds.EndEffector.manipulatorScore;
 
-  public EndEffectorScoreCoral(EndEffector endEffector) {
+  public EndEffectorScoreCoral(EndEffector endEffector, double speed) {
     this.endEffector = endEffector;
     addRequirements(endEffector);
   }
@@ -25,7 +26,7 @@ public class EndEffectorScoreCoral extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    endEffector.setManipulatorVoltage(Constants.Voltages.EEManipulatorScoreVoltage);
+    endEffector.setManipulatorSpeed(speed);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -35,7 +36,7 @@ public class EndEffectorScoreCoral extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    new SequentialCommandGroup(new WaitCommand(1), new InstantCommand(()->{ endEffector.setManipulatorVoltage(0); })).schedule();;
+    new SequentialCommandGroup(new WaitCommand(1), new InstantCommand(()->{ endEffector.setManipulatorSpeed(0); })).schedule();;
   }
 
   // Returns true when the command should end.
