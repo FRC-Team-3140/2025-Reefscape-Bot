@@ -12,7 +12,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorHeights;
-
+import frc.robot.commands.GroundCoralIntake;
+import frc.robot.commands.IntakeAlgaeReef;
+import frc.robot.commands.SourceCoralIntake;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class Controller extends SubsystemBase {
@@ -187,12 +189,12 @@ public class Controller extends SubsystemBase {
 
     if (secondaryController.getStartButton()) {
       // Get Algae L2
-      elevator.setHeight(ElevatorHeights.reefAlgaeL1Height);
+      new IntakeAlgaeReef(endEffector, ElevatorHeights.reefAlgaeL1Height);
     }
 
-    if (secondaryController.getBButton()) {
+    if (secondaryController.getBackButton()) {
       // Get Algae L3
-      elevator.setHeight(ElevatorHeights.reefAlgaeL2Height);
+      new IntakeAlgaeReef(endEffector, ElevatorHeights.reefAlgaeL2Height);
     }
 
     if (secondaryController.getRightTriggerAxis() > Constants.Controller.triggerThreshold) {
@@ -204,12 +206,25 @@ public class Controller extends SubsystemBase {
 
     if (secondaryController.getLeftBumperButton()) {
       // Ground Intake
-      groundIntake.intake();
+      new GroundCoralIntake(GroundIntake.getInstance(), Elevator.getInstance()).schedule();
     }
 
     if (secondaryController.getRightBumperButton()) {
       // Source Intake
-      elevator.setHeight(ElevatorHeights.sourceIntake);
+      new SourceCoralIntake().schedule();
+    }
+
+    if (secondaryController.getPOV() == 180) {
+      // Stow elevator
+      elevator.setHeight(ElevatorHeights.safeStowed);
+    }
+
+    if (secondaryController.getLeftTriggerAxis() > Constants.Controller.triggerThreshold) {
+      // Intake Algae
+      endEffector.setAlgaeIntakeSpeed(Constants.MotorSpeeds.EndEffector.algaeProcessorSpeed);
+      endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.processorScoreTop);
+    } else {
+      endEffector.setAlgaeIntakeSpeed(0);
     }
 
     // Secondary controller disable manual controll

@@ -173,11 +173,13 @@ public final class Constants {
   }
 
   public static class AlgaeIntakeAngles {
-    public static final double stowed = 0;
-    public static final double groundIntake = 0;
-    public static final double reefIntake = 0;
-    public static final double processorScoreBottom = 0;
-    public static final double processorScoreTop = 0;
+    public static final double stowed = 180;
+    public static final double stowedAlgaeTop = 10;
+    public static final double stowedAlgaeBottom = 100;
+    public static final double groundIntake = 75;
+    public static final double reefIntake = 30;
+    public static final double processorScoreBottom = stowedAlgaeBottom;
+    public static final double processorScoreTop = stowedAlgaeTop;
   }
 
   public static class ElevatorHeights {
@@ -193,6 +195,9 @@ public final class Constants {
 
     public static final double sourceIntake = 0;
     public static final double groundIntake = Constants.ElevatorHeights.minimum;
+
+    public static final double processerHeight = 0;
+    public static final double safeStowed = 0; 
   }
 
   public static class Odometry {
@@ -217,6 +222,8 @@ public final class Constants {
       public static final double manipulatorIntake = 0.75;
       public static final double manipulatorScore = 0.25;
       public static final double manipulatorScoreL4 = 0.1;
+      public static final double algaeIntakeSpeed = 0.25;
+      public static final double algaeProcessorSpeed = 0.25;
     }
   }
 }

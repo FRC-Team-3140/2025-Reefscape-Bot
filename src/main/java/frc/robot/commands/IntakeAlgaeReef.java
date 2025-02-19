@@ -24,6 +24,7 @@ public class IntakeAlgaeReef extends Command {
   public void initialize() {
     Elevator.getInstance().setHeight(height);
     endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.reefIntake);
+    endEffector.setAlgaeIntakeSpeed(Constants.MotorSpeeds.EndEffector.algaeIntakeSpeed);
   }
 
   @Override
@@ -33,7 +34,8 @@ public class IntakeAlgaeReef extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    endEffector.setAlgaeIntakeSpeed(0);
+    endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.stowedAlgaeTop);
   }
 
   // Returns true when the command should end.

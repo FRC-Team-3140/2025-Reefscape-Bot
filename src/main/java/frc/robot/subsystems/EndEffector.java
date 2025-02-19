@@ -96,6 +96,10 @@ public class EndEffector extends SubsystemBase {
     beltMotorMN.set(speed);
   }
 
+  public void setAlgaeIntakeSpeed(double speed) {
+    algaeIntakeMotorN.set(speed);
+  }
+
   public double getAlgaeIntakeAngle() {
     return armAngle;
   }
