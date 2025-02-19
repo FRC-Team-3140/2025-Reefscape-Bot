@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.odometry;
 
-import java.nio.ByteBuffer;
 
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
@@ -12,14 +11,10 @@ import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.libs.Vector2;
-import frc.robot.subsystems.NetworkTables;
 import frc.robot.subsystems.SwerveDrive;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
@@ -27,7 +22,6 @@ abstract public class Odometry extends SubsystemBase {
   protected static Odometry inst = null;
   protected double lastGyroAngle;
   protected static AHRS gyro;
-  private NetworkTableEntry robotPose;
   private Field2d fieldEntry;
   /** Creates a new Odometry. */
   public static Odometry getInstance() {
@@ -41,7 +35,6 @@ abstract public class Odometry extends SubsystemBase {
     gyro = new AHRS(NavXComType.kMXP_SPI);
     gyro.reset();
     lastGyroAngle = gyro.getRotation2d().getRadians();
-    robotPose = NetworkTables.robotPosEntry_o;
 
     fieldEntry = new Field2d();
     SmartDashboard.putData(fieldEntry);

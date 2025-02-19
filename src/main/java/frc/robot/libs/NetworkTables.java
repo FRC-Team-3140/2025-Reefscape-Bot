@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.libs;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -13,7 +13,6 @@ public class NetworkTables {
   private static NetworkTableInstance inst = NetworkTableInstance.getDefault();
   
   private static NetworkTable dash = inst.getTable(Constants.NetworktablePaths.Dashboard);
-    public static NetworkTableEntry robotPosEntry_o = dash.getEntry("Robot Pose");
   
   private static NetworkTable dsInfo = dash.getSubTable(Constants.NetworktablePaths.DS);
     public static NetworkTableEntry state_s = dsInfo.getEntry("state_s");

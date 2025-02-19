@@ -8,9 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import frc.robot.Constants;
-import frc.robot.commands.GroundCoralIntake;
 import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.endeffector.EndEffectorIntakeCoral;
 import frc.robot.commands.groundIntake.WaitUntilAngle;
@@ -27,7 +25,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Timer;
 
 public class GroundIntake extends SubsystemBase {
   private static GroundIntake instance;
@@ -179,5 +176,9 @@ public class GroundIntake extends SubsystemBase {
 
   public double getAngle() {
     return liftPos.get();
+  }
+
+  public boolean isCoralHeld() {
+    return coralHeld;
   }
 }

@@ -15,6 +15,7 @@ import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.GroundCoralIntake;
 import frc.robot.commands.IntakeAlgaeReef;
 import frc.robot.commands.SourceCoralIntake;
+import frc.robot.libs.NetworkTables;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class Controller extends SubsystemBase {
@@ -25,7 +26,6 @@ public class Controller extends SubsystemBase {
 
   private final Elevator elevator = Elevator.getInstance();
   private final EndEffector endEffector = EndEffector.getInstance();
-  private final GroundIntake groundIntake = GroundIntake.getInstance();
 
   /** Creates a new Controller. */
   public Controller(int primary, int secondary) {

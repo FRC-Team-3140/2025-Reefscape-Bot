@@ -9,6 +9,7 @@ import java.util.HashMap;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.tests.TestAlgaeIntake;
 import frc.robot.tests.TestAlgaeReef;
+import frc.robot.libs.NetworkTables;
 import frc.robot.tests.Test;
 import frc.robot.tests.TestElevator;
 import frc.robot.tests.TestEndEffector;
