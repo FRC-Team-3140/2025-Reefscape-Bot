@@ -24,11 +24,6 @@ import frc.robot.Constants;
 import frc.robot.libs.AbsoluteEncoder;
 
 public class SwerveModule extends SubsystemBase {
-
-    // Zero : 0.697578
-    // One : 0.701239
-    // Two: 0.467096
-    // Three : 0.207867
     public String moduleID;
     public int pwmID;
     public int driveMotorID;
@@ -81,16 +76,16 @@ public class SwerveModule extends SubsystemBase {
 
         turnMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // TODO: CTRE CANcoder Fixy
-        turnEncoder = new AbsoluteEncoder(analogID);
-        turnEncoder.setPositionOffset(baseAngle);
+        turnEncoder = new AbsoluteEncoder(analogID, baseAngle);
 
         driveEncoder = driveMotor.getEncoder();
 
         turnPID = new PIDController(P, 0, 0);
+
         // we don't use I or D since P works well enough
         turnPID.enableContinuousInput(0, 360);
         turnPID.setTolerance(turnSetpointTolerance, turnVelocityTolerance);
+
         // determined from a SYSID scan
         drivePID = new ProfiledPIDController(.11, 0, .015, constraints);
         drivePID.setTolerance(driveSetpointTolerance);
@@ -99,6 +94,8 @@ public class SwerveModule extends SubsystemBase {
     // runs while the bot is running
     @Override
     public void periodic() {
+        NetworkTableInstance.getDefault().getTable("Angle").getEntry(moduleID)
+                .setDouble(turnEncoder.getAbsolutePosition());
     }
 
     SlewRateLimiter accelerationLimiter = new SlewRateLimiter(30.0, -Constants.Bot.maxAcceleration, 0);

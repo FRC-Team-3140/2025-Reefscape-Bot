@@ -5,6 +5,7 @@
 package frc.robot.tests;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 
 /** Add your docs here. */
 public class TestElevator extends Test {
@@ -18,7 +19,8 @@ public class TestElevator extends Test {
     }
 
     public void Periodic() {
-
+        // TODO: Implement this method
+        new PrintCommand("Elevator").schedule();
     }
 
     @Override

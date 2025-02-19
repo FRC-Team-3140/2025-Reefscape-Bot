@@ -51,7 +51,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-
     CommandScheduler.getInstance().run();
     NetworkTables.voltage_d.setDouble(RobotController.getBatteryVoltage());
   }
@@ -79,6 +78,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
+    NetworkTables.state_s.setString("AUTO");
   }
 
   /** This function is called periodically during autonomous. */
@@ -96,6 +97,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    NetworkTables.state_s.setString("TELEOP");
   }
 
   /** This function is called periodically during operator control. */
@@ -116,6 +119,7 @@ public class Robot extends TimedRobot {
       e.printStackTrace();
     }
 
+    NetworkTables.state_s.setString("DEV");
   }
 
   /** This function is called periodically during test mode. */

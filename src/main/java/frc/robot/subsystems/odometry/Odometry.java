@@ -15,7 +15,8 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.libs.Vector2;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.subsystems.SwerveDrive;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 abstract public class Odometry extends SubsystemBase {
   protected double lastUpdate = Timer.getFPGATimestamp();
@@ -76,8 +77,14 @@ abstract public class Odometry extends SubsystemBase {
     return delta;
   }
 
-  public void update(SwerveModuleState[] states) {
-    updatePosition(states);
+  public void update() {
+    SwerveDrive drive = SwerveDrive.getInstance();
+    SwerveModulePosition[] positions = new SwerveModulePosition[drive.modules.length];
+    for (int i = 0; i < drive.modules.length; i ++) {
+        positions[i] = drive.modules[i].getSwerveModulePosition();
+    }
+
+    updatePosition(positions);
 
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     StructPublisher<Pose2d> odometryStruct = inst.getStructTopic("Odometry", Pose2d.struct).publish();
@@ -94,5 +101,5 @@ abstract public class Odometry extends SubsystemBase {
     return new Pose2d(new Translation2d(getX(), getY()), new Rotation2d(getAngle()));
   }
 
-  abstract public void updatePosition(SwerveModuleState[] states);
+  abstract public void updatePosition(SwerveModulePosition[] positions);
 }

@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.libs.Vector2;
 import frc.robot.subsystems.SwerveDrive;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 
@@ -21,23 +20,23 @@ public class PoseOdometry extends Odometry {
     }
 
     public double getX() {
-        return 0;
+        return estimator == null ? 0 : estimator.getEstimatedPosition().getX();
     }
 
     public double getY() {
-        return 0;
+        return estimator == null ? 0 : estimator.getEstimatedPosition().getY();
     }
 
     public double getAngle() {
-        return 0;
+        return getRotation().getRadians();
     }
 
     public Rotation2d getRotation() {
-        return super.getRotation();
+        return estimator == null ? new Rotation2d() : estimator.getEstimatedPosition().getRotation();
     }
 
     public Vector2 getPosition() {
-        return new Vector2();
+        return new Vector2(getX(), getY());
     }
 
     public boolean knowsPose() {
@@ -45,13 +44,26 @@ public class PoseOdometry extends Odometry {
     }
 
     @Override
-    public void update(SwerveModuleState[] states) {
+    public void update() {
+        super.update();
+    }
+
+    @Override
+    public void resetPose(Pose2d pose) {
+        super.resetPose(pose);
+        if (estimator != null) {
+            estimator.resetPose(pose);
+        }
+    }
+
+    @Override
+    public Pose2d getPose() {
+        return estimator.getEstimatedPosition();
+    }
+
+    public void updatePosition(SwerveModulePosition[] positions) {
         SwerveDrive drive = SwerveDrive.getInstance();
         Pose2d pose = calculatePoseFromTags();
-        SwerveModulePosition[] positions = new SwerveModulePosition[drive.modules.length];
-        for (int i = 0; i < drive.modules.length; i ++) {
-            positions[i] = drive.modules[i].getSwerveModulePosition();
-        }
         if (estimator == null && pose != null) {
             estimator = new SwerveDrivePoseEstimator(drive.kinematics, getGyroRotation(), positions, pose);
         } else if (pose != null) {
@@ -61,18 +73,5 @@ public class PoseOdometry extends Odometry {
         if (estimator != null) {
           estimator.update(getGyroRotation(), positions);
         }
-    }
-
-    @Override
-    public void resetPose(Pose2d pose) {
-        super.resetPose(pose);
-    }
-
-    @Override
-    public Pose2d getPose() {
-        return estimator.getEstimatedPosition();
-    }
-
-    public void updatePosition(SwerveModuleState[] states) {
     }
 }

@@ -5,9 +5,14 @@
 package frc.robot.tests;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import frc.robot.subsystems.EndEffector;
 
 /** Add your docs here. */
 public class TestAlgaeIntake extends Test {
+    private final EndEffector algaeIntake = EndEffector.getInstance();
+
+    private final double voltage = 0.25 * 12;
+
     public TestAlgaeIntake(NetworkTableEntry entry) {
         super(entry);
     }
@@ -18,7 +23,7 @@ public class TestAlgaeIntake extends Test {
     }
 
     public void Periodic() {
-
+        algaeIntake.setBeltVoltage(voltage);
     }
 
     @Override

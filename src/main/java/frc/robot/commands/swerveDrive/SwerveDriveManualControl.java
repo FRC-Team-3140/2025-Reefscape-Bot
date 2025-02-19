@@ -42,13 +42,13 @@ public class SwerveDriveManualControl extends Command {
         // }
 
         // Calculate the x speed based on the joystick input
-        final var xSpeed = -RobotContainer.m_driverController.getLeftY() * maxSpeed; 
+        final var xSpeed = -RobotContainer.primaryDriverController.getLeftY() * maxSpeed; 
         
         // Calculate the y speed based on the joystick input
-        final var ySpeed = -RobotContainer.m_driverController.getLeftX() * maxSpeed; 
+        final var ySpeed = -RobotContainer.primaryDriverController.getLeftX() * maxSpeed; 
         
         // Calculate the rotation speed based on the joystick input
-        final var rot = -RobotContainer.m_driverController.getRightX() * maxChassisTurnSpeed; 
+        final var rot = -RobotContainer.primaryDriverController.getRightX() * maxChassisTurnSpeed; 
         
         swerveDrive.drive(xSpeed, ySpeed, rot, fieldRelative); // Drive the swerve drive
     }

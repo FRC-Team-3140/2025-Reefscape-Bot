@@ -5,9 +5,14 @@
 package frc.robot.tests;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import frc.robot.subsystems.EndEffector;
 
 /** Add your docs here. */
 public class TestEndEffector extends Test {
+    private final EndEffector endEffector = EndEffector.getInstance();
+
+    private final double voltage = 0.25 * 12;
+
     public TestEndEffector(NetworkTableEntry entry) {
         super(entry);
     }
@@ -18,7 +23,7 @@ public class TestEndEffector extends Test {
     }
 
     public void Periodic() {
-
+        endEffector.setManipulatorVoltage(voltage);
     }
 
     @Override

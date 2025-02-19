@@ -4,14 +4,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.XboxController.Button;
-//import frc.robot.commands.Autos;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.libs.Controller;
 import frc.robot.subsystems.*;
 
 /**
@@ -38,9 +32,8 @@ public class RobotContainer {
     return container;
   }
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-
-  public final static Controller m_driverController = new Controller(Constants.Controller.DriverControllerPort);
+  public final static Controller primaryDriverController = new Controller(Constants.Controller.DriverControllerPort);
+  public final static Controller secondaryDriverController = new Controller(Constants.Controller.DriverControllerPort);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -68,9 +61,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    new JoystickButton(m_driverController, Button.kLeftBumper.value).onTrue(new InstantCommand(() -> GroundIntake.getInstance().intake()));
-    new JoystickButton(m_driverController, Button.kLeftBumper.value).onFalse(new InstantCommand(() -> GroundIntake.getInstance().stopIntake()));
-    new JoystickButton(m_driverController, Button.kRightBumper.value).onTrue(new InstantCommand(() -> GroundIntake.getInstance().outtake()));
+
   }
 
   /**

@@ -5,9 +5,14 @@
 package frc.robot.tests;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import frc.robot.subsystems.GroundIntake;
 
 /** Add your docs here. */
 public class TestGroundIntake extends Test {
+    private final GroundIntake groundIntake = GroundIntake.getInstance();
+
+    private final double angle = 90;
+
     public TestGroundIntake(NetworkTableEntry entry) {
         super(entry);
     }
@@ -18,11 +23,14 @@ public class TestGroundIntake extends Test {
     }
 
     public void Periodic() {
-
+        groundIntake.setAngle(angle);
+        groundIntake.intake();
     }
 
     @Override
     public void Stop() {
         super.Stop();
+
+        groundIntake.stopIntake();
     }
 }

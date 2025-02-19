@@ -126,6 +126,7 @@ public final class Constants {
 
   public static class Controller {
     public static final int DriverControllerPort = 0;
+    public static final int SecondaryDriverControllerPort = 1;
   }
 
   public static class Constraints {

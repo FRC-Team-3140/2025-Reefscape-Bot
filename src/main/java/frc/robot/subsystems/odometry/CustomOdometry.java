@@ -6,11 +6,11 @@ package frc.robot.subsystems.odometry;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
 import frc.robot.libs.Vector2;
+import frc.robot.subsystems.SwerveDrive;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class CustomOdometry extends Odometry {
@@ -70,16 +70,8 @@ public class CustomOdometry extends Odometry {
         return delta;
     }
 
-    @Override
-    public void periodic() {
-    }
-
-    public void update(SwerveModuleState[] states) {
-        updatePosition(states);
-
-        NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        StructPublisher<Pose2d> odometryStruct = inst.getStructTopic("Odometry", Pose2d.struct).publish();
-        odometryStruct.set(getPose());
+    public void update() {
+        super.update();
     }
 
     @Override
@@ -94,7 +86,7 @@ public class CustomOdometry extends Odometry {
         return super.getPose();
     }
 
-    public void updatePosition(SwerveModuleState[] states) {
+    public void updatePosition(SwerveModulePosition[] positions) {
         Pose2d tagPose = calculatePoseFromTags();
         double deltaTime = Timer.getFPGATimestamp() - lastUpdate;
         lastUpdate += deltaTime;
@@ -113,6 +105,12 @@ public class CustomOdometry extends Odometry {
         // move the position based on the delta calculated from the encoders
         double rotation = caluclateRotationDelta();
         angle += rotation;
+
+        SwerveDrive drive = SwerveDrive.getInstance();
+        SwerveModuleState[] states = new SwerveModuleState[drive.modules.length];
+        for (int i = 0; i < drive.modules.length; i ++) {
+            states[i] = drive.modules[i].getState();
+        }
         Vector2 delta = calculateEncoderDelta(states, deltaTime);
         position = position.add(delta);
 

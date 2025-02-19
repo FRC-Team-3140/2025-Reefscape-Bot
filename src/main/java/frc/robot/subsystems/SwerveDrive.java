@@ -74,12 +74,7 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public void periodic() {
-    SwerveModuleState[] states = new SwerveModuleState[4];
-    for (int i = 0; i < 4; i++) {
-      SwerveModule module = modules[i];
-      states[i] = module.getState();
-    }
-    odometry.update(states);
+    odometry.update();
   }
 
   /**

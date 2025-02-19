@@ -10,7 +10,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants;
 
 public class NetworkTables {
-  // TODO: Creating getting algae entry??
   private static NetworkTableInstance inst = NetworkTableInstance.getDefault();
   
   private static NetworkTable dash = inst.getTable(Constants.NetworktablePaths.Dashboard);
@@ -20,7 +19,7 @@ public class NetworkTables {
     public static NetworkTableEntry voltage_d = dsInfo.getEntry("voltage_d");
 
   private static NetworkTable reef = dash.getSubTable(Constants.NetworktablePaths.Reef);
-    public static NetworkTableEntry loc_a = reef.getEntry("loc_a");
+    public static NetworkTableEntry loc_s = reef.getEntry("loc_s");
     public static NetworkTableEntry algae_b = reef.getEntry("algae_b");
     public static NetworkTableEntry autoRunning_b = reef.getEntry("autoRunning_b");
 
