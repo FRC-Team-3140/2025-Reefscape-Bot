@@ -24,6 +24,7 @@ public class RobotContainer {
   public GroundIntake groundIntake = GroundIntake.getInstance();
   public TestRunner testRunner = TestRunner.getInstance();
   public DashboardCommandView dashboardCommandView = DashboardCommandView.getInstance();
+  public Controller controller = Controller.getInstance();
 
   private static RobotContainer container = null;
 

@@ -43,7 +43,7 @@ public class Controller extends SubsystemBase {
     AUTO, MANUAL
   }
 
-  private ControlMode curControlMode = ControlMode.AUTO;
+  private ControlMode curControlMode = ControlMode.MANUAL; // Default to auto when auto is implemented
 
   public static Controller getInstance() {
     if (instance == null) {
@@ -151,50 +151,66 @@ public class Controller extends SubsystemBase {
   }
 
   private void autoControlMode() {
-    if (primaryController.getYButton()) {
-      // TODO: Look at resetGyro() in Odometry.java
-      SwerveDrive.odometry.resetGyro();
+    if (secondaryController.getLeftStickButton() && secondaryController.getRightStickButton()) {
+      if (secondaryController.getRightBumperButtonPressed()) {
+        curControlMode = ControlMode.MANUAL;
+        System.out.println("Control Mode: " + curControlMode);
+      } else if (secondaryController.getLeftBumperButtonPressed()) {
+        curControlMode = ControlMode.AUTO;
+        System.out.println("Control Mode: " + curControlMode);
+      }
+
+      return;
     }
 
-    // Secondary controller enable manual controll
-    if (secondaryController.getLeftStickButton() && secondaryController.getRightStickButton()) {
-      if (secondaryController.getRightBumperButton()) {
-        curControlMode = ControlMode.MANUAL;
-      } else if (secondaryController.getLeftBumperButton()) {
-        curControlMode = ControlMode.AUTO;
-      }
+    if (primaryController.getYButtonPressed()) {
+      // TODO: Look at resetGyro() in Odometry.java
+      SwerveDrive.odometry.resetGyro();
     }
   }
 
   private void manualControlMode() {
-    if (secondaryController.getBButton()) {
+    if (secondaryController.getLeftStickButton() && secondaryController.getRightStickButton()) {
+      if (secondaryController.getRightBumperButtonPressed()) {
+        curControlMode = ControlMode.MANUAL;
+        System.out.println("Control Mode: " + curControlMode);
+      } else if (secondaryController.getLeftBumperButtonPressed()) {
+        curControlMode = ControlMode.AUTO;
+        System.out.println("Control Mode: " + curControlMode);
+      }
+      
+
+      return;
+    }
+
+    if (secondaryController.getBButtonPressed()) {
       // Elevator trough
       elevator.setHeight(ElevatorHeights.reefCoralL1Height);
     }
 
-    if (secondaryController.getAButton()) {
+    if (secondaryController.getAButtonPressed()) {
       // Elevator level reef 1
       elevator.setHeight(ElevatorHeights.reefCoralL2Height);
     }
 
-    if (secondaryController.getXButton()) {
+    if (secondaryController.getXButtonPressed()) {
       // Elevator level reef 2
       elevator.setHeight(ElevatorHeights.reefCoralL3Height);
     }
 
-    if (secondaryController.getYButton()) {
+    if (secondaryController.getYButtonPressed()) {
       // Elevator level reef 3
       elevator.setHeight(ElevatorHeights.reefCoralL4Height);
     }
 
-    if (secondaryController.getStartButton()) {
+    if (secondaryController.getStartButtonPressed()) {
       // Get Algae L2
-      new IntakeAlgaeReef(endEffector, ElevatorHeights.reefAlgaeL1Height);
+      new IntakeAlgaeReef(endEffector, ElevatorHeights.reefAlgaeL1Height).schedule();;
     }
 
-    if (secondaryController.getBackButton()) {
+    if (secondaryController.getBackButtonPressed()) {
       // Get Algae L3
-      new IntakeAlgaeReef(endEffector, ElevatorHeights.reefAlgaeL2Height);
+      new IntakeAlgaeReef(endEffector, ElevatorHeights.reefAlgaeL2Height).schedule();;
     }
 
     if (secondaryController.getRightTriggerAxis() > Constants.Controller.triggerThreshold) {
@@ -204,12 +220,12 @@ public class Controller extends SubsystemBase {
       endEffector.setManipulatorSpeed(0);
     }
 
-    if (secondaryController.getLeftBumperButton()) {
+    if (secondaryController.getLeftBumperButtonPressed()) {
       // Ground Intake
       new GroundCoralIntake(GroundIntake.getInstance(), Elevator.getInstance()).schedule();
     }
 
-    if (secondaryController.getRightBumperButton()) {
+    if (secondaryController.getRightBumperButtonPressed()) {
       // Source Intake
       new SourceCoralIntake().schedule();
     }
@@ -225,15 +241,6 @@ public class Controller extends SubsystemBase {
       endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.processorScoreTop);
     } else {
       endEffector.setAlgaeIntakeSpeed(0);
-    }
-
-    // Secondary controller disable manual controll
-    if (secondaryController.getLeftStickButton() && secondaryController.getRightStickButton()) {
-      if (secondaryController.getRightBumperButton()) {
-        curControlMode = ControlMode.MANUAL;
-      } else if (secondaryController.getLeftBumperButton()) {
-        curControlMode = ControlMode.AUTO;
-      }
     }
   }
 

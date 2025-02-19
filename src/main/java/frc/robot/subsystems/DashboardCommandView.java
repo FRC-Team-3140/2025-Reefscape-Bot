@@ -23,7 +23,7 @@ public class DashboardCommandView extends SubsystemBase {
       System.out.println("Command " + command.getName() + " started");
     });
     CommandScheduler.getInstance().onCommandExecute((command) -> {
-      System.out.println("Command " + command.getName() + " executing");
+      //System.out.println("Command " + command.getName() + " executing");
     });
     CommandScheduler.getInstance().onCommandFinish((command) -> {
       System.out.println("Command " + command.getName() + " ended");
