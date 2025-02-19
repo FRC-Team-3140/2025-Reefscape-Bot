@@ -16,6 +16,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 public class CustomOdometry extends Odometry {
     private Vector2 position = null;
     private Double angle = null; // IN RADIANS
+    private SwerveModuleState[] lastStates = null;
+    private Double lastStatesT = null;
+    private Double lastUpdateT = null;
 
     private CustomOdometry() {
         super();
@@ -56,14 +59,50 @@ public class CustomOdometry extends Odometry {
         return gyro.getRotation2d();
     }
 
-    private Vector2 calculateEncoderDelta(SwerveModuleState[] states, double deltaTime) {
+    private double optimizeAngle(double baseline, double angle) {
+        while (Math.abs(angle - baseline) > Math.PI) {
+            if (baseline > angle) {
+                angle += Math.PI * 2;
+            } else {
+                angle -= Math.PI * 2;
+            }
+        }
+        return angle;
+    }
+
+    private Vector2 calculateEncoderDelta(SwerveModuleState[] states) {
+        if (lastStates == null || lastStatesT == null) {
+            lastStates = states;
+            lastStatesT = Timer.getFPGATimestamp();
+            return new Vector2();
+        }
+        
         Vector2 delta = new Vector2();
+        double tc = Timer.getFPGATimestamp() - lastStatesT;
+        lastStatesT += tc;
 
         for (int i = 0; i < states.length; i++) {
-            double angle = states[i].angle.getRadians() + getAngle();
-            Vector2 dir = new Vector2(Math.cos(angle), Math.sin(angle));
-            delta = delta.add(dir.mult(states[i].speedMetersPerSecond * deltaTime));
-        }
+            double a0 = lastStates[i].angle.getRadians() + getAngle();
+            double af = optimizeAngle(a0, states[i].angle.getRadians() + getAngle());
+            double da = af - a0;
+
+            double v0 = lastStates[i].speedMetersPerSecond;
+            double vf = states[i].speedMetersPerSecond;
+            double dv = vf - v0;
+
+            /// UN///////FANCY CALCULUS F BASICHIT C (less accurate)ODE
+            // double angle = states[i].angle.getRadians() + getAngle();
+            // Vector2 dir = new Vector2(Math.cos(angle), Math.sin(angle));
+            // delta = delta.add(dir.mult(states[i].speedMetersPerSecond * deltaTime));
+
+
+            //////////// FANCY CALCULUS BASED COMPLEX CODE (accurate (probably))
+            delta = delta.add(new Vector2(
+                tc * ( vf/da*Math.sin(af) + dv/(da*da)*Math.cos(af) - dv/(da*da)*Math.cos(a0) - v0/da*Math.sin(a0)),
+                tc * (-vf/da*Math.cos(af) + dv/(da*da)*Math.sin(af) - dv/(da*da)*Math.sin(a0) + v0/da*Math.cos(a0))
+            ));        }
+
+        lastStates = states;
 
         delta = delta.div(states.length);
 
@@ -87,9 +126,15 @@ public class CustomOdometry extends Odometry {
     }
 
     public void updatePosition(SwerveModulePosition[] positions) {
+
+        if (lastUpdateT == null) {
+            lastUpdateT = Timer.getFPGATimestamp();
+        }
+
+
+        double deltaTime = Timer.getFPGATimestamp() - lastUpdateT;
+        lastUpdateT += deltaTime;
         Pose2d tagPose = calculatePoseFromTags();
-        double deltaTime = Timer.getFPGATimestamp() - lastUpdate;
-        lastUpdate += deltaTime;
 
         // if it found a camera position and it doesnt have a better position, use that
         if (tagPose != null && !knowsPose()) {
@@ -111,7 +156,7 @@ public class CustomOdometry extends Odometry {
         for (int i = 0; i < drive.modules.length; i ++) {
             states[i] = drive.modules[i].getState();
         }
-        Vector2 delta = calculateEncoderDelta(states, deltaTime);
+        Vector2 delta = calculateEncoderDelta(states);
         position = position.add(delta);
 
         // weightedly move the calculated position toward what the tags are saying.
@@ -123,13 +168,7 @@ public class CustomOdometry extends Odometry {
             position = position.lerp(tagPos, alpha);
 
             double targetAngle = tagPose.getRotation().getRadians();
-            while (Math.abs(targetAngle - angle) > Math.PI) {
-                if (targetAngle > angle) {
-                    angle += Math.PI * 2;
-                } else {
-                    angle -= Math.PI * 2;
-                }
-            }
+            angle = optimizeAngle(targetAngle, angle);
             angle = (targetAngle - angle) * alpha + angle;
         }
     }

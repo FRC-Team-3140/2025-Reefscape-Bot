@@ -71,7 +71,7 @@ public final class Constants {
 
     // Elevator
     public static final int ElevEncoder = 4;
- 
+
     // Algae Intake
     public static final int AIEncoder = 5;
 
@@ -110,11 +110,16 @@ public final class Constants {
     public static final double BLBaseAngle = 0.219279;
 
     public static final double BRBaseAngle = 0.447409;
+
+    // Endeffector
+    public static final double coralManipulatorVoltage = .4 * 12;
   }
 
   public static class Limits {
     // Elevator
     public static final double ElevMovement = 0.03;
+
+    public static final double ElevPosThreshold = 0.5;
 
     // Ground Intake
     public static final double GIMinAngle = 0;
@@ -127,6 +132,8 @@ public final class Constants {
   public static class Controller {
     public static final int DriverControllerPort = 0;
     public static final int SecondaryDriverControllerPort = 1;
+
+    public static final double triggerThreshold = 0.3;
   }
 
   public static class Constraints {
@@ -178,10 +185,9 @@ public final class Constants {
     public static final double reefCoralL2Height = 0;
     public static final double reefCoralL3Height = 0;
     public static final double reefCoralL4Height = 0;
-    
+
     public static final double sourceIntake = 0;
     public static final double groundIntake = Constants.ElevatorHeights.minimum;
- 
   }
 
   public static class Odometry {
@@ -196,7 +202,8 @@ public final class Constants {
     public static final String Voltage = "Voltage";
     public static final String Pose = "Pose";
     public static final String Reef = "Reef";
-    public static final String Test = "Test";
+    public static final String Test = "Dev";
+    public static final String Misc = "Misc";
   }
 
   public static class MotorSpeeds {

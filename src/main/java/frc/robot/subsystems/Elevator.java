@@ -82,7 +82,7 @@ public class Elevator extends SubsystemBase {
     pid.setI(ElevatorPIDs.getEntry("I").getDouble(0));
     pid.setD(ElevatorPIDs.getEntry("D").getDouble(0));
 
-    ElevatorTable.getEntry("Current Height").setDouble(Enc.get());
+    ElevatorTable.getEntry("Current Height").setDouble(getHeight());
     ElevatorTable.getEntry("Target Height").setDouble(target);
 
     double speed = calculateSpeed();
@@ -93,7 +93,16 @@ public class Elevator extends SubsystemBase {
     target = Math.max(Math.min(height, Constants.ElevatorHeights.maxiumum), Constants.ElevatorHeights.minimum); // TODO: DO MATH
   }
 
+  public double getHeight() {
+    // TODO: DO MATH
+    return Enc.get();
+  }
+
   public boolean isMoving() {
     return Math.abs(calculateSpeed()) > Constants.Limits.ElevMovement;
+  }
+  public Boolean[] isAtHeight(double height, double tolerance) {
+    // 0: is within tolerance, 1: is staying in tolerance
+    return new Boolean[] {Math.abs(getHeight() - height) < tolerance, Math.abs(target - height) < tolerance};
   }
 }

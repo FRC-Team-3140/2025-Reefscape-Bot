@@ -12,14 +12,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.libs.Vector2;
 import frc.robot.subsystems.SwerveDrive;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 abstract public class Odometry extends SubsystemBase {
-  protected double lastUpdate = Timer.getFPGATimestamp();
   protected static Odometry inst = null;
   protected double lastGyroAngle;
   protected static AHRS gyro;
@@ -36,12 +34,6 @@ abstract public class Odometry extends SubsystemBase {
     gyro = new AHRS(NavXComType.kMXP_SPI);
     gyro.reset();
     lastGyroAngle = gyro.getRotation2d().getRadians();
-  }
-
-  protected double getDeltaTime() {
-    double deltaTime = Timer.getFPGATimestamp() - lastUpdate;
-    lastUpdate += deltaTime;
-    return deltaTime;
   }
 
   protected Pose2d calculatePoseFromTags() {

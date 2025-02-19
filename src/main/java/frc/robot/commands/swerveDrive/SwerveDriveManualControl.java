@@ -1,7 +1,7 @@
 package frc.robot.commands.swerveDrive;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotContainer;
+import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.SwerveDrive;
 //Works Well
 
@@ -10,6 +10,7 @@ import frc.robot.subsystems.SwerveDrive;
  * It is intended to be the default command for the drive.
  */
 public class SwerveDriveManualControl extends Command {
+    private final Controller controller = Controller.getInstance();
     private final SwerveDrive swerveDrive; // The swerve drive subsystem
     private final double maxSpeed; // The maximum speed for the swerve drive
     private final double maxChassisTurnSpeed; // The maximum turn speed for the chassis
@@ -36,20 +37,15 @@ public class SwerveDriveManualControl extends Command {
      */
     @Override
     public void execute() {
-        // if(RobotContainer.m_driverController.getXButton()){
-        // speed = maxSpeed /2;
-        // turnSpeed = maxChassisTurnSpeed/2;
-        // }
-
         // Calculate the x speed based on the joystick input
-        final var xSpeed = -RobotContainer.primaryDriverController.getLeftY() * maxSpeed; 
-        
+        final var xSpeed = -controller.primaryController.getLeftY() * maxSpeed;
+
         // Calculate the y speed based on the joystick input
-        final var ySpeed = -RobotContainer.primaryDriverController.getLeftX() * maxSpeed; 
-        
+        final var ySpeed = -controller.primaryController.getLeftX() * maxSpeed;
+
         // Calculate the rotation speed based on the joystick input
-        final var rot = -RobotContainer.primaryDriverController.getRightX() * maxChassisTurnSpeed; 
-        
+        final var rot = -controller.primaryController.getRightX() * maxChassisTurnSpeed;
+
         swerveDrive.drive(xSpeed, ySpeed, rot, fieldRelative); // Drive the swerve drive
     }
 

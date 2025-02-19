@@ -32,9 +32,6 @@ public class RobotContainer {
     return container;
   }
 
-  public final static Controller primaryDriverController = new Controller(Constants.Controller.DriverControllerPort);
-  public final static Controller secondaryDriverController = new Controller(Constants.Controller.DriverControllerPort);
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */

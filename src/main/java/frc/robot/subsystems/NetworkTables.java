@@ -23,7 +23,7 @@ public class NetworkTables {
     public static NetworkTableEntry algae_b = reef.getEntry("algae_b");
     public static NetworkTableEntry autoRunning_b = reef.getEntry("autoRunning_b");
 
-  private static NetworkTable devBoard = dash.getSubTable("Dev");
+  private static NetworkTable devBoard = dash.getSubTable(Constants.NetworktablePaths.Test);
     public static NetworkTableEntry swerveButton_b = devBoard.getEntry("Swerve_b");
     public static NetworkTableEntry algaeButton_b = devBoard.getEntry("Algae Intake_b");
     public static NetworkTableEntry effectorButton_b = devBoard.getEntry("End Effector_b");
@@ -33,4 +33,7 @@ public class NetworkTables {
     public static NetworkTableEntry sourceButton_b = devBoard.getEntry("Source Handoff_b");
     public static NetworkTableEntry reefButton_b = devBoard.getEntry("Algae Reef_b");
     public static NetworkTableEntry algaeGroundButton_b = devBoard.getEntry("Algae Ground_b");
+  
+  private static NetworkTable misc = dash.getSubTable(Constants.NetworktablePaths.Misc);
+    public static NetworkTableEntry driveModeManual_b = misc.getEntry("driveModeManual_b");
 }

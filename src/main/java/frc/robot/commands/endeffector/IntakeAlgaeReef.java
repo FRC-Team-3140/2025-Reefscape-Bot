@@ -10,10 +10,13 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
 
 public class IntakeAlgaeReef extends Command {
-  EndEffector endEffector = EndEffector.getInstance();
+  EndEffector endEffector = null;
   double height = Constants.ElevatorHeights.minimum;
-  public IntakeAlgaeReef(double intakeHeight) {
+
+  public IntakeAlgaeReef(EndEffector endEffector, double intakeHeight) {
+    this.endEffector = endEffector;
     height = intakeHeight;
+
     addRequirements(endEffector);
   }
 
@@ -24,7 +27,8 @@ public class IntakeAlgaeReef extends Command {
   }
 
   @Override
-  public void execute() {}
+  public void execute() {
+  }
 
   // Called once the command ends or is interrupted.
   @Override
