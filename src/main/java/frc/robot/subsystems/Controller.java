@@ -21,7 +21,6 @@ public class Controller extends SubsystemBase {
   public final XboxController primaryController;
   public final XboxController secondaryController;
 
-  private final SwerveDrive serve = SwerveDrive.getInstance();
   private final Elevator elevator = Elevator.getInstance();
   private final EndEffector endEffector = EndEffector.getInstance();
   private final GroundIntake groundIntake = GroundIntake.getInstance();
@@ -151,8 +150,8 @@ public class Controller extends SubsystemBase {
 
   private void autoControlMode() {
     if (primaryController.getYButton()) {
-      // TODO: Remember how to do this
-      serve.resetGyro();
+      // TODO: Look at resetGyro() in Odometry.java
+      SwerveDrive.odometry.resetGyro();
     }
 
     // Secondary controller enable manual controll

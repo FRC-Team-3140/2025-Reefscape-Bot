@@ -31,6 +31,11 @@ public class PoseOdometry extends Odometry {
         return getRotation().getRadians();
     }
 
+    public void resetGyro() {
+        // TODO: 2024 code has an odometry offset that is also updated here!
+        gyro.reset();
+    }
+
     public Rotation2d getRotation() {
         return estimator == null ? new Rotation2d() : estimator.getEstimatedPosition().getRotation();
     }

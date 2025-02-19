@@ -59,6 +59,11 @@ public class CustomOdometry extends Odometry {
         return gyro.getRotation2d();
     }
 
+    public void resetGyro() {
+        // TODO: 2024 code has an odometry offset that is also updated here!
+        gyro.reset();
+    }
+
     private double optimizeAngle(double baseline, double angle) {
         while (Math.abs(angle - baseline) > Math.PI) {
             if (baseline > angle) {
@@ -76,7 +81,7 @@ public class CustomOdometry extends Odometry {
             lastStatesT = Timer.getFPGATimestamp();
             return new Vector2();
         }
-        
+
         Vector2 delta = new Vector2();
         double tc = Timer.getFPGATimestamp() - lastStatesT;
         lastStatesT += tc;
@@ -95,12 +100,13 @@ public class CustomOdometry extends Odometry {
             // Vector2 dir = new Vector2(Math.cos(angle), Math.sin(angle));
             // delta = delta.add(dir.mult(states[i].speedMetersPerSecond * deltaTime));
 
-
             //////////// FANCY CALCULUS BASED COMPLEX CODE (accurate (probably))
             delta = delta.add(new Vector2(
-                tc * ( vf/da*Math.sin(af) + dv/(da*da)*Math.cos(af) - dv/(da*da)*Math.cos(a0) - v0/da*Math.sin(a0)),
-                tc * (-vf/da*Math.cos(af) + dv/(da*da)*Math.sin(af) - dv/(da*da)*Math.sin(a0) + v0/da*Math.cos(a0))
-            ));        }
+                    tc * (vf / da * Math.sin(af) + dv / (da * da) * Math.cos(af) - dv / (da * da) * Math.cos(a0)
+                            - v0 / da * Math.sin(a0)),
+                    tc * (-vf / da * Math.cos(af) + dv / (da * da) * Math.sin(af) - dv / (da * da) * Math.sin(a0)
+                            + v0 / da * Math.cos(a0))));
+        }
 
         lastStates = states;
 
@@ -131,7 +137,6 @@ public class CustomOdometry extends Odometry {
             lastUpdateT = Timer.getFPGATimestamp();
         }
 
-
         double deltaTime = Timer.getFPGATimestamp() - lastUpdateT;
         lastUpdateT += deltaTime;
         Pose2d tagPose = calculatePoseFromTags();
@@ -153,7 +158,7 @@ public class CustomOdometry extends Odometry {
 
         SwerveDrive drive = SwerveDrive.getInstance();
         SwerveModuleState[] states = new SwerveModuleState[drive.modules.length];
-        for (int i = 0; i < drive.modules.length; i ++) {
+        for (int i = 0; i < drive.modules.length; i++) {
             states[i] = drive.modules[i].getState();
         }
         Vector2 delta = calculateEncoderDelta(states);

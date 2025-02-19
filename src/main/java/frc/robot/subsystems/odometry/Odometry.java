@@ -59,6 +59,8 @@ abstract public class Odometry extends SubsystemBase {
     return gyro.getRotation2d();
   }
 
+  abstract public void resetGyro();
+
   @Override
   public void periodic() {
   }
