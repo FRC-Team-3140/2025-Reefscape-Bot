@@ -3,7 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.tests;
-
+import frc.robot.subsystems.TestRunner.TestType;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import frc.robot.subsystems.EndEffector;
 
@@ -13,8 +13,8 @@ public class TestEndEffector extends Test {
 
     private final double voltage = 0.25;
 
-    public TestEndEffector(NetworkTableEntry entry) {
-        super(entry);
+    public TestEndEffector(NetworkTableEntry entry, TestType type) {
+        super(entry, type);
     }
 
     @Override

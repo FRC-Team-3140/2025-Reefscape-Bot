@@ -3,7 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.tests;
-
+import frc.robot.subsystems.TestRunner.TestType;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import frc.robot.Constants;
 import frc.robot.subsystems.SwerveDrive;
@@ -15,8 +15,8 @@ public class TestSwerve extends Test {
     private long lastSwitchTime = System.currentTimeMillis();
     private int stage = 0;
 
-    public TestSwerve(NetworkTableEntry entry) {
-        super(entry);
+    public TestSwerve(NetworkTableEntry entry, TestType type) {
+        super(entry, type);
     }
 
     @Override

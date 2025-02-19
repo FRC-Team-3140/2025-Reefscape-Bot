@@ -40,21 +40,23 @@ public class TestRunner extends SubsystemBase {
     }
     return instance;
   }
-
+ // TODO: Figure out why Test Ground Intake, Test Elevator, Algae Reef, and Test Groud are not working
   private TestRunner() {
-    tests.put(TestType.SWERVE, new TestSwerve(NetworkTables.swerveButton_b));
-    tests.put(TestType.ALGAE_INTAKE, new TestAlgaeIntake(NetworkTables.algaeButton_b));
-    tests.put(TestType.END_EFFECTOR, new TestEndEffector(NetworkTables.effectorButton_b));
-    tests.put(TestType.GROUND_INTAKE, new TestGroundIntake(NetworkTables.groundButton_b));
-    tests.put(TestType.ELEVATOR, new TestElevator(NetworkTables.elevatorButton_b));
-    tests.put(TestType.GROUND_HANDOFF, new TestGroundHandoff(NetworkTables.handoffButton_b));
-    tests.put(TestType.GROUND_INTAKE, new TestGroundIntake(NetworkTables.reefButton_b));
-    tests.put(TestType.ALGAE_REEF, new TestAlgaeReef(NetworkTables.algaeButton_b));
+    tests.put(TestType.SWERVE, new TestSwerve(NetworkTables.swerveButton_b, TestType.SWERVE));
+    tests.put(TestType.ALGAE_INTAKE, new TestAlgaeIntake(NetworkTables.algaeButton_b, TestType.ALGAE_INTAKE));
+    tests.put(TestType.END_EFFECTOR, new TestEndEffector(NetworkTables.effectorButton_b, TestType.END_EFFECTOR));
+    tests.put(TestType.GROUND_INTAKE, new TestGroundIntake(NetworkTables.groundButton_b, TestType.GROUND_INTAKE));
+    tests.put(TestType.ELEVATOR, new TestElevator(NetworkTables.elevatorButton_b, TestType.ELEVATOR));
+    tests.put(TestType.GROUND_HANDOFF, new TestGroundHandoff(NetworkTables.handoffButton_b, TestType.GROUND_HANDOFF));
+    tests.put(TestType.GROUND_INTAKE, new TestGroundIntake(NetworkTables.reefButton_b, TestType.GROUND_INTAKE));
+    tests.put(TestType.ALGAE_REEF, new TestAlgaeReef(NetworkTables.algaeButton_b, TestType.ALGAE_REEF));
   }
 
   @Override
   public void periodic() {
     for (TestType type : tests.keySet()) {
+      tests.get(type).QueryNetworkTable();
+
       if (!tests.get(type).running)
         continue;
 
