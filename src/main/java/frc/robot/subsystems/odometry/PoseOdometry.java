@@ -14,7 +14,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 
 public class PoseOdometry extends Odometry {
     protected SwerveDrivePoseEstimator estimator = null;
-
+    private Pose2d nullPose = new Pose2d(0, 0, new Rotation2d(0));
     protected PoseOdometry() {
         super();
     }
@@ -63,7 +63,7 @@ public class PoseOdometry extends Odometry {
 
     @Override
     public Pose2d getPose() {
-        return estimator.getEstimatedPosition();
+        return estimator == null ? nullPose : estimator.getEstimatedPosition();
     }
 
     public void updatePosition(SwerveModulePosition[] positions) {

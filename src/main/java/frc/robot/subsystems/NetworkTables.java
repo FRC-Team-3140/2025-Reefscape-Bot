@@ -13,6 +13,7 @@ public class NetworkTables {
   private static NetworkTableInstance inst = NetworkTableInstance.getDefault();
   
   private static NetworkTable dash = inst.getTable(Constants.NetworktablePaths.Dashboard);
+    public static NetworkTableEntry robotPosEntry_o = dash.getEntry("Robot Pose");
   
   private static NetworkTable dsInfo = dash.getSubTable(Constants.NetworktablePaths.DS);
     public static NetworkTableEntry state_s = dsInfo.getEntry("state_s");
