@@ -71,7 +71,7 @@ public class GroundIntake extends SubsystemBase {
       instance = new GroundIntake();
     }
 
-    return new GroundIntake();
+    return instance;
   }
 
   /** Creates a new GroundIntake. */
