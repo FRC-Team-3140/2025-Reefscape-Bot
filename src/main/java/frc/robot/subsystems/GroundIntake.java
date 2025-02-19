@@ -7,8 +7,13 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import frc.robot.Constants;
+import frc.robot.commands.GroundCoralIntake;
 import frc.robot.commands.elevator.SetHeight;
+import frc.robot.commands.endeffector.EndEffectorIntakeCoral;
+import frc.robot.commands.groundIntake.WaitUntilAngle;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -121,25 +126,27 @@ public class GroundIntake extends SubsystemBase {
             0)));
 
     if (intakeActive) {
-      if (leftMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold
-          || rightMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold) {
-        Boolean[] elevatorStats = elevator.isAtHeight(Constants.ElevatorHeights.minimum,
-            Constants.Limits.ElevPosThreshold);
+      if (leftMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold || rightMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold) {
+        intakeActive = false;
+        Boolean[] elevatorStats = elevator.isAtHeight(Constants.ElevatorHeights.minimum, Constants.Limits.ElevPosThreshold);
         new SequentialCommandGroup(
             (elevatorStats[0] && elevatorStats[1] ? null : new SetHeight(Constants.ElevatorHeights.minimum)),
             new InstantCommand(() -> {
               stopIntake();
-              setAngle(SetPoints.stow);
+              setAngle(SetPoints.handoff);
               coralHeld = true;
+            }),
+            new WaitUntilAngle(instance, SetPoints.handoff, Constants.Limits.GIAngleTolerance),
+            new ParallelDeadlineGroup(
+                new EndEffectorIntakeCoral(null),
+                new InstantCommand(() -> {
+                  outtake();
+                })),
+            new InstantCommand(() -> {
+              stopIntake();
+              setAngle(SetPoints.stow);
+              coralHeld = false;
             })).schedule();
-      }
-      // TODO: Finish implementing this logic as the command above
-      if (coralHeld && elevator.isAtHeight(Constants.ElevatorHeights.minimum, Constants.Limits.ElevPosThreshold)[0]) {
-        setAngle(SetPoints.handoff);
-        outtake();
-        Timer.delay(1);
-        stopIntake();
-        coralHeld = false;
       }
     }
   }
@@ -168,5 +175,9 @@ public class GroundIntake extends SubsystemBase {
   // Set Angle
   public void setAngle(double degree) {
     setPoint = degree;
+  }
+
+  public double getAngle() {
+    return liftPos.get();
   }
 }

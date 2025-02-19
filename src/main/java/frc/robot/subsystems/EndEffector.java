@@ -29,7 +29,6 @@ public class EndEffector extends SubsystemBase {
   SparkMax algaeIntakeRotateMotorN;
 
   SparkMaxConfig breakModeConfig = new SparkMaxConfig();
-  SparkMaxConfig coastModeConfig = new SparkMaxConfig();
 
   DutyCycleEncoder AlgaeArmEncoder;
 
@@ -55,7 +54,6 @@ public class EndEffector extends SubsystemBase {
     AlgaeArmPID = new PIDController(P, I, D);
 
     breakModeConfig.idleMode(IdleMode.kBrake);
-    coastModeConfig.idleMode(IdleMode.kCoast);
 
     AlgaeArmEncoder = new DutyCycleEncoder(Constants.SensorIDs.AIEncoder);
 

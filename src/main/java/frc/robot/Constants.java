@@ -126,6 +126,8 @@ public final class Constants {
 
     public static final double GICoralDetectionCurrentThreshold = 10;
 
+    public static final double GIAngleTolerance = 5;
+
     // End Effector TODO: Update these values
     public static final double EEIntakeAngleMin = 0;
     public static final double EEIntakeAngleMax = 180;
