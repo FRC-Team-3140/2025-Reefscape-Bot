@@ -228,7 +228,7 @@ public class Controller extends SubsystemBase {
     if (secondaryController.getRightBumperButtonPressed()) {
       // Source Intake
       new SourceCoralIntake().schedule();
-    }
+    } 
 
     if (secondaryController.getPOV() == 180) {
       // Stow elevator

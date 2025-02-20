@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import frc.robot.Constants;
 import frc.robot.commands.elevator.SetHeight;
@@ -134,7 +135,7 @@ public class GroundIntake extends SubsystemBase {
               coralHeld = true;
             }),
             new WaitUntilAngle(instance, SetPoints.handoff, Constants.Limits.GIAngleTolerance),
-            new ParallelDeadlineGroup(
+            new ParallelCommandGroup(
                 new EndEffectorIntakeCoral(null),
                 new InstantCommand(() -> {
                   outtake();
