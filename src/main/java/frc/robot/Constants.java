@@ -71,7 +71,7 @@ public final class Constants {
 
     // Elevator
     public static final int ElevEncoder = 4;
- 
+
     // Algae Intake
     public static final int AIEncoder = 5;
 
@@ -110,11 +110,14 @@ public final class Constants {
     public static final double BLBaseAngle = 0.219279;
 
     public static final double BRBaseAngle = 0.447409;
+
   }
 
   public static class Limits {
     // Elevator
     public static final double ElevMovement = 0.03;
+
+    public static final double ElevPosThreshold = 0.5;
 
     // Ground Intake
     public static final double GIMinAngle = 0;
@@ -122,10 +125,20 @@ public final class Constants {
     public static final double GIMaxAngle = 180;
 
     public static final double GICoralDetectionCurrentThreshold = 10;
+
+    public static final double GIAngleTolerance = 5;
+
+    // End Effector TODO: Update these values
+    public static final double EEIntakeAngleMin = 0;
+    public static final double EEIntakeAngleMax = 180;
+    public static final double EEIntakeCurrentThreshold = 10;
   }
 
   public static class Controller {
     public static final int DriverControllerPort = 0;
+    public static final int SecondaryDriverControllerPort = 1;
+
+    public static final double triggerThreshold = 0.3;
   }
 
   public static class Constraints {
@@ -139,7 +152,9 @@ public final class Constants {
   public static class Voltages {
     // Ground Intake
     public static final double GIVoltage = 8;
+
   }
+
 
   public static class CameraConstants {
     public static final double maxAmbiguity = 0.1;
@@ -160,11 +175,13 @@ public final class Constants {
   }
 
   public static class AlgaeIntakeAngles {
-    public static final double stowed = 0;
-    public static final double groundIntake = 0;
-    public static final double reefIntake = 0;
-    public static final double processorScoreBottom = 0;
-    public static final double processorScoreTop = 0;
+    public static final double stowed = 180;
+    public static final double stowedAlgaeTop = 10;
+    public static final double stowedAlgaeBottom = 100;
+    public static final double groundIntake = 75;
+    public static final double reefIntake = 30;
+    public static final double processorScoreBottom = stowedAlgaeBottom;
+    public static final double processorScoreTop = stowedAlgaeTop;
   }
 
   public static class ElevatorHeights {
@@ -177,10 +194,12 @@ public final class Constants {
     public static final double reefCoralL2Height = 0;
     public static final double reefCoralL3Height = 0;
     public static final double reefCoralL4Height = 0;
-    
+
     public static final double sourceIntake = 0;
     public static final double groundIntake = Constants.ElevatorHeights.minimum;
- 
+
+    public static final double processerHeight = 0;
+    public static final double safeStowed = 0; 
   }
 
   public static class Odometry {
@@ -191,10 +210,22 @@ public final class Constants {
     public static final String Dashboard = "Dashboard";
 
     // Subtables of Dashboard
-    public static final String GamePhase = "GamePhase";
+    public static final String DS = "DS";
     public static final String Voltage = "Voltage";
     public static final String Pose = "Pose";
     public static final String Reef = "Reef";
-    public static final String Test = "Test";
+    public static final String Test = "Dev";
+    public static final String Misc = "Misc";
+  }
+
+  public static class MotorSpeeds {
+    public static class EndEffector {
+      public static final double beltIntake = 0.75;
+      public static final double manipulatorIntake = 0.75;
+      public static final double manipulatorScore = 0.25;
+      public static final double manipulatorScoreL4 = 0.1;
+      public static final double algaeIntakeSpeed = 0.25;
+      public static final double algaeProcessorSpeed = 0.25;
+    }
   }
 }

@@ -3,13 +3,14 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.tests;
-
+import frc.robot.subsystems.TestRunner.TestType;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 
 /** Add your docs here. */
 public class TestAlgaeReef extends Test {
-    public TestAlgaeReef(NetworkTableEntry entry) {
-        super(entry);
+    public TestAlgaeReef(NetworkTableEntry entry, TestType type) {
+        super(entry, type);
     }
 
     @Override
@@ -18,7 +19,8 @@ public class TestAlgaeReef extends Test {
     }
 
     public void Periodic() {
-
+        // TODO: Implement this method
+        new PrintCommand("Algae Reef").schedule();
     }
 
     @Override

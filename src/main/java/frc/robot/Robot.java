@@ -6,9 +6,11 @@ package frc.robot;
 
 import com.pathplanner.lib.config.RobotConfig;
 
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.TestRunner;
 
 /**
@@ -49,15 +51,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler. This is responsible for polling buttons, adding
-    // newly-scheduled
-    // commands, running already-scheduled commands, removing finished or
-    // interrupted commands,
-    // and running subsystem periodic() methods. This must be called from the
-    // robot's periodic
-    // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    // TODO: publish voltage and pose. - TK
+    NetworkTables.voltage_d.setDouble(RobotController.getBatteryVoltage());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -83,6 +78,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
+    NetworkTables.state_s.setString("AUTO");
   }
 
   /** This function is called periodically during autonomous. */
@@ -100,6 +97,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    NetworkTables.state_s.setString("TELEOP");
   }
 
   /** This function is called periodically during operator control. */
@@ -119,7 +118,8 @@ public class Robot extends TimedRobot {
       // Handle exception as needed
       e.printStackTrace();
     }
-    
+
+    NetworkTables.state_s.setString("DEV");
   }
 
   /** This function is called periodically during test mode. */

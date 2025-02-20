@@ -29,7 +29,6 @@ public class EndEffector extends SubsystemBase {
   SparkMax algaeIntakeRotateMotorN;
 
   SparkMaxConfig breakModeConfig = new SparkMaxConfig();
-  SparkMaxConfig coastModeConfig = new SparkMaxConfig();
 
   DutyCycleEncoder AlgaeArmEncoder;
 
@@ -55,7 +54,6 @@ public class EndEffector extends SubsystemBase {
     AlgaeArmPID = new PIDController(P, I, D);
 
     breakModeConfig.idleMode(IdleMode.kBrake);
-    coastModeConfig.idleMode(IdleMode.kCoast);
 
     AlgaeArmEncoder = new DutyCycleEncoder(Constants.SensorIDs.AIEncoder);
 
@@ -64,16 +62,16 @@ public class EndEffector extends SubsystemBase {
     rightManipulatorMotorMN = new SparkMax(Constants.MotorIDs.EERight, MotorType.kBrushless);
 
     algaeIntakeMotorN = new SparkMax(Constants.MotorIDs.AIIntake, MotorType.kBrushless);
-    algaeIntakeRotateMotorN = new SparkMax(Constants.MotorIDs.AIIntake, MotorType.kBrushless);
+    algaeIntakeRotateMotorN = new SparkMax(Constants.MotorIDs.AIRotate, MotorType.kBrushless);
 
     SparkMaxConfig config = new SparkMaxConfig();
 
-    config.inverted(true).idleMode(IdleMode.kCoast).follow(Constants.MotorIDs.EERight);
+    config.inverted(true).idleMode(IdleMode.kBrake).follow(Constants.MotorIDs.EERight);
     leftManipulatorMotorMN.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    rightManipulatorMotorMN.configure(coastModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    rightManipulatorMotorMN.configure(breakModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    algaeIntakeMotorN.configure(coastModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    algaeIntakeMotorN.configure(breakModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     algaeIntakeRotateMotorN.configure(breakModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
@@ -88,26 +86,27 @@ public class EndEffector extends SubsystemBase {
     targetAngle = angle;
   }
 
+  public void setManipulatorSpeed(double speed) {
+    rightManipulatorMotorMN.set(speed);
+  }
+  
+  public void setBeltSpeed(double speed) {
+    beltMotorMN.set(speed);
+  }
+
+  public void setAlgaeIntakeSpeed(double speed) {
+    algaeIntakeMotorN.set(speed);
+  }
+
   public double getAlgaeIntakeAngle() {
     return armAngle;
   }
 
-  public boolean hasCoral() {
-    return !coralSensor.get();
+  public double getAlgaeIntakeCurrent() {
+    return algaeIntakeMotorN.getOutputCurrent();
   }
 
-  public void algaeBreakMode() {
-    algaeIntakeMotorN.configure(breakModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-  } 
-  public void algaeCoastMode() {
-    algaeIntakeMotorN.configure(coastModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-  }
-  public void coralBreakMode() {
-    leftManipulatorMotorMN.configure(breakModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-    rightManipulatorMotorMN.configure(breakModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-  }
-  public void coralCoastMode() {
-    leftManipulatorMotorMN.configure(coastModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-    rightManipulatorMotorMN.configure(coastModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+  public boolean hasCoral() {
+    return !coralSensor.get();
   }
 }

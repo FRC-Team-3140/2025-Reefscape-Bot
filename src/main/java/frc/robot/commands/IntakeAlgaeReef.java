@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.endeffector;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -10,10 +10,13 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
 
 public class IntakeAlgaeReef extends Command {
-  EndEffector endEffector = EndEffector.getInstance();
+  EndEffector endEffector = null;
   double height = Constants.ElevatorHeights.minimum;
-  public IntakeAlgaeReef(double intakeHeight) {
+
+  public IntakeAlgaeReef(EndEffector endEffector, double intakeHeight) {
+    this.endEffector = endEffector;
     height = intakeHeight;
+
     addRequirements(endEffector);
   }
 
@@ -21,20 +24,23 @@ public class IntakeAlgaeReef extends Command {
   public void initialize() {
     Elevator.getInstance().setHeight(height);
     endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.reefIntake);
+    endEffector.setAlgaeIntakeSpeed(Constants.MotorSpeeds.EndEffector.algaeIntakeSpeed);
   }
 
   @Override
-  public void execute() {}
+  public void execute() {
+  }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    endEffector.setAlgaeIntakeSpeed(0);
+    endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.stowedAlgaeTop);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return endEffector.getAlgaeIntakeCurrent() > Constants.Limits.EEIntakeCurrentThreshold;
   }
 }

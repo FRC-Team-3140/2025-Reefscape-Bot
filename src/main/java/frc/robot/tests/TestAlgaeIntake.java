@@ -3,13 +3,18 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.tests;
-
+import frc.robot.subsystems.TestRunner.TestType;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import frc.robot.subsystems.EndEffector;
 
 /** Add your docs here. */
 public class TestAlgaeIntake extends Test {
-    public TestAlgaeIntake(NetworkTableEntry entry) {
-        super(entry);
+    private final EndEffector algaeIntake = EndEffector.getInstance();
+
+    private final double voltage = 0.4;
+
+    public TestAlgaeIntake(NetworkTableEntry entry, TestType type) {
+        super(entry, type);
     }
 
     @Override
@@ -18,7 +23,7 @@ public class TestAlgaeIntake extends Test {
     }
 
     public void Periodic() {
-
+        algaeIntake.setBeltSpeed(voltage);
     }
 
     @Override

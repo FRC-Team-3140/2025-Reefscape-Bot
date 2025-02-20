@@ -5,7 +5,14 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import frc.robot.Constants;
+import frc.robot.commands.elevator.SetHeight;
+import frc.robot.commands.endeffector.EndEffectorIntakeCoral;
+import frc.robot.commands.groundIntake.WaitUntilAngle;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -23,6 +30,8 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 public class GroundIntake extends SubsystemBase {
   private static GroundIntake instance;
 
+  private static Elevator elevator = Elevator.getInstance();
+
   private final SparkMax leftMN;
   private final SparkMax rightMN;
   private final SparkMax liftN;
@@ -38,6 +47,7 @@ public class GroundIntake extends SubsystemBase {
   private double setPoint = 0;
 
   private boolean intakeActive = false;
+  private boolean coralHeld = false;
 
   private SparkMaxConfig leftMNCoast = new SparkMaxConfig();
   private SparkMaxConfig leftMNBrake = new SparkMaxConfig();
@@ -50,6 +60,7 @@ public class GroundIntake extends SubsystemBase {
   public static class SetPoints {
     public static final double stow = 0;
     public static final double intake = 0;
+    public static final double handoff = 0;
     public static final double maintainance = 0;
   }
 
@@ -58,7 +69,7 @@ public class GroundIntake extends SubsystemBase {
       instance = new GroundIntake();
     }
 
-    return new GroundIntake();
+    return instance;
   }
 
   /** Creates a new GroundIntake. */
@@ -113,19 +124,33 @@ public class GroundIntake extends SubsystemBase {
             0)));
 
     if (intakeActive) {
-      if (leftMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold
-          || rightMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold) {
-        stopIntake();
-        setAngle(SetPoints.stow);
+      if (leftMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold || rightMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold) {
+        intakeActive = false;
+        Boolean[] elevatorStats = elevator.isAtHeight(Constants.ElevatorHeights.minimum, Constants.Limits.ElevPosThreshold);
+        new SequentialCommandGroup(
+            (elevatorStats[0] && elevatorStats[1] ? null : new SetHeight(Constants.ElevatorHeights.minimum)),
+            new InstantCommand(() -> {
+              stopIntake();
+              setAngle(SetPoints.handoff);
+              coralHeld = true;
+            }),
+            new WaitUntilAngle(instance, SetPoints.handoff, Constants.Limits.GIAngleTolerance),
+            new ParallelCommandGroup(
+                new EndEffectorIntakeCoral(null),
+                new InstantCommand(() -> {
+                  outtake();
+                })),
+            new InstantCommand(() -> {
+              stopIntake();
+              setAngle(SetPoints.stow);
+              coralHeld = false;
+            })).schedule();
       }
     }
   }
 
   public void intake() {
     intakeActive = true;
-
-    leftMN.configure(leftMNCoast, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    rightMN.configure(leftMNCoast, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
     setAngle(SetPoints.intake);
 
@@ -136,17 +161,11 @@ public class GroundIntake extends SubsystemBase {
   public void outtake() {
     intakeActive = false;
 
-    leftMN.configure(leftMNCoast, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    rightMN.configure(leftMNCoast, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-
     leftMN.setVoltage(-Constants.Voltages.GIVoltage);
     rightMN.setVoltage(-Constants.Voltages.GIVoltage);
   }
 
   public void stopIntake() {
-    leftMN.configure(leftMNBrake, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    rightMN.configure(leftMNBrake, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-
     leftMN.setVoltage(0);
     rightMN.setVoltage(0);
   }
@@ -154,5 +173,13 @@ public class GroundIntake extends SubsystemBase {
   // Set Angle
   public void setAngle(double degree) {
     setPoint = degree;
+  }
+
+  public double getAngle() {
+    return liftPos.get();
+  }
+
+  public boolean isCoralHeld() {
+    return coralHeld;
   }
 }
