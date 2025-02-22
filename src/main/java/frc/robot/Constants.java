@@ -25,38 +25,38 @@ public final class Constants {
   public static class MotorIDs {
     /* Swerve Drive Motors: */
     // FL
-    public static final int FLNeo = 0;
-    public static final int FLVortex = 1;
+    public static final int FLNeo = 1;
+    public static final int FLVortex = 2;
 
     // FR
-    public static final int FRNeo = 2;
-    public static final int FRVortex = 3;
+    public static final int FRNeo = 3;
+    public static final int FRVortex = 4;
 
     // BL
-    public static final int BLNeo = 4;
-    public static final int BLVortex = 5;
+    public static final int BLNeo = 5;
+    public static final int BLVortex = 6;
 
     // BR
-    public static final int BRNeo = 6;
-    public static final int BRVortex = 7;
+    public static final int BRNeo = 7;
+    public static final int BRVortex = 8;
 
     // Elevator
-    public static final int ElevLNeo = 8;
-    public static final int ElevRNeo = 9;
+    public static final int ElevLNeo = 9;
+    public static final int ElevRNeo = 10;
 
     // End Effector
-    public static final int EELeft = 10;
-    public static final int EERight = 11;
-    public static final int EETop = 12;
+    public static final int EELeft = 11;
+    public static final int EERight = 12;
+    public static final int EETop = 13;
 
     // Algae Intake
-    public static final int AIRotate = 13;
-    public static final int AIIntake = 14;
+    public static final int AIRotate = 14;
+    public static final int AIIntake = 15;
 
     // Ground Intake
-    public static final int GILeft = 15;
-    public static final int GIRight = 16;
-    public static final int GILift = 17;
+    public static final int GILeft = 16;
+    public static final int GIRight = 17;
+    public static final int GILift = 18;
   }
 
   public static class SensorIDs {
