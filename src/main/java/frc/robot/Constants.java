@@ -208,6 +208,8 @@ public final class Constants {
   public static class NetworktablePaths {
     public static final String Dashboard = "Dashboard";
 
+    public static final String Sensors = "sensors3140";
+    
     // Subtables of Dashboard
     public static final String DS = "DS";
     public static final String Voltage = "Voltage";

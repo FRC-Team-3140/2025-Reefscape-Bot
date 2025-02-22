@@ -4,10 +4,13 @@
 
 package frc.robot.sensors;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.libs.NetworkTables;
 
 public class Camera extends SubsystemBase {
-
   private static Camera instance = null;
 
   /**
@@ -17,7 +20,6 @@ public class Camera extends SubsystemBase {
     public final double Xdistance;
     public final double Ydistance;
     public final double yaw;
-    public final double ambiguity;
     public final int id;
 
     /**
@@ -27,14 +29,12 @@ public class Camera extends SubsystemBase {
      * @param Xdistance the measured distance in the X axis
      * @param Ydistance the measured distance in the Y axis
      * @param yaw       the measured yaw
-     * @param ambiguity the ambiguity of the distance measurement
      * @param id        the fiducial id of the detected apriltag
      */
-    public AprilTagMeasurement(double Xdistance, double Ydistance, double yaw, double ambiguity, int id) {
+    public AprilTagMeasurement(double Xdistance, double Ydistance, double yaw, int id) {
       this.Xdistance = Xdistance;
       this.Ydistance = Ydistance;
       this.yaw = yaw;
-      this.ambiguity = ambiguity;
       this.id = id;
     }
   }
@@ -64,5 +64,28 @@ public class Camera extends SubsystemBase {
       instance = new Camera();
     }
     return instance;
+  }
+
+  public AprilTagMeasurement getMeasurement(int id) {
+    return new AprilTagMeasurement(
+        0,
+        0,
+        0,
+        id);
+  }
+
+  public Pose2d getCameraPose() {
+    return new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(2)));
+  }
+
+  public int[] getDetectedTags() {
+    double[] detectedTags = NetworkTables.ids.getDoubleArray(new double[0]);
+    int[] detectedTagsInt = new int[detectedTags.length];
+
+    for (int i = 0; i < detectedTags.length; i++) {
+      detectedTagsInt[i] = (int) detectedTags[i];
+    }
+
+    return detectedTagsInt;
   }
 }

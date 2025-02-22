@@ -38,7 +38,7 @@ public class SwerveModule extends SubsystemBase {
 
     public double botMass = 24.4;
 
-    public double P = .01;
+    public double turnP = .01;
 
     public double driveSetpointTolerance = .5;
     public double turnSetpointTolerance;
@@ -80,7 +80,7 @@ public class SwerveModule extends SubsystemBase {
 
         driveEncoder = driveMotor.getEncoder();
 
-        turnPID = new PIDController(P, 0, 0);
+        turnPID = new PIDController(turnP, 0, 0);
 
         // we don't use I or D since P works well enough
         turnPID.enableContinuousInput(0, 360);

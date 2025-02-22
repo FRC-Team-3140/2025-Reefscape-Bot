@@ -15,6 +15,7 @@ public class NetworkTables {
   private static NetworkTable dash = inst.getTable(Constants.NetworktablePaths.Dashboard);
     public static NetworkTableEntry commands = dash.getEntry("commands_sa");  
     public static NetworkTableEntry commandStatuses = dash.getEntry("commandStatuses_ia");  
+
   private static NetworkTable dsInfo = dash.getSubTable(Constants.NetworktablePaths.DS);
     public static NetworkTableEntry state_s = dsInfo.getEntry("state_s");
     public static NetworkTableEntry voltage_d = dsInfo.getEntry("voltage_d");
@@ -34,6 +35,12 @@ public class NetworkTables {
     public static NetworkTableEntry sourceButton_b = devBoard.getEntry("Source Handoff_b");
     public static NetworkTableEntry reefButton_b = devBoard.getEntry("Algae Reef_b");
     public static NetworkTableEntry algaeGroundButton_b = devBoard.getEntry("Algae Ground_b");
+
+  private static NetworkTable sensors = inst.getTable(Constants.NetworktablePaths.Sensors);
+    private static NetworkTable aprilTags = sensors.getSubTable("apriltags");
+      public static NetworkTableEntry bestCameraTranslation = aprilTags.getEntry("best_camera_translation");
+      public static NetworkTableEntry bestCameraDirection = aprilTags.getEntry("best_camera_direction");
+      public static NetworkTableEntry ids = aprilTags.getEntry("ids");
   
   private static NetworkTable misc = dash.getSubTable(Constants.NetworktablePaths.Misc);
     public static NetworkTableEntry driveModeManual_b = misc.getEntry("driveModeManual_b");
