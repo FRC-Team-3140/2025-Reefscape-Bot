@@ -90,7 +90,9 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setHeight(double height) {
-    target = Math.max(Math.min(height, Constants.ElevatorHeights.maxiumum), Constants.ElevatorHeights.minimum); // TODO: DO MATH
+    target = Math.max(Math.min(height, Constants.ElevatorHeights.maxiumum), Constants.ElevatorHeights.minimum); // TODO:
+                                                                                                                // DO
+                                                                                                                // MATH
   }
 
   public double getHeight() {
@@ -101,8 +103,9 @@ public class Elevator extends SubsystemBase {
   public boolean isMoving() {
     return Math.abs(calculateSpeed()) > Constants.Limits.ElevMovement;
   }
+
   public Boolean[] isAtHeight(double height, double tolerance) {
     // 0: is within tolerance, 1: is staying in tolerance
-    return new Boolean[] {Math.abs(getHeight() - height) < tolerance, Math.abs(target - height) < tolerance};
+    return new Boolean[] { Math.abs(getHeight() - height) < tolerance, Math.abs(target - height) < tolerance };
   }
 }

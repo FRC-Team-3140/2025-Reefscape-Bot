@@ -36,10 +36,10 @@ public class Test {
     }
 
     public void QueryNetworkTable() {
-        
+
         if (ntEntry.getBoolean(false) != running) {
             System.out.println("Printing from class: " + this.getClass().getName());
             TestRunner.getInstance().setState(type, !running);
-        } 
+        }
     }
 }

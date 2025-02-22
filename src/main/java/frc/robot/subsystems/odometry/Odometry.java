@@ -63,7 +63,11 @@ abstract public class Odometry extends SubsystemBase {
     return gyro.getRotation2d();
   }
 
-  abstract public void resetGyro();
+  public void resetGyro() {
+    double delta = caluclateRotationDelta();
+    gyro.reset();
+    lastGyroAngle = gyro.getRotation2d().getRadians() - delta;
+  };
 
   @Override
   public void periodic() {

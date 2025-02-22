@@ -13,7 +13,8 @@ public class NetworkTables {
   private static NetworkTableInstance inst = NetworkTableInstance.getDefault();
   
   private static NetworkTable dash = inst.getTable(Constants.NetworktablePaths.Dashboard);
-  
+    public static NetworkTableEntry commands = dash.getEntry("commands_sa");  
+    public static NetworkTableEntry commandStatuses = dash.getEntry("commandStatuses_ia");  
   private static NetworkTable dsInfo = dash.getSubTable(Constants.NetworktablePaths.DS);
     public static NetworkTableEntry state_s = dsInfo.getEntry("state_s");
     public static NetworkTableEntry voltage_d = dsInfo.getEntry("voltage_d");
@@ -28,7 +29,7 @@ public class NetworkTables {
     public static NetworkTableEntry algaeButton_b = devBoard.getEntry("Algae Intake_b");
     public static NetworkTableEntry effectorButton_b = devBoard.getEntry("End Effector_b");
     public static NetworkTableEntry groundButton_b = devBoard.getEntry("Ground Intake_b");
-    public static NetworkTableEntry elevatorButton_b = devBoard.getEntry("Elevator");
+    public static NetworkTableEntry elevatorButton_b = devBoard.getEntry("Elevator_b");
     public static NetworkTableEntry handoffButton_b = devBoard.getEntry("Ground Handoff_b");
     public static NetworkTableEntry sourceButton_b = devBoard.getEntry("Source Handoff_b");
     public static NetworkTableEntry reefButton_b = devBoard.getEntry("Algae Reef_b");

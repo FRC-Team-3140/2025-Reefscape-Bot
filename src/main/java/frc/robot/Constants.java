@@ -155,7 +155,6 @@ public final class Constants {
 
   }
 
-
   public static class CameraConstants {
     public static final double maxAmbiguity = 0.1;
   }
@@ -199,7 +198,7 @@ public final class Constants {
     public static final double groundIntake = Constants.ElevatorHeights.minimum;
 
     public static final double processerHeight = 0;
-    public static final double safeStowed = 0; 
+    public static final double safeStowed = 0;
   }
 
   public static class Odometry {

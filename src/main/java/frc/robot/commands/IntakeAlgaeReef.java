@@ -4,12 +4,12 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.libs.LoggedCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
 
-public class IntakeAlgaeReef extends Command {
+public class IntakeAlgaeReef extends LoggedCommand {
   EndEffector endEffector = null;
   double height = Constants.ElevatorHeights.minimum;
 
@@ -25,6 +25,7 @@ public class IntakeAlgaeReef extends Command {
     Elevator.getInstance().setHeight(height);
     endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.reefIntake);
     endEffector.setAlgaeIntakeSpeed(Constants.MotorSpeeds.EndEffector.algaeIntakeSpeed);
+    super.initialize();
   }
 
   @Override
@@ -36,6 +37,7 @@ public class IntakeAlgaeReef extends Command {
   public void end(boolean interrupted) {
     endEffector.setAlgaeIntakeSpeed(0);
     endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.stowedAlgaeTop);
+    super.end(interrupted);
   }
 
   // Returns true when the command should end.

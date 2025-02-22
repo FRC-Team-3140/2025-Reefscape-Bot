@@ -48,6 +48,7 @@ public class TestRunner extends SubsystemBase {
     tests.put(TestType.GROUND_INTAKE, new TestGroundIntake(NetworkTables.groundButton_b, TestType.GROUND_INTAKE));
     tests.put(TestType.ELEVATOR, new TestElevator(NetworkTables.elevatorButton_b, TestType.ELEVATOR));
     tests.put(TestType.GROUND_HANDOFF, new TestGroundHandoff(NetworkTables.handoffButton_b, TestType.GROUND_HANDOFF));
+    tests.put(TestType.GROUND_HANDOFF, new TestGroundHandoff(NetworkTables.sourceButton_b, TestType.SOURCE_HANDOFF));
     tests.put(TestType.GROUND_INTAKE, new TestGroundIntake(NetworkTables.reefButton_b, TestType.GROUND_INTAKE));
     tests.put(TestType.ALGAE_REEF, new TestAlgaeReef(NetworkTables.algaeButton_b, TestType.ALGAE_REEF));
   }

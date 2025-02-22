@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.libs.LoggedCommand;
 import frc.robot.subsystems.*;
 
 /**
@@ -23,7 +23,6 @@ public class RobotContainer {
   public EndEffector endEffector = EndEffector.getInstance();
   public GroundIntake groundIntake = GroundIntake.getInstance();
   public TestRunner testRunner = TestRunner.getInstance();
-  public DashboardCommandView dashboardCommandView = DashboardCommandView.getInstance();
   public Controller controller = Controller.getInstance();
 
   private static RobotContainer container = null;
@@ -43,13 +42,12 @@ public class RobotContainer {
 
   }
 
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
+  public LoggedCommand getAutonomousCommand() {
     return null;
   }
 }
