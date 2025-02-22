@@ -5,7 +5,7 @@
 package frc.robot.commands.endeffector;
 
 
-import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.libs.LoggedCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -13,7 +13,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.EndEffector;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class EndEffectorScoreCoral extends Command {
+public class EndEffectorScoreCoral extends LoggedCommand {
 
   private EndEffector endEffector = null;
   private double speed = Constants.MotorSpeeds.EndEffector.manipulatorScore;
@@ -27,6 +27,7 @@ public class EndEffectorScoreCoral extends Command {
   @Override
   public void initialize() {
     endEffector.setManipulatorSpeed(speed);
+    super.initialize();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -36,7 +37,8 @@ public class EndEffectorScoreCoral extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    new SequentialCommandGroup(new WaitCommand(1), new InstantCommand(()->{ endEffector.setManipulatorSpeed(0); })).schedule();;
+    new SequentialCommandGroup(new WaitCommand(1), new InstantCommand(()->{ endEffector.setManipulatorSpeed(0); })).schedule();
+    super.end(interrupted);
   }
 
   // Returns true when the command should end.

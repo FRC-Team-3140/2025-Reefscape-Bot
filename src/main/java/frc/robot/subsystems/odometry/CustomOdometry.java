@@ -58,12 +58,7 @@ public class CustomOdometry extends Odometry {
     public Rotation2d getGyroRotation() {
         return gyro.getRotation2d();
     }
-
-    public void resetGyro() {
-        // TODO: 2024 code has an odometry offset that is also updated here!
-        gyro.reset();
-    }
-
+    
     private double optimizeAngle(double baseline, double angle) {
         while (Math.abs(angle - baseline) > Math.PI) {
             if (baseline > angle) {
@@ -95,7 +90,7 @@ public class CustomOdometry extends Odometry {
             double vf = states[i].speedMetersPerSecond;
             double dv = vf - v0;
 
-            /// UN///////FANCY CALCULUS F BASICHIT C (less accurate)ODE
+            //////////// UNFANCY CALCULUS FREE BASIC CODE(less accurate)
             // double angle = states[i].angle.getRadians() + getAngle();
             // Vector2 dir = new Vector2(Math.cos(angle), Math.sin(angle));
             // delta = delta.add(dir.mult(states[i].speedMetersPerSecond * deltaTime));

@@ -89,7 +89,7 @@ public class EndEffector extends SubsystemBase {
   public void setManipulatorSpeed(double speed) {
     rightManipulatorMotorMN.set(speed);
   }
-  
+
   public void setBeltSpeed(double speed) {
     beltMotorMN.set(speed);
   }

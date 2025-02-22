@@ -1,6 +1,6 @@
 package frc.robot.commands.swerveDrive;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.libs.LoggedCommand;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.SwerveDrive;
 //Works Well
@@ -9,7 +9,7 @@ import frc.robot.subsystems.SwerveDrive;
  * This class represents a basic swerve control command.
  * It is intended to be the default command for the drive.
  */
-public class SwerveDriveManualControl extends Command {
+public class SwerveDriveManualControl extends LoggedCommand {
     private final Controller controller = Controller.getInstance();
     private final SwerveDrive swerveDrive; // The swerve drive subsystem
     private final double maxSpeed; // The maximum speed for the swerve drive
