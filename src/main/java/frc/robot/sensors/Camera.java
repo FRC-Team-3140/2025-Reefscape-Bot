@@ -66,6 +66,14 @@ public class Camera extends SubsystemBase {
     return instance;
   }
 
+  public AprilTagMeasurement getClosestApriltag() {
+    return new AprilTagMeasurement(
+        0,
+        0,
+        0,
+        0);
+  }
+
   public AprilTagMeasurement getMeasurement(int id) {
     return new AprilTagMeasurement(
         0,
