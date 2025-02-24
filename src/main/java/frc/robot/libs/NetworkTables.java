@@ -26,6 +26,14 @@ public class NetworkTables {
     public static NetworkTableEntry autoRunning_b = reef.getEntry("autoRunning_b");
 
   private static NetworkTable devBoard = dash.getSubTable(Constants.NetworktablePaths.Test);
+    public static NetworkTableEntry numOLoggedCmds_i = devBoard.getEntry("numOLoggedCmds_i");
+
+    // TODO: Finish dashboard implementation | Get values from odometry. 
+    public static NetworkTableEntry measuredSwerveStates_a = devBoard.getEntry("measuredStates_a");
+    public static NetworkTableEntry desiredSwerveStates_a = devBoard.getEntry("desiredStates_a");
+    public static NetworkTableEntry botRotDev_d = devBoard.getEntry("botRotDeg_d");
+
+    // Test buttons
     public static NetworkTableEntry swerveButton_b = devBoard.getEntry("Swerve_b");
     public static NetworkTableEntry algaeButton_b = devBoard.getEntry("Algae Intake_b");
     public static NetworkTableEntry effectorButton_b = devBoard.getEntry("End Effector_b");

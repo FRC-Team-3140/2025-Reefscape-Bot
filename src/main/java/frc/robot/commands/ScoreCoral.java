@@ -60,7 +60,10 @@ public class ScoreCoral extends Command {
     String side = posParts[0];
     String position = posParts[1];
     System.out.println("Side: " + side + ", Position: " + position);
+
+    // TODO: Brogan fix this V
     int posint = 0;
+    
     switch (side) {
       case "LEFT":
         posint = 1;
