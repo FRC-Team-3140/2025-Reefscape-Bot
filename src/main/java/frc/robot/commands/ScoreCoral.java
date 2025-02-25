@@ -25,14 +25,14 @@ public class ScoreCoral extends Command {
   private Elevator elevator = null;
 
   public enum Position {
-    LEFT_1,
-    LEFT_2,
-    LEFT_3,
-    LEFT_4,
-    RIGHT_1,
-    RIGHT_2,
-    RIGHT_3,
-    RIGHT_4
+    L_1,
+    L_2,
+    L_3,
+    L_4,
+    R_1,
+    R_2,
+    R_3,
+    R_4
   }
 
   private Position coralScorePos = null;
@@ -65,10 +65,10 @@ public class ScoreCoral extends Command {
     int posint = 0;
     
     switch (side) {
-      case "LEFT":
+      case "L":
         posint = 1;
         break;
-      case "RIGHT":
+      case "R":
         posint = 2;
         break;
       default:
