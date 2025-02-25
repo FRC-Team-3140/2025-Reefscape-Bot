@@ -92,7 +92,7 @@ public final class Constants {
 
     // In meters per second, determined from the free speed of the bot via
     // SwerveDriveSpecialties
-    public static final double maxChassisSpeed = 5.05968; // * 1.4044;
+    public static final double maxChassisSpeed = 11.8; // * 1.4044;
     public static final double maxModuleSpeed = maxChassisSpeed / wheelDiameter / Math.PI;
     public static final double maxTurnSpeed = Double.MAX_VALUE; // These are basically infinite for our purposes
     public static final double maxAcceleration = 4000;
@@ -103,13 +103,13 @@ public final class Constants {
     public static final double encoderRotationToMeters = 2 * Math.PI * ((wheelDiameter / 2) / gearRatio);
 
     // Swerve Module Base Angles
-    public static final double FLBaseAngle = 0.701239;
+    public static final double FLBaseAngle = 217.682;
 
-    public static final double FRBaseAngle = 0.707867;
+    public static final double FRBaseAngle = 227.472;
 
-    public static final double BLBaseAngle = 0.219279;
+    public static final double BLBaseAngle = 200.170;
 
-    public static final double BRBaseAngle = 0.447409;
+    public static final double BRBaseAngle = 311.373;
 
   }
 

@@ -139,7 +139,7 @@ public class SwerveDrive extends SubsystemBase {
       NetworkTables.measuredSwerveStates_da.setDoubleArray(measuredStates.stream().mapToDouble(Double::doubleValue).toArray());
     }
 
-    NetworkTables.botRotDeg_d.setDouble(odometry.getAngle());
+    NetworkTables.botRotDeg_d.setDouble(odometry.getGyroRotation().getDegrees());
   }
 
   // public Pose2d getExpectedPose() {

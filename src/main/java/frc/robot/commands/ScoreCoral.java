@@ -61,15 +61,14 @@ public class ScoreCoral extends Command {
     String position = posParts[1];
     System.out.println("Side: " + side + ", Position: " + position);
 
-    // TODO: Brogan fix this V
     int posint = 0;
-    
+
     switch (side) {
       case "L":
         posint = 1;
         break;
       case "R":
-        posint = 2;
+        posint = -1;
         break;
       default:
         System.err.println("Somehow magically passed in invalid position...");
@@ -106,13 +105,18 @@ public class ScoreCoral extends Command {
 
     System.out.println("Cloest Tag ID: " + closestTag.ID);
     System.out.println("Closets Tag Pose: \n" + "x:" + pose.getX() + "\n" + "y:"
-          + pose.getY() + "\n" + "yaw:" + pose.getRotation().getAngle());
+        + pose.getY() + "\n" + "yaw:" + pose.getRotation().getAngle());
+        
+    double angle = pose.getRotation().getAngle() + posint * (Math.PI / 4);
+    double distance = (Constants.Bot.botLength / 2)/Math.tan(angle);
 
-      // Put the edge of the bot theoretically touching the apriltag
+    // Put the edge of the bot theoretically touching the apriltag
     pathfindingCommand = AutoBuilder.pathfindToPose(
-      new Pose2d((pose.getX() + (Constants.Bot.botLength / 2)), (pose.getY() + (Constants.Bot.botLength / 2)),
-        new Rotation2d(Units.degreesToRadians(pose.getRotation().getAngle()))),
-      constraints);
+        new Pose2d(
+            pose.getX() + distance * Math.cos(angle),
+            pose.getY() + distance * Math.sin(angle),
+            new Rotation2d(Units.degreesToRadians(pose.getRotation().getAngle()) + Math.PI / 2)),
+        constraints);
 
     // Schedule the pathfinding command to run along with this command that will
     // handle the elevator
