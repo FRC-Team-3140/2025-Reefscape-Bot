@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -14,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.odometry.Odometry;
 
 /** Represents a swerve drive style drivetrain. */
@@ -71,10 +74,13 @@ public class SwerveDrive extends SubsystemBase {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     thetaController.setTolerance(Math.PI / 45); // 4 degrees
     odometry = Odometry.getInstance();
+
+    NetworkTables.maxVelo.setDouble(Constants.Bot.maxChassisSpeed);
   }
 
   public void periodic() {
     odometry.update();
+    updateNetworktables();
   }
 
   /**
@@ -103,6 +109,37 @@ public class SwerveDrive extends SubsystemBase {
 
   public boolean shouldFlipPath() {
     return DriverStation.getAlliance().get().equals(Alliance.Red);
+  }
+
+  private void updateNetworktables() {
+    if (swerveModuleStates != null) {
+      ArrayList<Double> desiredStates = new ArrayList<>(8); 
+  
+      for (int i = 0; i < swerveModuleStates.length; i++) {
+        // Angle, Velocity / Module
+        if (swerveModuleStates[i] != null) {
+          desiredStates.add(swerveModuleStates[i].angle != null ? swerveModuleStates[i].angle.getDegrees() : 0);
+          desiredStates.add(swerveModuleStates[i].speedMetersPerSecond);
+        } else {
+          desiredStates.add(0.0);
+          desiredStates.add(0.0);
+        }
+      }
+  
+      NetworkTables.desiredSwerveStates_da.setDoubleArray(desiredStates.stream().mapToDouble(Double::doubleValue).toArray());
+  
+      ArrayList<Double> measuredStates = new ArrayList<>(8); 
+      
+      for (int i = 0; i < modules.length; i++) {
+        // Angle, Velocity / Module
+        measuredStates.add(modules[i].getTurnEncoder().getAbsolutePosition());
+        measuredStates.add(modules[i].driveMotor.getEncoder().getVelocity());
+      }
+      
+      NetworkTables.measuredSwerveStates_da.setDoubleArray(measuredStates.stream().mapToDouble(Double::doubleValue).toArray());
+    }
+
+    NetworkTables.botRotDeg_d.setDouble(odometry.getAngle());
   }
 
   // public Pose2d getExpectedPose() {

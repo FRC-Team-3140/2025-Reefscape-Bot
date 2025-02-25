@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.commands.swerveDrive.SwerveDriveManualControl;
 import frc.robot.libs.LoggedCommand;
 import frc.robot.subsystems.*;
 
@@ -39,7 +40,8 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   private RobotContainer() {
-
+    // TODO: figure out where to put this for final version V
+    swerveDrive.setDefaultCommand(new SwerveDriveManualControl(swerveDrive, Constants.Bot.maxChassisSpeed, Constants.Bot.maxChassisTurnSpeed));
   }
 
   /**

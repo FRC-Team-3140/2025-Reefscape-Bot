@@ -29,9 +29,10 @@ public class NetworkTables {
     public static NetworkTableEntry numOLoggedCmds_i = devBoard.getEntry("numOLoggedCmds_i");
 
     // TODO: Finish dashboard implementation | Get values from odometry. 
-    public static NetworkTableEntry measuredSwerveStates_a = devBoard.getEntry("measuredStates_a");
-    public static NetworkTableEntry desiredSwerveStates_a = devBoard.getEntry("desiredStates_a");
-    public static NetworkTableEntry botRotDev_d = devBoard.getEntry("botRotDeg_d");
+    public static NetworkTableEntry measuredSwerveStates_da = devBoard.getEntry("measuredStates_da");
+    public static NetworkTableEntry desiredSwerveStates_da = devBoard.getEntry("desiredStates_da");
+    public static NetworkTableEntry botRotDeg_d = devBoard.getEntry("botRotDeg_d");
+    public static NetworkTableEntry maxVelo = devBoard.getEntry("maxVelo_d");
 
     // Test buttons
     public static NetworkTableEntry swerveButton_b = devBoard.getEntry("Swerve_b");

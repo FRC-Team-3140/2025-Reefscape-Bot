@@ -87,13 +87,15 @@ public class SwerveModule extends SubsystemBase {
         turnPID.setTolerance(turnSetpointTolerance, turnVelocityTolerance);
 
         // determined from a SYSID scan
-        drivePID = new ProfiledPIDController(.11, 0, .015, constraints);
+        drivePID = new ProfiledPIDController(0.005, 0, 0.0005, constraints);
         drivePID.setTolerance(driveSetpointTolerance);
     }
-
+    
     // runs while the bot is running
     @Override
     public void periodic() {
+        setAngle(0);
+        turnPID.calculate(getTurnEncoder().getAbsolutePosition());
         NetworkTableInstance.getDefault().getTable("Angle").getEntry(moduleID)
                 .setDouble(turnEncoder.getAbsolutePosition());
     }
