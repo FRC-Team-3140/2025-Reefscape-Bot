@@ -13,6 +13,7 @@ public class AbsoluteEncoder extends AnalogEncoder {
     }
 
     public double getAbsolutePosition() {
-        return super.get() - zeroOffset;
+        double position = (super.get() - zeroOffset) % 360.0;
+        return position < 0 ? position + 360.0 : position;
     }
 }

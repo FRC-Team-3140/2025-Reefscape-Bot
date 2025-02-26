@@ -41,23 +41,27 @@ public class SwerveDrive extends SubsystemBase {
           Constants.SensorIDs.FL,
           Constants.MotorIDs.FLVortex,
           Constants.MotorIDs.FLNeo,
-          Constants.Bot.FLZeroOffset),
+          Constants.Bot.FLZeroOffset,
+          false),
       new SwerveModule(
           "frontRight",
           Constants.SensorIDs.FR,
           Constants.MotorIDs.FRVortex,
           Constants.MotorIDs.FRNeo,
-          Constants.Bot.FRZeroOffset),
+          Constants.Bot.FRZeroOffset,
+          true),
       new SwerveModule("backLeft",
           Constants.SensorIDs.BL,
           Constants.MotorIDs.BLVortex,
           Constants.MotorIDs.BLNeo,
-          Constants.Bot.BLZeroOffset),
+          Constants.Bot.BLZeroOffset,
+          false),
       new SwerveModule("backRight",
           Constants.SensorIDs.BR,
           Constants.MotorIDs.BRVortex,
           Constants.MotorIDs.BRNeo,
-          Constants.Bot.BRZeroOffset)
+          Constants.Bot.BRZeroOffset,
+          true)
   };
 
   public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
@@ -113,8 +117,8 @@ public class SwerveDrive extends SubsystemBase {
 
   private void updateNetworktables() {
     if (swerveModuleStates != null) {
-      ArrayList<Double> desiredStates = new ArrayList<>(8); 
-  
+      ArrayList<Double> desiredStates = new ArrayList<>(8);
+
       for (int i = 0; i < swerveModuleStates.length; i++) {
         // Angle, Velocity / Module
         if (swerveModuleStates[i] != null) {
@@ -125,21 +129,26 @@ public class SwerveDrive extends SubsystemBase {
           desiredStates.add(0.0);
         }
       }
-  
-      NetworkTables.desiredSwerveStates_da.setDoubleArray(desiredStates.stream().mapToDouble(Double::doubleValue).toArray());
-  
-      ArrayList<Double> measuredStates = new ArrayList<>(8); 
-      
+
+      NetworkTables.desiredSwerveStates_da
+          .setDoubleArray(desiredStates.stream().mapToDouble(Double::doubleValue).toArray());
+
+      ArrayList<Double> measuredStates = new ArrayList<>(8);
+
       for (int i = 0; i < modules.length; i++) {
         // Angle, Velocity / Module
         measuredStates.add(modules[i].getTurnEncoder().getAbsolutePosition());
         double wheelCircumference = Constants.Bot.wheelDiameter * Math.PI;
         double gearRatio = Constants.Bot.gearRatio;
-        double velocityMetersPerSecond = (modules[i].driveMotor.getEncoder().getVelocity() / gearRatio) * (wheelCircumference / 60);
+        double velocityMetersPerSecond = (modules[i].driveMotor.getEncoder().getVelocity() / gearRatio)
+            * (wheelCircumference / 60);
         measuredStates.add(velocityMetersPerSecond);
+        // TODO: accurate ^ ?
+        // System.out.println(velocityMetersPerSecond);
       }
-      
-      NetworkTables.measuredSwerveStates_da.setDoubleArray(measuredStates.stream().mapToDouble(Double::doubleValue).toArray());
+
+      NetworkTables.measuredSwerveStates_da
+          .setDoubleArray(measuredStates.stream().mapToDouble(Double::doubleValue).toArray());
     }
 
     NetworkTables.botRotDeg_d.setDouble(odometry.getGyroRotation().getDegrees());

@@ -25,7 +25,6 @@ import frc.robot.libs.AbsoluteEncoder;
 
 public class SwerveModule extends SubsystemBase {
     public String moduleID;
-    public int pwmID;
     public int driveMotorID;
     public int turnMotorID;
     public double baseAngle;
@@ -38,11 +37,11 @@ public class SwerveModule extends SubsystemBase {
 
     public double botMass = 24.4;
 
-    public double turnP = .01;
+    public double turnP = .005;
 
     public double driveSetpointTolerance = .5;
-    public double turnSetpointTolerance;
-    public double turnVelocityTolerance;
+    public double turnSetpointTolerance = 2;
+    public double turnVelocityTolerance = 5;
 
     private SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.084706 * .712, 2.4433 * .712,
             0.10133 * .712);
@@ -56,7 +55,7 @@ public class SwerveModule extends SubsystemBase {
     // Conversion Factor for the motor encoder output to wheel output
     // (Circumference / Gear Ratio) * Inches to meters conversion
 
-    public SwerveModule(String moduleID, int analogID, int driveMotorID, int turnMotorID, double baseAngle) {
+    public SwerveModule(String moduleID, int analogID, int driveMotorID, int turnMotorID, double baseAngle, boolean driveInverted) {
         this.moduleID = moduleID;
         this.baseAngle = baseAngle;
         this.turnMotorID = turnMotorID;
@@ -64,7 +63,7 @@ public class SwerveModule extends SubsystemBase {
 
         SparkMaxConfig motorConfig = new SparkMaxConfig();
 
-        motorConfig.idleMode(IdleMode.kBrake).inverted(false).smartCurrentLimit(40);
+        motorConfig.idleMode(IdleMode.kBrake).inverted(driveInverted).smartCurrentLimit(40);
 
         driveMotor = new SparkFlex(driveMotorID, MotorType.kBrushless);
 

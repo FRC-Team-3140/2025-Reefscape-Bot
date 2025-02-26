@@ -14,7 +14,7 @@ public class SwerveDriveManualControl extends LoggedCommand {
     private final SwerveDrive swerveDrive; // The swerve drive subsystem
     private final double maxSpeed; // The maximum speed for the swerve drive
     private final double maxChassisTurnSpeed; // The maximum turn speed for the chassis
-    public static boolean fieldRelative = true;
+    public static boolean fieldRelative = false;
 
     /**
      * Creates a new BasicSwerveControlL2 command.
