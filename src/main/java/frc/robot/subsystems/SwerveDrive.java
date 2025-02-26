@@ -41,23 +41,23 @@ public class SwerveDrive extends SubsystemBase {
           Constants.SensorIDs.FL,
           Constants.MotorIDs.FLVortex,
           Constants.MotorIDs.FLNeo,
-          Constants.Bot.FLBaseAngle),
+          Constants.Bot.FLZeroOffset),
       new SwerveModule(
           "frontRight",
           Constants.SensorIDs.FR,
           Constants.MotorIDs.FRVortex,
           Constants.MotorIDs.FRNeo,
-          Constants.Bot.FRBaseAngle),
+          Constants.Bot.FRZeroOffset),
       new SwerveModule("backLeft",
           Constants.SensorIDs.BL,
           Constants.MotorIDs.BLVortex,
           Constants.MotorIDs.BLNeo,
-          Constants.Bot.BLBaseAngle),
+          Constants.Bot.BLZeroOffset),
       new SwerveModule("backRight",
           Constants.SensorIDs.BR,
           Constants.MotorIDs.BRVortex,
           Constants.MotorIDs.BRNeo,
-          Constants.Bot.BRBaseAngle)
+          Constants.Bot.BRZeroOffset)
   };
 
   public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
@@ -133,7 +133,10 @@ public class SwerveDrive extends SubsystemBase {
       for (int i = 0; i < modules.length; i++) {
         // Angle, Velocity / Module
         measuredStates.add(modules[i].getTurnEncoder().getAbsolutePosition());
-        measuredStates.add(modules[i].driveMotor.getEncoder().getVelocity());
+        double wheelCircumference = Constants.Bot.wheelDiameter * Math.PI;
+        double gearRatio = Constants.Bot.gearRatio;
+        double velocityMetersPerSecond = (modules[i].driveMotor.getEncoder().getVelocity() / gearRatio) * (wheelCircumference / 60);
+        measuredStates.add(velocityMetersPerSecond);
       }
       
       NetworkTables.measuredSwerveStates_da.setDoubleArray(measuredStates.stream().mapToDouble(Double::doubleValue).toArray());

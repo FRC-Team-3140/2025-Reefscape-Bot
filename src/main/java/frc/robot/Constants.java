@@ -85,14 +85,14 @@ public final class Constants {
   }
 
   public static class Bot {
-    public static final double gearRatio = 6.12; // TODO: Figure out what this is for (Swerve Module?)
+    public static final double gearRatio = 6.12;
     public static final double botMass = 24.4; // TODO: Update Bot Mass
-    public static final double wheelDiameter = .10;// .1016; //TODO: Update!
+    public static final double wheelDiameter = Units.inchesToMeters(4);
     public static final double botLength = Units.inchesToMeters(29);
 
     // In meters per second, determined from the free speed of the bot via
     // SwerveDriveSpecialties
-    public static final double maxChassisSpeed = 11.8; // * 1.4044;
+    public static final double maxChassisSpeed = 11.8;
     public static final double maxModuleSpeed = maxChassisSpeed / wheelDiameter / Math.PI;
     public static final double maxTurnSpeed = Double.MAX_VALUE; // These are basically infinite for our purposes
     public static final double maxAcceleration = 4000;
@@ -103,13 +103,13 @@ public final class Constants {
     public static final double encoderRotationToMeters = 2 * Math.PI * ((wheelDiameter / 2) / gearRatio);
 
     // Swerve Module Base Angles
-    public static final double FLBaseAngle = 217.682;
+    public static final double FLZeroOffset = 217.682;
 
-    public static final double FRBaseAngle = 227.472;
+    public static final double FRZeroOffset = 227.472;
 
-    public static final double BLBaseAngle = 200.170;
+    public static final double BLZeroOffset = 200.170;
 
-    public static final double BRBaseAngle = 311.373;
+    public static final double BRZeroOffset = 311.373;
 
   }
 
