@@ -206,6 +206,16 @@ public class SwerveDrive extends SubsystemBase {
     NetworkTables.botRotDeg_d.setDouble(odometry.getAngle());
   }
 
+  public void setSwerveModuleStates(SwerveModuleState[] states, boolean locked) {
+    if (states.length == 4) {
+      for (int i = 0; i < 4; i++) {
+        modules[i].setStates(states[i], locked);
+      }
+    } else {
+      System.err.println("To many or too few swerve module states. NOT SETTING!");
+    }
+  }
+
   // public Pose2d getExpectedPose() {
   // return getPose().plus(new Transform2d(
   // new Translation2d(botSpeeds.vxMetersPerSecond * .05,

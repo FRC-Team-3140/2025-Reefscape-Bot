@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.pathplanner.lib.config.RobotConfig;
 
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
@@ -111,6 +112,13 @@ public final class Constants {
 
     public static final double BRZeroOffset = 312.425;
 
+    // Default swerve state
+    public static final SwerveModuleState[] defaultSwerveStates = {
+        new SwerveModuleState(),
+        new SwerveModuleState(),
+        new SwerveModuleState(),
+        new SwerveModuleState()
+    };
   }
 
   public static class Limits {
@@ -209,7 +217,7 @@ public final class Constants {
     public static final String Dashboard = "Dashboard";
 
     public static final String Sensors = "sensors3140";
-    
+
     // Subtables of Dashboard
     public static final String DS = "DS";
     public static final String Voltage = "Voltage";
