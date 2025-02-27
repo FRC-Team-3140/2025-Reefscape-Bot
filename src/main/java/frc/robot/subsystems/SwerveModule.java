@@ -55,7 +55,8 @@ public class SwerveModule extends SubsystemBase {
     // Conversion Factor for the motor encoder output to wheel output
     // (Circumference / Gear Ratio) * Inches to meters conversion
 
-    public SwerveModule(String moduleID, int analogID, int driveMotorID, int turnMotorID, double baseAngle, boolean driveInverted) {
+    public SwerveModule(String moduleID, int analogID, int driveMotorID, int turnMotorID, double baseAngle,
+            boolean driveInverted) {
         this.moduleID = moduleID;
         this.baseAngle = baseAngle;
         this.turnMotorID = turnMotorID;
@@ -89,7 +90,7 @@ public class SwerveModule extends SubsystemBase {
         drivePID = new ProfiledPIDController(0.005, 0, 0.0005, constraints);
         drivePID.setTolerance(driveSetpointTolerance);
     }
-    
+
     // runs while the bot is running
     @Override
     public void periodic() {
@@ -102,6 +103,9 @@ public class SwerveModule extends SubsystemBase {
     SlewRateLimiter accelerationLimiter = new SlewRateLimiter(30.0, -Constants.Bot.maxAcceleration, 0);
 
     public void setStates(SwerveModuleState state, boolean locked) {
+        if (locked)
+            state.angle = Rotation2d.fromDegrees(45);
+
         state.optimize(Rotation2d.fromDegrees(turnEncoder.getAbsolutePosition()));
         setAngle(state.angle.getDegrees());
         setDriveSpeed(accelerationLimiter.calculate(state.speedMetersPerSecond));
