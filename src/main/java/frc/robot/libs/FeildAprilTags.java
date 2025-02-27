@@ -33,7 +33,6 @@ public class FeildAprilTags {
     }
 
     private FeildAprilTags() {
-        // TODO: Invesigate if the k2025ReefscapeAndyMark is going to be the one we use and if it will cause any issues on older wpilibs...
         field = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
         aprilTags = field.getTags();
 

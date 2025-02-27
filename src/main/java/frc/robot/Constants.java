@@ -113,6 +113,7 @@ public final class Constants {
     public static final double BRZeroOffset = 312.425;
 
     // Default swerve state
+    // new SwerveModuleState initializes states with 0s for angle and velocity
     public static final SwerveModuleState[] defaultSwerveStates = {
         new SwerveModuleState(),
         new SwerveModuleState(),
