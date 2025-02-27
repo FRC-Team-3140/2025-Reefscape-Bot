@@ -3,6 +3,7 @@ package frc.robot.commands.swerveDrive;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 import frc.robot.libs.LoggedCommand;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.SwerveDrive;
@@ -17,7 +18,8 @@ public class SwerveDriveManualControl extends LoggedCommand {
     private final SwerveDrive swerveDrive; // The swerve drive subsystem
     private final double maxSpeed; // The maximum speed for the swerve drive
     private final double maxChassisTurnSpeed; // The maximum turn speed for the chassis
-    public static boolean fieldRelative = false;
+    private final boolean fieldRelative = false;
+    private boolean locked = false;
 
     /**
      * Creates a new BasicSwerveControlL2 command.
@@ -40,35 +42,42 @@ public class SwerveDriveManualControl extends LoggedCommand {
      */
     @Override
     public void execute() {
-        // Calculate the x speed based on the joystick input
-        final double xSpeed = -controller.primaryController.getLeftY() * maxSpeed;
-
-        // Calculate the y speed based on the joystick input
-        final double ySpeed = -controller.primaryController.getLeftX() * maxSpeed;
-
-        // Calculate the rotation speed based on the joystick input
-        final double rot = -controller.primaryController.getRightX() * maxChassisTurnSpeed;
-
-        double[] curModuleAngles = new double[swerveDrive.modules.length];
-
-        for (int i = 0; i < swerveDrive.modules.length; i++ ){
-            curModuleAngles[i] = swerveDrive.modules[i].getState().angle.getDegrees();
+        if (controller.primaryController.getLeftStickButton() && controller.primaryController.getRightStickButton()) {
+            locked = !locked;
         }
 
-        SwerveModuleState[] states = new SwerveModuleState[swerveDrive.modules.length];
+        if (!locked) {
+            // Calculate the x speed based on the joystick input
+            final double xSpeed = -controller.primaryController.getLeftY() * maxSpeed;
 
-        for (int i = 0; i < swerveDrive.modules.length; i++) {
-            // This will ensure that the bot doesn't move while maintaining a certain angle 
-            // Currently it will hold the angle it's currently at to prevent the wheels from 
-            // snapping back and forth between 0 and a controller setpoint. 
-            states[i] = new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(curModuleAngles[i])));
-        }
+            // Calculate the y speed based on the joystick input
+            final double ySpeed = -controller.primaryController.getLeftX() * maxSpeed;
 
-        if (xSpeed > 0 || ySpeed > 0 || rot > 0) {
-            swerveDrive.drive(xSpeed, ySpeed, rot, fieldRelative); // Drive the swerve drive
+            // Calculate the rotation speed based on the joystick input
+            final double rot = -controller.primaryController.getRightX() * maxChassisTurnSpeed;
+
+            double[] curModuleAngles = new double[swerveDrive.modules.length];
+
+            for (int i = 0; i < swerveDrive.modules.length; i++) {
+                curModuleAngles[i] = swerveDrive.modules[i].getState().angle.getDegrees();
+            }
+
+            SwerveModuleState[] states = new SwerveModuleState[swerveDrive.modules.length];
+
+            for (int i = 0; i < swerveDrive.modules.length; i++) {
+                // This will ensure that the bot doesn't move while maintaining a certain angle
+                // Currently it will hold the angle it's currently at to prevent the wheels from
+                // snapping back and forth between 0 and a controller setpoint.
+                states[i] = new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(curModuleAngles[i])));
+            }
+
+            if (xSpeed > 0 || ySpeed > 0 || rot > 0) {
+                swerveDrive.drive(xSpeed, ySpeed, rot, fieldRelative); // Drive the swerve drive
+            } else {
+                swerveDrive.setSwerveModuleStates(states, false);
+            }
         } else {
-            // Optionally, add a controller button to set locked state in the future if needed.
-            swerveDrive.setSwerveModuleStates(states, false);
+            swerveDrive.setSwerveModuleStates(Constants.Bot.defaultSwerveStates, true);
         }
     }
 
