@@ -4,8 +4,12 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.swerveDrive.SwerveDriveManualControl;
-import frc.robot.libs.LoggedCommand;
 import frc.robot.subsystems.*;
 
 /**
@@ -18,6 +22,8 @@ import frc.robot.subsystems.*;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  private static RobotContainer container = null;
+
   // The robot's subsystems and commands are defined here...
   public SwerveDrive swerveDrive = SwerveDrive.getInstance();
   public Elevator elevator = Elevator.getInstance();
@@ -26,7 +32,7 @@ public class RobotContainer {
   public TestRunner testRunner = TestRunner.getInstance();
   public Controller controller = Controller.getInstance();
 
-  private static RobotContainer container = null;
+  private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
   // Get the singleton instance or create it if it doesn't exist
   public static RobotContainer getInstance() {
@@ -42,6 +48,11 @@ public class RobotContainer {
   private RobotContainer() {
     // TODO: figure out where to put this for final version V
     swerveDrive.setDefaultCommand(new SwerveDriveManualControl(swerveDrive, Constants.Bot.maxChassisSpeed, Constants.Bot.maxChassisTurnSpeed));
+
+    // Pathplanner Paths
+    autoChooser.addOption("Test", AutoBuilder.buildAuto("PathplannerTest"));
+
+    SmartDashboard.putData("Path planner", autoChooser);
   }
 
   /**
@@ -49,7 +60,8 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public LoggedCommand getAutonomousCommand() {
-    return null;
+  public Command getAutonomousCommand() {
+    // TODO: Return type was logged command. Need to look into. 
+    return autoChooser.getSelected();
   }
 }
