@@ -60,26 +60,7 @@ public class SwerveDriveManualControl extends LoggedCommand {
             // Calculate the rotation speed based on the joystick input
             final double rot = -controller.getRightX(Controller.controllers.PRIMARY) * maxChassisTurnSpeed;
 
-            if (Math.abs(xSpeed) > 0.0 || Math.abs(ySpeed) > 0 || Math.abs(rot) > 0) {
-                swerveDrive.drive(xSpeed, ySpeed, rot, fieldRelative); // Drive the swerve drive
-            } else {
-                double[] curModuleAngles = new double[swerveDrive.modules.length];
-
-                for (int i = 0; i < swerveDrive.modules.length; i++) {
-                    curModuleAngles[i] = swerveDrive.modules[i].getState().angle.getDegrees();
-                }
-
-                SwerveModuleState[] states = new SwerveModuleState[swerveDrive.modules.length];
-
-                for (int i = 0; i < swerveDrive.modules.length; i++) {
-                    // This will ensure that the bot doesn't move while maintaining a certain angle
-                    // Currently it will hold the angle it's currently at to prevent the wheels from
-                    // snapping back and forth between 0 and a controller setpoint.
-                    states[i] = new SwerveModuleState(0, Rotation2d.fromDegrees(curModuleAngles[i]));
-                }
-
-                swerveDrive.setSwerveModuleStates(states, false);
-            }
+            swerveDrive.drive(xSpeed, ySpeed, rot, fieldRelative); // Drive the swerve drive
         } else {
             swerveDrive.setSwerveModuleStates(Constants.Bot.defaultSwerveStates, true);
         }
