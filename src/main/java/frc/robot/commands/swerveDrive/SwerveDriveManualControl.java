@@ -15,8 +15,8 @@ public class SwerveDriveManualControl extends LoggedCommand {
     private final SwerveDrive swerveDrive; // The swerve drive subsystem
     private final double maxSpeed; // The maximum speed for the swerve drive
     private final double maxChassisTurnSpeed; // The maximum turn speed for the chassis
-    private final boolean fieldRelative = false;
     private final double movementThreshold = 0.75;
+    private boolean fieldRelative = true;
     private boolean locked = false;
 
     /**
@@ -46,6 +46,10 @@ public class SwerveDriveManualControl extends LoggedCommand {
                         || (Math.abs(controller.primaryController.getLeftY()) > movementThreshold)
                         || (Math.abs(controller.primaryController.getRightX()) > movementThreshold)))) {
             locked = !locked;
+        }
+
+        if (controller.primaryController.getBackButtonPressed() && controller.primaryController.getBackButtonPressed()) {
+            fieldRelative = !fieldRelative;
         }
 
         if (!locked) {
