@@ -44,6 +44,7 @@ public class NetworkTables {
     public static NetworkTableEntry sourceButton_b = devBoard.getEntry("Source Handoff_b");
     public static NetworkTableEntry reefButton_b = devBoard.getEntry("Algae Reef_b");
     public static NetworkTableEntry algaeGroundButton_b = devBoard.getEntry("Algae Ground_b");
+    public static NetworkTableEntry homeElevatorButton_b = devBoard.getEntry("Home Elevator Button_b");
 
   private static NetworkTable sensors = inst.getTable(Constants.NetworktablePaths.Sensors);
     private static NetworkTable aprilTags = sensors.getSubTable("apriltags");

@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -15,7 +16,6 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -24,12 +24,13 @@ public class Elevator extends SubsystemBase {
 
   private final SparkMax LMot;
   private final SparkMax RMot;
-  private final DutyCycleEncoder Enc;
+  private final SparkAbsoluteEncoder Enc;
   private final ProfiledPIDController pid;
   private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private final NetworkTable ElevatorTable;
   private final NetworkTable ElevatorPIDs;
   private double target;
+  private double enc_offset;
 
   private final SparkMaxConfig lConfig;
   private final SparkMaxConfig rConfig;
@@ -43,6 +44,8 @@ public class Elevator extends SubsystemBase {
 
   /** Creates a new Elevator. */
   private Elevator() {
+    enc_offset = 0;
+
     ElevatorTable = inst.getTable("Elevator");
     ElevatorPIDs = ElevatorTable.getSubTable("PID");
 
@@ -59,7 +62,7 @@ public class Elevator extends SubsystemBase {
     LMot.configure(lConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     RMot.configure(rConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    Enc = new DutyCycleEncoder(Constants.SensorIDs.ElevEncoder);
+    Enc = LMot.getAbsoluteEncoder();
 
     pid = new ProfiledPIDController(
         ElevatorPIDs.getEntry("P").getDouble(0),
@@ -72,8 +75,12 @@ public class Elevator extends SubsystemBase {
     ElevatorPIDs.getEntry("D").setPersistent();
   }
 
+  public void zero() {
+    enc_offset = Enc.getPosition();
+  }
+
   private double calculateSpeed() {
-    return pid.calculate(Enc.get(), new TrapezoidProfile.State(target, 0));
+    return pid.calculate(getHeight(), new TrapezoidProfile.State(target, 0));
   }
 
   @Override
@@ -90,14 +97,23 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setHeight(double height) {
-    target = Math.max(Math.min(height, Constants.ElevatorHeights.maxiumum), Constants.ElevatorHeights.minimum); // TODO:
-                                                                                                                // DO
-                                                                                                                // MATH
+    target = Math.max(Math.min(height, Constants.ElevatorHeights.maxiumum), Constants.ElevatorHeights.minimum);
+  }
+
+  public void setHeight(double height, boolean override) {
+    if (override) {
+      target = height;
+    } else {
+      setHeight(height);
+    }
   }
 
   public double getHeight() {
-    // TODO: DO MATH
-    return Enc.get();
+    return (Enc.getPosition() - enc_offset)*Constants.ElevatorHeights.conversionFactor;
+  }
+
+  public boolean isHome() {
+    return Math.abs(LMot.getOutputCurrent()) > Constants.Limits.CurrentHomeThreshold;
   }
 
   public boolean isMoving() {

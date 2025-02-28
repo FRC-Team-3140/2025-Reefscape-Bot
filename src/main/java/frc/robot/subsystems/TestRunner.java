@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.tests.TestAlgaeIntake;
 import frc.robot.tests.TestAlgaeReef;
 import frc.robot.libs.NetworkTables;
+import frc.robot.tests.HomeElevator;
 import frc.robot.tests.Test;
 import frc.robot.tests.TestElevator;
 import frc.robot.tests.TestEndEffector;
@@ -29,7 +30,8 @@ public class TestRunner extends SubsystemBase {
     GROUND_HANDOFF,
     SOURCE_HANDOFF,
     ALGAE_REEF,
-    ALGAE_GROUND
+    ALGAE_GROUND, 
+    HOME_ELEVATOR
   };
 
   private final HashMap<TestType, Test> tests = new HashMap<TestType, Test>();
@@ -53,6 +55,7 @@ public class TestRunner extends SubsystemBase {
     tests.put(TestType.GROUND_HANDOFF, new TestGroundHandoff(NetworkTables.sourceButton_b, TestType.SOURCE_HANDOFF));
     tests.put(TestType.GROUND_INTAKE, new TestGroundIntake(NetworkTables.reefButton_b, TestType.GROUND_INTAKE));
     tests.put(TestType.ALGAE_REEF, new TestAlgaeReef(NetworkTables.algaeButton_b, TestType.ALGAE_REEF));
+    tests.put(TestType.HOME_ELEVATOR, new HomeElevator(NetworkTables.homeElevatorButton_b, TestType.HOME_ELEVATOR));
   }
 
   @Override

@@ -133,7 +133,7 @@ public final class Constants {
   public static class Limits {
     // Elevator
     public static final double ElevMovement = 0.03;
-
+    public static final double CurrentHomeThreshold = 4;
     public static final double ElevPosThreshold = 0.5;
 
     // Ground Intake
@@ -201,6 +201,8 @@ public final class Constants {
   }
 
   public static class ElevatorHeights {
+    public static final double conversionFactor = 1;
+
     public static final double minimum = 0;
     public static final double maxiumum = 100;
 
@@ -216,6 +218,8 @@ public final class Constants {
 
     public static final double processerHeight = 0;
     public static final double safeStowed = 0;
+
+    public static final double homeUpDist = 1;
   }
 
   public static class Odometry {
