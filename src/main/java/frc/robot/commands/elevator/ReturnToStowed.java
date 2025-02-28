@@ -7,7 +7,6 @@ package frc.robot.commands.elevator;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ReturnToStowed extends SequentialCommandGroup {
   /** Creates a new ReturnToStowed. */

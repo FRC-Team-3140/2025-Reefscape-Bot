@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.odometry;
 
-
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -23,6 +22,7 @@ abstract public class Odometry extends SubsystemBase {
   protected double lastGyroAngle;
   protected static AHRS gyro;
   private Field2d fieldEntry;
+
   /** Creates a new Odometry. */
   public static Odometry getInstance() {
     if (inst == null) {
@@ -41,9 +41,9 @@ abstract public class Odometry extends SubsystemBase {
   }
 
   protected Pose2d calculatePoseFromTags() {
-      // TODO
-      return null;
-    }
+    // TODO
+    return null;
+  }
 
   abstract public double getX();
 
@@ -82,8 +82,8 @@ abstract public class Odometry extends SubsystemBase {
   public void update() {
     SwerveDrive drive = SwerveDrive.getInstance();
     SwerveModulePosition[] positions = new SwerveModulePosition[drive.modules.length];
-    for (int i = 0; i < drive.modules.length; i ++) {
-        positions[i] = drive.modules[i].getSwerveModulePosition();
+    for (int i = 0; i < drive.modules.length; i++) {
+      positions[i] = drive.modules[i].getSwerveModulePosition();
     }
 
     updatePosition(positions);
@@ -99,6 +99,10 @@ abstract public class Odometry extends SubsystemBase {
 
   public Pose2d getPose() {
     return new Pose2d(new Translation2d(getX(), getY()), new Rotation2d(getAngle()));
+  }
+
+  public AHRS getGyro() {
+    return gyro;
   }
 
   abstract public void updatePosition(SwerveModulePosition[] positions);

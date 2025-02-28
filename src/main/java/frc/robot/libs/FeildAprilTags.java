@@ -51,7 +51,8 @@ public class FeildAprilTags {
 
     public Pose2d getTagPose(int id) {
         Optional<Pose3d> pose3dSupplier = field.getTagPose(id);
-        if(!pose3dSupplier.isPresent()) return null;
+        if (!pose3dSupplier.isPresent())
+            return null;
         Pose3d pose3d = pose3dSupplier.get();
         Rotation3d rot3d = pose3d.getRotation();
 

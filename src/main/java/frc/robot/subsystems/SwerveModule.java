@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -102,10 +103,7 @@ public class SwerveModule extends SubsystemBase {
 
     SlewRateLimiter accelerationLimiter = new SlewRateLimiter(30.0, -Constants.Bot.maxAcceleration, 0);
 
-    public void setStates(SwerveModuleState state, boolean locked) {
-        if (locked)
-            state.angle = Rotation2d.fromDegrees(45);
-
+    public void setStates(SwerveModuleState state) {
         state.optimize(Rotation2d.fromDegrees(turnEncoder.getAbsolutePosition()));
         setAngle(state.angle.getDegrees());
         setDriveSpeed(accelerationLimiter.calculate(state.speedMetersPerSecond));
@@ -137,14 +135,17 @@ public class SwerveModule extends SubsystemBase {
     public SwerveModulePosition getSwerveModulePosition() {
         double angle = turnEncoder.getAbsolutePosition();
         double distance = driveEncoder.getPosition() * Constants.Bot.encoderRotationToMeters;
-        return new SwerveModulePosition(distance, new Rotation2d(3.14 * angle / 180));
+        return new SwerveModulePosition(distance, new Rotation2d(Units.degreesToRadians(angle)));
     }
 
-    // public RelativeEncoder getDriveEncoder() {
-    // return this.driveEncoder;
-    // }
-    // ^ Dangerous since values need to be manually multiplied by
-    // Constants.Bot.encoderRotationToMeters
+    public double getVelocity() {
+        double wheelCircumference = Constants.Bot.wheelDiameter * Math.PI;
+        double gearRatio = Constants.Bot.gearRatio;
+        double velocityMetersPerSecond = (driveMotor.getEncoder().getVelocity() * wheelCircumference)
+                / (60 * gearRatio);
+
+        return velocityMetersPerSecond;
+    }
 
     public AbsoluteEncoder getTurnEncoder() {
         return this.turnEncoder;

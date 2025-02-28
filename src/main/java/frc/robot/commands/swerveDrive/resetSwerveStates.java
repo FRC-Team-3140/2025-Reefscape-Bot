@@ -28,7 +28,8 @@ public class resetSwerveStates extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    swerve.setSwerveModuleStates(Constants.Bot.defaultSwerveStates, false); // Swerve module states constructed with 0s by default
+    swerve.setSwerveModuleStates(Constants.Bot.defaultSwerveStates, false); // Swerve module states constructed with 0s
+                                                                            // by default
   }
 
   // Called once the command ends or is interrupted.

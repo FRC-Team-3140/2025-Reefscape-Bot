@@ -14,7 +14,7 @@ public class CommandLogger {
         String[] commandNamesArray = new String[commandNames.size()];
         commandNames.toArray(commandNamesArray);
         NetworkTables.commands.setStringArray(commandNamesArray);
-        
+
         Integer[] commandStatesArray = new Integer[commandStates.size()];
         commandStates.toArray(commandStatesArray);
         NetworkTables.commandStatuses.setNumberArray(commandStatesArray);

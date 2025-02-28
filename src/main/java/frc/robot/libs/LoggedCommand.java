@@ -8,7 +8,8 @@ public abstract class LoggedCommand extends Command {
     public void initialize() {
         CommandLogger.commandNames.add(this.getName());
         CommandLogger.commandStates.add(1);
-        // TODO: Fix issue where old commands aren't cleared when number of logged commands is decreased. 
+        // Fix issue where old commands aren't cleared when number of logged commands is
+        // decreased. - Brogan decided not to fix
         if (CommandLogger.commandNames.size() > NetworkTables.numOLoggedCmds_i.getInteger(50)) {
             CommandLogger.commandNames.remove(0);
             CommandLogger.commandStates.remove(0);

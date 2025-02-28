@@ -12,6 +12,7 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -139,7 +140,7 @@ public class SwerveDrive extends SubsystemBase {
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Bot.maxChassisSpeed);
 
     for (int i = 0; i < 4; i++) {
-      modules[i].setStates(swerveModuleStates[i], false);
+      modules[i].setStates(swerveModuleStates[i]);
     }
   }
 
@@ -190,26 +191,25 @@ public class SwerveDrive extends SubsystemBase {
       for (int i = 0; i < modules.length; i++) {
         // Angle, Velocity / Module
         measuredStates.add(modules[i].getTurnEncoder().getAbsolutePosition());
-        double wheelCircumference = Constants.Bot.wheelDiameter * Math.PI;
-        double gearRatio = Constants.Bot.gearRatio;
-        double velocityMetersPerSecond = (modules[i].driveMotor.getEncoder().getVelocity() / gearRatio)
-            * (wheelCircumference / 60);
-        measuredStates.add(velocityMetersPerSecond);
-        // TODO: accurate ^ ?
-        // System.out.println(velocityMetersPerSecond);
+        measuredStates.add(modules[i].getVelocity());
       }
 
       NetworkTables.measuredSwerveStates_da
           .setDoubleArray(measuredStates.stream().mapToDouble(Double::doubleValue).toArray());
     }
 
-    NetworkTables.botRotDeg_d.setDouble(odometry.getAngle());
+    NetworkTables.botRotDeg_d.setDouble(odometry.getGyroRotation().getDegrees());
   }
 
   public void setSwerveModuleStates(SwerveModuleState[] states, boolean locked) {
     if (states.length == 4) {
       for (int i = 0; i < 4; i++) {
-        modules[i].setStates(states[i], locked);
+        if (locked) {
+          states[i].angle = Rotation2d.fromDegrees(Constants.Bot.lockedAngles[i]);
+          swerveModuleStates[i] = states[i];
+        }
+
+        modules[i].setStates(states[i]);
       }
     } else {
       System.err.println("To many or too few swerve module states. NOT SETTING!");

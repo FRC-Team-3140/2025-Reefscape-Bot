@@ -40,7 +40,9 @@ public class TestRunner extends SubsystemBase {
     }
     return instance;
   }
- // TODO: Figure out why Test Ground Intake, Test Elevator, Algae Reef, and Test Groud are not working
+
+  // TODO: Figure out why Test Ground Intake, Test Elevator, Algae Reef, and Test
+  // Groud are not working
   private TestRunner() {
     tests.put(TestType.SWERVE, new TestSwerve(NetworkTables.swerveButton_b, TestType.SWERVE));
     tests.put(TestType.ALGAE_INTAKE, new TestAlgaeIntake(NetworkTables.algaeButton_b, TestType.ALGAE_INTAKE));

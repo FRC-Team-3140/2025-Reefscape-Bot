@@ -12,6 +12,7 @@ public class WaitUntilAngle extends LoggedCommand {
   GroundIntake groundIntake;
   double angle = 0;
   double tolerance = 180;
+
   public WaitUntilAngle(GroundIntake groundIntake, double angle, double tolerance) {
     this.groundIntake = groundIntake;
     addRequirements(groundIntake);

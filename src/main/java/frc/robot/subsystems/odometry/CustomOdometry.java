@@ -58,7 +58,7 @@ public class CustomOdometry extends Odometry {
     public Rotation2d getGyroRotation() {
         return gyro.getRotation2d();
     }
-    
+
     private double optimizeAngle(double baseline, double angle) {
         while (Math.abs(angle - baseline) > Math.PI) {
             if (baseline > angle) {

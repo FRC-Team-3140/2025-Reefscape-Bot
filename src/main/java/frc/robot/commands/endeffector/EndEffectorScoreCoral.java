@@ -4,7 +4,6 @@
 
 package frc.robot.commands.endeffector;
 
-
 import frc.robot.libs.LoggedCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -32,12 +31,15 @@ public class EndEffectorScoreCoral extends LoggedCommand {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+  }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    new SequentialCommandGroup(new WaitCommand(1), new InstantCommand(()->{ endEffector.setManipulatorSpeed(0); })).schedule();
+    new SequentialCommandGroup(new WaitCommand(1), new InstantCommand(() -> {
+      endEffector.setManipulatorSpeed(0);
+    })).schedule();
     super.end(interrupted);
   }
 

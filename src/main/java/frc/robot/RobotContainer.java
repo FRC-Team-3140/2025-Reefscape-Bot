@@ -57,7 +57,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // TODO: Return type was logged command. Need to look into. 
     return autoChooser.getSelected();
   }
 }

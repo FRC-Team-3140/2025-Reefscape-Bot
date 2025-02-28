@@ -93,7 +93,7 @@ public final class Constants {
 
     // In meters per second, determined from the free speed of the bot via
     // SwerveDriveSpecialties
-    public static final double maxChassisSpeed = 11.8;
+    public static final double maxChassisSpeed = 5.8969405214990;
     public static final double maxModuleSpeed = maxChassisSpeed / wheelDiameter / Math.PI;
     public static final double maxTurnSpeed = Double.MAX_VALUE; // These are basically infinite for our purposes
     public static final double maxAcceleration = 4000;
@@ -119,6 +119,14 @@ public final class Constants {
         new SwerveModuleState(),
         new SwerveModuleState(),
         new SwerveModuleState()
+    };
+
+    // nah
+    public static final double[] lockedAngles = {
+        45,
+        315,
+        315,
+        45
     };
   }
 

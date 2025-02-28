@@ -106,9 +106,9 @@ public class ScoreCoral extends Command {
     System.out.println("Cloest Tag ID: " + closestTag.ID);
     System.out.println("Closets Tag Pose: \n" + "x:" + pose.getX() + "\n" + "y:"
         + pose.getY() + "\n" + "yaw:" + pose.getRotation().getAngle());
-        
+
     double angle = pose.getRotation().getAngle() + posint * (Math.PI / 4);
-    double distance = (Constants.Bot.botLength / 2)/Math.tan(angle);
+    double distance = (Constants.Bot.botLength / 2) / Math.tan(angle);
 
     // Put the edge of the bot theoretically touching the apriltag
     pathfindingCommand = AutoBuilder.pathfindToPose(
