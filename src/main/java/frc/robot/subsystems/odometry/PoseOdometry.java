@@ -14,6 +14,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 
 public class PoseOdometry extends Odometry {
     protected SwerveDrivePoseEstimator estimator = null;
+    private boolean knowsPosition = false;
     private Pose2d nullPose = new Pose2d(0, 0, new Rotation2d(0));
 
     protected PoseOdometry() {
@@ -41,7 +42,7 @@ public class PoseOdometry extends Odometry {
     }
 
     public boolean knowsPose() {
-        return estimator != null;
+        return knowsPosition;
     }
 
     @Override
@@ -65,14 +66,18 @@ public class PoseOdometry extends Odometry {
     public void updatePosition(SwerveModulePosition[] positions) {
         SwerveDrive drive = SwerveDrive.getInstance();
         Pose2d pose = calculatePoseFromTags();
-        if (estimator == null && pose != null) {
-            estimator = new SwerveDrivePoseEstimator(drive.kinematics, getGyroRotation(), positions, pose);
-        } else if (pose != null) {
-            estimator.addVisionMeasurement(pose, Timer.getFPGATimestamp());
+        if (estimator == null) {
+            estimator = new SwerveDrivePoseEstimator(drive.kinematics, getGyroRotation(), positions, new Pose2d());
+        }
+        if (pose != null) {
+            if (!knowsPosition) {
+                knowsPosition = true;
+                estimator.resetPose(pose);
+            } else {
+                estimator.addVisionMeasurement(pose, Timer.getFPGATimestamp());
+            }
         }
 
-        if (estimator != null) {
-            estimator.update(getGyroRotation(), positions);
-        }
+        estimator.update(getGyroRotation(), positions);
     }
 }

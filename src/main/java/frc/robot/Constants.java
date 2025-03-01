@@ -173,7 +173,8 @@ public final class Constants {
   }
 
   public static class CameraConstants {
-    public static final double maxAmbiguity = 0.1;
+    public static final double maxTimeBeteweenFrames = 0.1;
+    public static final double aprilOffsetToCenter = Units.inchesToMeters(6); 
   }
 
   public static class PathplannerConstants {
