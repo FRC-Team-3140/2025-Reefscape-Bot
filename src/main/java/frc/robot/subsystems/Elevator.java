@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -40,10 +39,13 @@ public class Elevator extends SubsystemBase {
   private final NetworkTable ElevatorTable;
   private final NetworkTable ElevatorPIDs;
   private double target;
-  private double enc_offset;
 
   private final SparkMaxConfig lConfig;
   private final SparkMaxConfig rConfig;
+
+  private final double kP = 1;
+  private final double kI = 0.0; 
+  private final double kD = 0.0;
 
   private double speed;
 
@@ -56,7 +58,6 @@ public class Elevator extends SubsystemBase {
 
   /** Creates a new Elevator. */
   private Elevator() {
-    enc_offset = 0;
 
     ElevatorTable = inst.getTable("Elevator");
     ElevatorPIDs = ElevatorTable.getSubTable("PID");
@@ -76,6 +77,9 @@ public class Elevator extends SubsystemBase {
     LeftEncoder = new AbsoluteEncoder(Constants.SensorIDs.ElevEncoderLeft, Constants.Bot.leftElevatorBaseAngle);
     RightEncoder = new AbsoluteEncoder(Constants.SensorIDs.ElevEncoderRight, Constants.Bot.rightElevatorBaseAngle);
 
+    ElevatorPIDs.getEntry("P").setDouble(kP);
+    ElevatorPIDs.getEntry("I").setDouble(kI);
+    ElevatorPIDs.getEntry("D").setDouble(kD);
 
     pidLeft = new ProfiledPIDController(
         ElevatorPIDs.getEntry("P").getDouble(0),
@@ -93,9 +97,6 @@ public class Elevator extends SubsystemBase {
     ElevatorPIDs.getEntry("D").setPersistent();
   }
 
-  public void zero() {
-    enc_offset = Enc.getPosition();
-  }
 
   private double calculateSpeed() {
     return speed;

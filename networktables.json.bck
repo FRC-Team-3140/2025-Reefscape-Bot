@@ -1,0 +1,10 @@
+[
+  {
+    "name": "/Elevator/PID/P",
+    "type": "double",
+    "value": 0.1,
+    "properties": {
+      "persistent": true
+    }
+  }
+]

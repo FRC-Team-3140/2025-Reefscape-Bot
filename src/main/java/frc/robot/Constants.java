@@ -167,7 +167,7 @@ public final class Constants {
 
   public static class Constraints {
     public static final double elevatorMaxVelocity = 1;
-    public static final double elevatorMaxAcceleration = 1;
+    public static final double elevatorMaxAcceleration = 3;
     // Ground Intake
     public static final TrapezoidProfile.Constraints GIConstraints = new TrapezoidProfile.Constraints(1, 1);
   }

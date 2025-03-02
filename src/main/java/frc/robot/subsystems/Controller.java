@@ -7,7 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
+// import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -163,7 +163,7 @@ public class Controller extends SubsystemBase {
       return;
     }
 
-    elevator.setHeight(elevator.getTarget() - getRightY(controllers.SECONDARY));
+    elevator.setHeight(elevator.getTarget() * 0.05 - getRightY(controllers.SECONDARY));
 
     if (primaryController.getYButtonPressed()) {
       // TODO: Look at resetGyro() in Odometry.java
