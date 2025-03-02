@@ -14,18 +14,28 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.libs.AbsoluteEncoder;
 
 public class Elevator extends SubsystemBase {
   private static Elevator instance = null;
 
-  private final SparkMax LMot;
-  private final SparkMax RMot;
-  private final SparkAbsoluteEncoder Enc;
-  private final ProfiledPIDController pid;
+  public final SparkMax LMot;
+  public final SparkMax RMot;
+
+  private final AbsoluteEncoder LeftEncoder;
+  private final AbsoluteEncoder RightEncoder;
+
+  public final Constraints ElevConstraints = new Constraints(Constants.Constraints.elevatorMaxVelocity, Constants.Constraints.elevatorMaxAcceleration);
+  // Two PIDs so I and D can be consistant per side. 
+  private final ProfiledPIDController pidLeft;
+  private final ProfiledPIDController pidRight;
+
+
   private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private final NetworkTable ElevatorTable;
   private final NetworkTable ElevatorPIDs;
@@ -34,6 +44,8 @@ public class Elevator extends SubsystemBase {
 
   private final SparkMaxConfig lConfig;
   private final SparkMaxConfig rConfig;
+
+  private double speed;
 
   public static Elevator getInstance() {
     if (instance == null) {
@@ -57,18 +69,24 @@ public class Elevator extends SubsystemBase {
 
     rConfig = new SparkMaxConfig();
     rConfig.idleMode(IdleMode.kBrake);
-    rConfig.follow(LMot, true);
 
     LMot.configure(lConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     RMot.configure(rConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    Enc = LMot.getAbsoluteEncoder();
+    LeftEncoder = new AbsoluteEncoder(Constants.SensorIDs.ElevEncoderLeft, Constants.Bot.leftElevatorBaseAngle);
+    RightEncoder = new AbsoluteEncoder(Constants.SensorIDs.ElevEncoderRight, Constants.Bot.rightElevatorBaseAngle);
 
-    pid = new ProfiledPIDController(
+
+    pidLeft = new ProfiledPIDController(
         ElevatorPIDs.getEntry("P").getDouble(0),
         ElevatorPIDs.getEntry("I").getDouble(0),
         ElevatorPIDs.getEntry("D").getDouble(0),
-        Constants.Constraints.ElevConstraints);
+        ElevConstraints);
+    pidRight = new ProfiledPIDController(
+        ElevatorPIDs.getEntry("P").getDouble(0),
+        ElevatorPIDs.getEntry("I").getDouble(0),
+        ElevatorPIDs.getEntry("D").getDouble(0),
+        ElevConstraints);
 
     ElevatorPIDs.getEntry("P").setPersistent();
     ElevatorPIDs.getEntry("I").setPersistent();
@@ -80,20 +98,30 @@ public class Elevator extends SubsystemBase {
   }
 
   private double calculateSpeed() {
-    return pid.calculate(getHeight(), new TrapezoidProfile.State(target, 0));
+    return speed;
+  } 
+
+  private double getEncoderAverage() {
+    return (LeftEncoder.get() + RightEncoder.get()) / 2;
   }
 
   @Override
   public void periodic() {
-    pid.setP(ElevatorPIDs.getEntry("P").getDouble(0));
-    pid.setI(ElevatorPIDs.getEntry("I").getDouble(0));
-    pid.setD(ElevatorPIDs.getEntry("D").getDouble(0));
+    pidLeft.setP(ElevatorPIDs.getEntry("P").getDouble(0));
+    pidLeft.setI(ElevatorPIDs.getEntry("I").getDouble(0));
+    pidLeft.setD(ElevatorPIDs.getEntry("D").getDouble(0));
+
+    pidRight.setP(ElevatorPIDs.getEntry("P").getDouble(0));
+    pidRight.setI(ElevatorPIDs.getEntry("I").getDouble(0));
+    pidRight.setD(ElevatorPIDs.getEntry("D").getDouble(0));
+
 
     ElevatorTable.getEntry("Current Height").setDouble(getHeight());
     ElevatorTable.getEntry("Target Height").setDouble(target);
-
-    double speed = calculateSpeed();
+    speed = pidLeft.calculate(LeftEncoder.get(), new TrapezoidProfile.State(target, 0));
+    if(Controller.getInstance().getControlMode() == Controller.ControlMode.MANUAL) return;
     LMot.set(speed);
+    RMot.set(pidRight.calculate(RightEncoder.get(), new TrapezoidProfile.State(target, 0)));
   }
 
   public void setHeight(double height) {
@@ -109,13 +137,18 @@ public class Elevator extends SubsystemBase {
   }
 
   public double getHeight() {
-    return (Enc.getPosition() - enc_offset)*Constants.ElevatorHeights.conversionFactor;
+    return getEncoderAverage() * Constants.Bot.elevatorEncoderDegreesToMeters;
+
   }
 
   public boolean isHome() {
     return Math.abs(LMot.getOutputCurrent()) > Constants.Limits.CurrentHomeThreshold;
   }
 
+  public double getTarget() {
+    return target;
+  }
+  
   public boolean isMoving() {
     return Math.abs(calculateSpeed()) > Constants.Limits.ElevMovement;
   }

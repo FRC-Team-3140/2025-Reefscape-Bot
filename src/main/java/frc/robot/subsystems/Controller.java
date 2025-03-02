@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorHeights;
-import frc.robot.commands.GroundCoralIntake;
 import frc.robot.commands.IntakeAlgaeReef;
 import frc.robot.commands.SourceCoralIntake;
 import frc.robot.libs.NetworkTables;
@@ -163,12 +162,9 @@ public class Controller extends SubsystemBase {
 
       return;
     }
-    if (primaryController.getAButtonPressed()) {
-      new SequentialCommandGroup(
-          new PrintCommand("test "),
-          new WaitCommand(1),
-          new PrintCommand("test2 ")).schedule();
-    }
+
+    elevator.setHeight(elevator.getTarget() - getRightY(controllers.SECONDARY));
+
     if (primaryController.getYButtonPressed()) {
       // TODO: Look at resetGyro() in Odometry.java
       SwerveDrive.odometry.resetGyro();
@@ -187,6 +183,9 @@ public class Controller extends SubsystemBase {
 
       return;
     }
+    double speed = -getRightY(controllers.SECONDARY);
+    elevator.LMot.set(speed);
+    elevator.RMot.set(speed); 
 
     if (secondaryController.getBButtonPressed()) {
       // Elevator trough
@@ -229,7 +228,7 @@ public class Controller extends SubsystemBase {
 
     if (secondaryController.getLeftBumperButtonPressed()) {
       // Ground Intake
-      new GroundCoralIntake(GroundIntake.getInstance(), Elevator.getInstance()).schedule();
+      // new GroundCoralIntake(GroundIntake.getInstance(), Elevator.getInstance()).schedule();
     }
 
     if (secondaryController.getRightBumperButtonPressed()) {
