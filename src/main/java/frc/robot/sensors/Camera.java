@@ -4,20 +4,33 @@
 
 package frc.robot.sensors;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.libs.NetworkTables;
+import frc.robot.libs.Vector2;
 
 public class Camera extends SubsystemBase {
-
   private static Camera instance = null;
+
+  private final double delayTime = 0.5;
+
+  private boolean connected = false;
+
+  private double globalTime = -1;
+  private double lastTime = -1;
+
+  private double lastAttemptReconnectIterration = 0;
 
   /**
    * Represents a distance measurement obtained from a camera sensor.
    */
   public class AprilTagMeasurement {
-    public final double Xdistance;
-    public final double Ydistance;
+    public final double distance;
     public final double yaw;
-    public final double ambiguity;
     public final int id;
 
     /**
@@ -27,14 +40,11 @@ public class Camera extends SubsystemBase {
      * @param Xdistance the measured distance in the X axis
      * @param Ydistance the measured distance in the Y axis
      * @param yaw       the measured yaw
-     * @param ambiguity the ambiguity of the distance measurement
      * @param id        the fiducial id of the detected apriltag
      */
-    public AprilTagMeasurement(double Xdistance, double Ydistance, double yaw, double ambiguity, int id) {
-      this.Xdistance = Xdistance;
-      this.Ydistance = Ydistance;
+    public AprilTagMeasurement(double distance, double yaw, int id) {
+      this.distance = distance;
       this.yaw = yaw;
-      this.ambiguity = ambiguity;
       this.id = id;
     }
   }
@@ -54,6 +64,22 @@ public class Camera extends SubsystemBase {
 
   }
 
+  @Override
+  public void periodic() {
+    if (((Timer.getFPGATimestamp() - lastAttemptReconnectIterration)) > delayTime) {
+      lastTime = globalTime;
+      globalTime = NetworkTables.globalCameraTimestamp.getDouble(-1);
+
+      if (globalTime == -1 || globalTime - lastTime > Constants.CameraConstants.maxTimeBeteweenFrames) {
+        connected = false;
+      } else {
+        connected = true;
+      }
+
+      lastAttemptReconnectIterration = Timer.getFPGATimestamp();
+    }
+  }
+
   /**
    * Represents a camera used for vision processing.
    * 
@@ -64,5 +90,85 @@ public class Camera extends SubsystemBase {
       instance = new Camera();
     }
     return instance;
+  }
+
+  public boolean isConnected() {
+    return connected;
+  }
+
+  public Integer getClosestApriltag() {
+    if (connected) {
+      double[] distances = NetworkTables.camera0_Distances.getDoubleArray(new double[0]);
+      int[] ids = getDetectedTags();
+
+      if (distances.length <= 0 || ids.length <= 0)
+        return null;
+
+      double minDistance = distances[0];
+
+      int minIndex = 0;
+
+      for (int i = 0; i < distances.length; i++) {
+        if (distances[i] < minDistance) {
+          minDistance = distances[i];
+          minIndex = i;
+        }
+      }
+
+      return ids[minIndex];
+    } else {
+      return null;
+    }
+  }
+
+  public AprilTagMeasurement getMeasurement(int id) {
+    if (connected) {
+      NetworkTables.camera0_requestedID.setDouble(id);
+
+      Timer.delay(0.1);
+
+      double globalCameraTimestamp = NetworkTables.camera0_Timestamp.getDouble(0);
+      double timestamp = NetworkTables.camera0_requestedTimestamp.getDouble(-1);
+
+      if (timestamp == -1 || globalCameraTimestamp - timestamp > Constants.CameraConstants.maxTimeBeteweenFrames)
+        return null;
+
+      return new AprilTagMeasurement(
+          NetworkTables.camera0_requestedDistance.getDouble(0),
+          NetworkTables.camera0_requestedBearing.getDouble(0),
+          id);
+    } else {
+      return null;
+    }
+  }
+
+  public Pose2d getPoseFromCamera() {
+    if (connected) {
+      double[] pose = NetworkTables.camera0_Position.getDoubleArray(new double[0]);
+      double[] dir = NetworkTables.camera0_Direction.getDoubleArray(new double[0]);
+
+      Vector2 oneMUnitVec = new Vector2(dir[0], dir[1]).sub(new Vector2(pose[0], pose[1]));
+      Vector2 centerOfBot = oneMUnitVec.neg().mult(Constants.CameraConstants.aprilOffsetToCenter);
+
+      return new Pose2d(centerOfBot.X, centerOfBot.Y,
+          new Rotation2d(Units.degreesToRadians(Math.atan2(oneMUnitVec.Y, oneMUnitVec.X))));
+    } else {
+      return null;
+    }
+  }
+
+  public int[] getDetectedTags() {
+    if (connected) {
+      double[] detectedTags = NetworkTables.camera0_IDs.getDoubleArray(new double[0]);
+      int[] detectedTagsInt = new int[detectedTags.length];
+
+      for (int i = 0; i < detectedTags.length; i++) {
+        detectedTagsInt[i] = (int) detectedTags[i];
+      }
+
+      return detectedTagsInt;
+    } else {
+      return null;
+    }
   }
 }

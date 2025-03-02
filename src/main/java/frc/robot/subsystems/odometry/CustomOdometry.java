@@ -14,11 +14,12 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class CustomOdometry extends Odometry {
-    private Vector2 position = null;
-    private Double angle = null; // IN RADIANS
+    private Vector2 position = new Vector2(); // THIS AND ANGLE USED TO BE NULLABLE, NOT ANYMORE BUT KEPT COMPATIBILITY
+    private Double angle = Double.valueOf(0); // IN RADIANS
     private SwerveModuleState[] lastStates = null;
     private Double lastStatesT = null;
     private Double lastUpdateT = null;
+    private boolean knowsPosition = false;
 
     private CustomOdometry() {
         super();
@@ -59,11 +60,6 @@ public class CustomOdometry extends Odometry {
         return gyro.getRotation2d();
     }
 
-    public void resetGyro() {
-        // TODO: 2024 code has an odometry offset that is also updated here!
-        gyro.reset();
-    }
-
     private double optimizeAngle(double baseline, double angle) {
         while (Math.abs(angle - baseline) > Math.PI) {
             if (baseline > angle) {
@@ -95,7 +91,7 @@ public class CustomOdometry extends Odometry {
             double vf = states[i].speedMetersPerSecond;
             double dv = vf - v0;
 
-            /// UN///////FANCY CALCULUS F BASICHIT C (less accurate)ODE
+            //////////// UNFANCY CALCULUS FREE BASIC CODE (less accurate)
             // double angle = states[i].angle.getRadians() + getAngle();
             // Vector2 dir = new Vector2(Math.cos(angle), Math.sin(angle));
             // delta = delta.add(dir.mult(states[i].speedMetersPerSecond * deltaTime));
@@ -132,37 +128,26 @@ public class CustomOdometry extends Odometry {
     }
 
     public void updatePosition(SwerveModulePosition[] positions) {
-
         if (lastUpdateT == null) {
             lastUpdateT = Timer.getFPGATimestamp();
         }
+        
 
         double deltaTime = Timer.getFPGATimestamp() - lastUpdateT;
         lastUpdateT += deltaTime;
         Pose2d tagPose = calculatePoseFromTags();
 
         // if it found a camera position and it doesnt have a better position, use that
-        if (tagPose != null && !knowsPose()) {
+        if (tagPose != null && !knowsPosition) {
+            knowsPosition = true;
             position = new Vector2(tagPose.getX(), tagPose.getY());
             angle = tagPose.getRotation().getRadians();
+        } 
+
+        // incase these values are null, we can't do anything
+        if (position == null || angle == null) {
             return;
         }
-
-        // if it still doesnt have a position, we cant use the delta, so just stop
-        if (!knowsPose())
-            return;
-
-        // move the position based on the delta calculated from the encoders
-        double rotation = caluclateRotationDelta();
-        angle += rotation;
-
-        SwerveDrive drive = SwerveDrive.getInstance();
-        SwerveModuleState[] states = new SwerveModuleState[drive.modules.length];
-        for (int i = 0; i < drive.modules.length; i++) {
-            states[i] = drive.modules[i].getState();
-        }
-        Vector2 delta = calculateEncoderDelta(states);
-        position = position.add(delta);
 
         // weightedly move the calculated position toward what the tags are saying.
         if (tagPose != null) {
@@ -176,5 +161,17 @@ public class CustomOdometry extends Odometry {
             angle = optimizeAngle(targetAngle, angle);
             angle = (targetAngle - angle) * alpha + angle;
         }
+
+        // move the position based on the delta calculated from the encoders
+        double rotation = caluclateRotationDelta();
+        angle += rotation;
+
+        SwerveDrive drive = SwerveDrive.getInstance();
+        SwerveModuleState[] states = new SwerveModuleState[drive.modules.length];
+        for (int i = 0; i < drive.modules.length; i++) {
+            states[i] = drive.modules[i].getState();
+        }
+        Vector2 delta = calculateEncoderDelta(states);
+        position = position.add(delta);
     }
 }

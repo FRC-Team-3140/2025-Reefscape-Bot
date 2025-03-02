@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.odometry;
 
-
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -16,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.libs.Vector2;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.libs.NetworkTables;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 abstract public class Odometry extends SubsystemBase {
@@ -23,6 +23,8 @@ abstract public class Odometry extends SubsystemBase {
   protected double lastGyroAngle;
   protected static AHRS gyro;
   private Field2d fieldEntry;
+  private double timestamp;
+
   /** Creates a new Odometry. */
   public static Odometry getInstance() {
     if (inst == null) {
@@ -36,14 +38,21 @@ abstract public class Odometry extends SubsystemBase {
     gyro.reset();
     lastGyroAngle = gyro.getRotation2d().getRadians();
 
+    timestamp = NetworkTables.camera0_Timestamp.getDouble(0);
+
     fieldEntry = new Field2d();
     SmartDashboard.putData(fieldEntry);
   }
 
   protected Pose2d calculatePoseFromTags() {
-      // TODO
+    if (timestamp == NetworkTables.camera0_Timestamp.getDouble(0)) {
       return null;
     }
+    double angle = NetworkTables.camera0_Angle.getDouble(0);
+    double[] pos = NetworkTables.camera0_Position.getDoubleArray(new double[3]);
+
+    return new Pose2d(new Translation2d(pos[0], pos[1]), Rotation2d.fromDegrees(angle));
+  }
 
   abstract public double getX();
 
@@ -63,7 +72,11 @@ abstract public class Odometry extends SubsystemBase {
     return gyro.getRotation2d();
   }
 
-  abstract public void resetGyro();
+  public void resetGyro() {
+    double delta = caluclateRotationDelta();
+    gyro.reset();
+    lastGyroAngle = gyro.getRotation2d().getRadians() - delta;
+  };
 
   @Override
   public void periodic() {
@@ -78,8 +91,8 @@ abstract public class Odometry extends SubsystemBase {
   public void update() {
     SwerveDrive drive = SwerveDrive.getInstance();
     SwerveModulePosition[] positions = new SwerveModulePosition[drive.modules.length];
-    for (int i = 0; i < drive.modules.length; i ++) {
-        positions[i] = drive.modules[i].getSwerveModulePosition();
+    for (int i = 0; i < drive.modules.length; i++) {
+      positions[i] = drive.modules[i].getSwerveModulePosition();
     }
 
     updatePosition(positions);
@@ -95,6 +108,10 @@ abstract public class Odometry extends SubsystemBase {
 
   public Pose2d getPose() {
     return new Pose2d(new Translation2d(getX(), getY()), new Rotation2d(getAngle()));
+  }
+
+  public AHRS getGyro() {
+    return gyro;
   }
 
   abstract public void updatePosition(SwerveModulePosition[] positions);

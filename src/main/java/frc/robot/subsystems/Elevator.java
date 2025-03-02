@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -34,10 +35,12 @@ public class Elevator extends SubsystemBase {
   private final ProfiledPIDController pidLeft;
   private final ProfiledPIDController pidRight;
 
+
   private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private final NetworkTable ElevatorTable;
   private final NetworkTable ElevatorPIDs;
   private double target;
+  private double enc_offset;
 
   private final SparkMaxConfig lConfig;
   private final SparkMaxConfig rConfig;
@@ -53,6 +56,8 @@ public class Elevator extends SubsystemBase {
 
   /** Creates a new Elevator. */
   private Elevator() {
+    enc_offset = 0;
+
     ElevatorTable = inst.getTable("Elevator");
     ElevatorPIDs = ElevatorTable.getSubTable("PID");
 
@@ -71,6 +76,7 @@ public class Elevator extends SubsystemBase {
     LeftEncoder = new AbsoluteEncoder(Constants.SensorIDs.ElevEncoderLeft, Constants.Bot.leftElevatorBaseAngle);
     RightEncoder = new AbsoluteEncoder(Constants.SensorIDs.ElevEncoderRight, Constants.Bot.rightElevatorBaseAngle);
 
+
     pidLeft = new ProfiledPIDController(
         ElevatorPIDs.getEntry("P").getDouble(0),
         ElevatorPIDs.getEntry("I").getDouble(0),
@@ -85,6 +91,10 @@ public class Elevator extends SubsystemBase {
     ElevatorPIDs.getEntry("P").setPersistent();
     ElevatorPIDs.getEntry("I").setPersistent();
     ElevatorPIDs.getEntry("D").setPersistent();
+  }
+
+  public void zero() {
+    enc_offset = Enc.getPosition();
   }
 
   private double calculateSpeed() {
@@ -115,11 +125,24 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setHeight(double height) {
-    target = Math.max(Math.min(height, Constants.ElevatorHeights.maxiumum), Constants.ElevatorHeights.minimum); // TODO: DO MATH
+    target = Math.max(Math.min(height, Constants.ElevatorHeights.maxiumum), Constants.ElevatorHeights.minimum);
+  }
+
+  public void setHeight(double height, boolean override) {
+    if (override) {
+      target = height;
+    } else {
+      setHeight(height);
+    }
   }
 
   public double getHeight() {
     return getEncoderAverage() * Constants.Bot.elevatorEncoderDegreesToMeters;
+
+  }
+
+  public boolean isHome() {
+    return Math.abs(LMot.getOutputCurrent()) > Constants.Limits.CurrentHomeThreshold;
   }
 
   public double getTarget() {
@@ -129,8 +152,9 @@ public class Elevator extends SubsystemBase {
   public boolean isMoving() {
     return Math.abs(calculateSpeed()) > Constants.Limits.ElevMovement;
   }
+
   public Boolean[] isAtHeight(double height, double tolerance) {
     // 0: is within tolerance, 1: is staying in tolerance
-    return new Boolean[] {Math.abs(getHeight() - height) < tolerance, Math.abs(target - height) < tolerance};
+    return new Boolean[] { Math.abs(getHeight() - height) < tolerance, Math.abs(target - height) < tolerance };
   }
 }

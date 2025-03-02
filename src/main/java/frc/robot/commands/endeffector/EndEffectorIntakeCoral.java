@@ -4,12 +4,12 @@
 
 package frc.robot.commands.endeffector;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.libs.LoggedCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.EndEffector;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class EndEffectorIntakeCoral extends Command {
+public class EndEffectorIntakeCoral extends LoggedCommand {
   private EndEffector endEffector = null;
 
   /** Creates a new IntakeCoral. */
@@ -24,6 +24,7 @@ public class EndEffectorIntakeCoral extends Command {
   public void initialize() {
     endEffector.setBeltSpeed(Constants.MotorSpeeds.EndEffector.beltIntake);
     endEffector.setManipulatorSpeed(Constants.MotorSpeeds.EndEffector.manipulatorIntake);
+    super.initialize();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -36,6 +37,8 @@ public class EndEffectorIntakeCoral extends Command {
   public void end(boolean interrupted) {
     endEffector.setBeltSpeed(0);
     endEffector.setManipulatorSpeed(0);
+    System.out.println("EndEffectorIntakeCoral ended");
+    super.end(interrupted);
   }
 
   // Returns true when the command should end.

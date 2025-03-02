@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -163,6 +164,7 @@ public class Controller extends SubsystemBase {
     }
 
     elevator.setHeight(elevator.getTarget() - getRightY(controllers.SECONDARY));
+
     if (primaryController.getYButtonPressed()) {
       // TODO: Look at resetGyro() in Odometry.java
       SwerveDrive.odometry.resetGyro();
@@ -178,7 +180,6 @@ public class Controller extends SubsystemBase {
         curControlMode = ControlMode.AUTO;
         System.out.println("Control Mode: " + curControlMode);
       }
-      
 
       return;
     }
@@ -208,12 +209,14 @@ public class Controller extends SubsystemBase {
 
     if (secondaryController.getStartButtonPressed()) {
       // Get Algae L2
-      new IntakeAlgaeReef(endEffector, ElevatorHeights.reefAlgaeL1Height).schedule();;
+      new IntakeAlgaeReef(endEffector, ElevatorHeights.reefAlgaeL1Height).schedule();
+      ;
     }
 
     if (secondaryController.getBackButtonPressed()) {
       // Get Algae L3
-      new IntakeAlgaeReef(endEffector, ElevatorHeights.reefAlgaeL2Height).schedule();;
+      new IntakeAlgaeReef(endEffector, ElevatorHeights.reefAlgaeL2Height).schedule();
+      ;
     }
 
     if (secondaryController.getRightTriggerAxis() > Constants.Controller.triggerThreshold) {
@@ -231,7 +234,7 @@ public class Controller extends SubsystemBase {
     if (secondaryController.getRightBumperButtonPressed()) {
       // Source Intake
       new SourceCoralIntake().schedule();
-    } 
+    }
 
     if (secondaryController.getPOV() == 180) {
       // Stow elevator

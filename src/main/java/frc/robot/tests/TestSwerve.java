@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.tests;
+
 import frc.robot.subsystems.TestRunner.TestType;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import frc.robot.Constants;
@@ -11,7 +12,7 @@ import frc.robot.subsystems.SwerveDrive;
 /** Add your docs here. */
 public class TestSwerve extends Test {
     private final SwerveDrive swerve = SwerveDrive.getInstance();
-    
+
     private long lastSwitchTime = System.currentTimeMillis();
     private int stage = 0;
 
@@ -23,7 +24,6 @@ public class TestSwerve extends Test {
     public void Start() {
         super.Start();
     }
-
 
     public void Periodic() {
         // Toggles between straight driving, horizontal driving, and turning

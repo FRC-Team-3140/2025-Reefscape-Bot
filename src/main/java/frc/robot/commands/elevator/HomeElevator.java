@@ -4,45 +4,53 @@
 
 package frc.robot.commands.elevator;
 
-import frc.robot.libs.LoggedCommand;
-import frc.robot.RobotContainer;
+import frc.robot.Constants;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Elevator;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class SetHeight extends LoggedCommand {
-  private Elevator elev;
-  private double height;
+public class HomeElevator extends Command {
+  /** Creates a new HomeElevator. */
+  Elevator elev;
+  double up = 0;
+  double lastH = 0;
 
-  /** Creates a new SetHeight. */
-  public SetHeight(double height) {
-    this.height = height;
-    elev = RobotContainer.getInstance().elevator;
-
+  public HomeElevator() {
+    elev = Elevator.getInstance();
     addRequirements(elev);
-    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elev.setHeight(height);
-    super.initialize();
+    up = Constants.ElevatorHeights.homeUpDist;
+    lastH = elev.getHeight();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    if (up != 0) {
+      double delta = elev.getHeight() - lastH;
+      lastH += delta;
+      up = Math.max(up - delta, 0);
+      elev.setHeight(elev.getHeight() + 100, false);
+    } else {
+      elev.setHeight(elev.getHeight() - 100, true);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    super.end(interrupted);
+    if (!interrupted) {
+      elev.zero();
+    }
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !elev.isMoving();
+    return up == 0 && elev.isHome();
   }
 }

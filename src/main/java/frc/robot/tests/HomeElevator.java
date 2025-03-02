@@ -9,8 +9,8 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 
 /** Add your docs here. */
-public class TestSourceHandoff extends Test {
-    public TestSourceHandoff(NetworkTableEntry entry, TestType type) {
+public class HomeElevator extends Test {
+    public HomeElevator(NetworkTableEntry entry, TestType type) {
         super(entry, type);
     }
 
@@ -21,7 +21,7 @@ public class TestSourceHandoff extends Test {
 
     public void Periodic() {
         // TODO: Implement this method
-        new PrintCommand("Soruce Handoff").schedule();
+        new PrintCommand("GroundIntake").schedule();
     }
 
     @Override

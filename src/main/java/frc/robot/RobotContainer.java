@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.*;
 
@@ -17,16 +21,17 @@ import frc.robot.subsystems.*;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  private static RobotContainer container = null;
+
   // The robot's subsystems and commands are defined here...
   public SwerveDrive swerveDrive = SwerveDrive.getInstance();
   public Elevator elevator = Elevator.getInstance();
   public EndEffector endEffector = EndEffector.getInstance();
   // public GroundIntake groundIntake = GroundIntake.getInstance();
   public TestRunner testRunner = TestRunner.getInstance();
-  public DashboardCommandView dashboardCommandView = DashboardCommandView.getInstance();
   public Controller controller = Controller.getInstance();
 
-  private static RobotContainer container = null;
+  private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
   // Get the singleton instance or create it if it doesn't exist
   public static RobotContainer getInstance() {
@@ -40,9 +45,11 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   private RobotContainer() {
+    // Pathplanner Paths
+    autoChooser.addOption("Test", AutoBuilder.buildAuto("PathplannerTest"));
 
+    SmartDashboard.putData("Path planner", autoChooser);
   }
-
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -50,6 +57,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return null;
+    return autoChooser.getSelected();
   }
 }

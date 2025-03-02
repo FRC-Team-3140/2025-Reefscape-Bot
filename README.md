@@ -1,3 +1,7 @@
+# Coding Specifics:
+Commands should extend LoggedCommand instead of Command.
+Commands need to run `super.initialize();` in the initialize method, and `super.end(interrupted);` in the end method.
+
 # Can IDs
 | Motor Name       | CAN ID |
 |------------------|--------|

@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -25,7 +26,6 @@ import frc.robot.libs.AbsoluteEncoder;
 
 public class SwerveModule extends SubsystemBase {
     public String moduleID;
-    public int pwmID;
     public int driveMotorID;
     public int turnMotorID;
     public double baseAngle;
@@ -38,11 +38,11 @@ public class SwerveModule extends SubsystemBase {
 
     public double botMass = 24.4;
 
-    public double P = .01;
+    public double turnP = .01;
 
     public double driveSetpointTolerance = .5;
-    public double turnSetpointTolerance;
-    public double turnVelocityTolerance;
+    public double turnSetpointTolerance = 5;
+    public double turnVelocityTolerance = 1;
 
     private SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.084706 * .712, 2.4433 * .712,
             0.10133 * .712);
@@ -56,7 +56,8 @@ public class SwerveModule extends SubsystemBase {
     // Conversion Factor for the motor encoder output to wheel output
     // (Circumference / Gear Ratio) * Inches to meters conversion
 
-    public SwerveModule(String moduleID, int analogID, int driveMotorID, int turnMotorID, double baseAngle) {
+    public SwerveModule(String moduleID, int analogID, int driveMotorID, int turnMotorID, double baseAngle,
+            boolean driveInverted) {
         this.moduleID = moduleID;
         this.baseAngle = baseAngle;
         this.turnMotorID = turnMotorID;
@@ -64,7 +65,7 @@ public class SwerveModule extends SubsystemBase {
 
         SparkMaxConfig motorConfig = new SparkMaxConfig();
 
-        motorConfig.idleMode(IdleMode.kBrake).inverted(false).smartCurrentLimit(40);
+        motorConfig.idleMode(IdleMode.kBrake).inverted(driveInverted).smartCurrentLimit(40);
 
         driveMotor = new SparkFlex(driveMotorID, MotorType.kBrushless);
 
@@ -80,27 +81,29 @@ public class SwerveModule extends SubsystemBase {
 
         driveEncoder = driveMotor.getEncoder();
 
-        turnPID = new PIDController(P, 0, 0);
+        turnPID = new PIDController(turnP, 0, 0);
 
         // we don't use I or D since P works well enough
         turnPID.enableContinuousInput(0, 360);
         turnPID.setTolerance(turnSetpointTolerance, turnVelocityTolerance);
 
         // determined from a SYSID scan
-        drivePID = new ProfiledPIDController(.11, 0, .015, constraints);
+        drivePID = new ProfiledPIDController(0.005, 0, 0.0005, constraints);
         drivePID.setTolerance(driveSetpointTolerance);
     }
 
     // runs while the bot is running
     @Override
     public void periodic() {
+        setAngle(0);
+        turnPID.calculate(getTurnEncoder().getAbsolutePosition());
         NetworkTableInstance.getDefault().getTable("Angle").getEntry(moduleID)
                 .setDouble(turnEncoder.getAbsolutePosition());
     }
 
     SlewRateLimiter accelerationLimiter = new SlewRateLimiter(30.0, -Constants.Bot.maxAcceleration, 0);
 
-    public void setStates(SwerveModuleState state, boolean locked) {
+    public void setStates(SwerveModuleState state) {
         state.optimize(Rotation2d.fromDegrees(turnEncoder.getAbsolutePosition()));
         setAngle(state.angle.getDegrees());
         setDriveSpeed(accelerationLimiter.calculate(state.speedMetersPerSecond));
@@ -132,14 +135,17 @@ public class SwerveModule extends SubsystemBase {
     public SwerveModulePosition getSwerveModulePosition() {
         double angle = turnEncoder.getAbsolutePosition();
         double distance = driveEncoder.getPosition() * Constants.Bot.encoderRotationToMeters;
-        return new SwerveModulePosition(distance, new Rotation2d(3.14 * angle / 180));
+        return new SwerveModulePosition(distance, new Rotation2d(Units.degreesToRadians(angle)));
     }
 
-    // public RelativeEncoder getDriveEncoder() {
-    // return this.driveEncoder;
-    // }
-    // ^ Dangerous since values need to be manually multiplied by
-    // Constants.Bot.encoderRotationToMeters
+    public double getVelocity() {
+        double wheelCircumference = Constants.Bot.wheelDiameter * Math.PI;
+        double gearRatio = Constants.Bot.gearRatio;
+        double velocityMetersPerSecond = (driveMotor.getEncoder().getVelocity() * wheelCircumference)
+                / (60 * gearRatio);
+
+        return velocityMetersPerSecond;
+    }
 
     public AbsoluteEncoder getTurnEncoder() {
         return this.turnEncoder;

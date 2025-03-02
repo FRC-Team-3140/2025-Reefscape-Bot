@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import frc.robot.Constants;
 import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.endeffector.EndEffectorIntakeCoral;
@@ -127,9 +126,11 @@ public class GroundIntake extends SubsystemBase {
             0)));
 
     if (intakeActive) {
-      if (leftMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold || rightMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold) {
+      if (leftMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold
+          || rightMN.getOutputCurrent() >= Constants.Limits.GICoralDetectionCurrentThreshold) {
         intakeActive = false;
-        Boolean[] elevatorStats = elevator.isAtHeight(Constants.ElevatorHeights.minimum, Constants.Limits.ElevPosThreshold);
+        Boolean[] elevatorStats = elevator.isAtHeight(Constants.ElevatorHeights.minimum,
+            Constants.Limits.ElevPosThreshold);
         new SequentialCommandGroup(
             (elevatorStats[0] && elevatorStats[1] ? null : new SetHeight(Constants.ElevatorHeights.minimum)),
             new InstantCommand(() -> {

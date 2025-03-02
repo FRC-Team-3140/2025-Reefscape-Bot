@@ -1,6 +1,7 @@
 package frc.robot.commands.swerveDrive;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
+import frc.robot.libs.LoggedCommand;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.SwerveDrive;
 //Works Well
@@ -9,12 +10,14 @@ import frc.robot.subsystems.SwerveDrive;
  * This class represents a basic swerve control command.
  * It is intended to be the default command for the drive.
  */
-public class SwerveDriveManualControl extends Command {
+public class SwerveDriveManualControl extends LoggedCommand {
     private final Controller controller = Controller.getInstance();
     private final SwerveDrive swerveDrive; // The swerve drive subsystem
     private final double maxSpeed; // The maximum speed for the swerve drive
     private final double maxChassisTurnSpeed; // The maximum turn speed for the chassis
-    public static boolean fieldRelative = true;
+    private final double movementThreshold = 0.75;
+    private boolean fieldRelative = true;
+    private boolean locked = false;
 
     /**
      * Creates a new BasicSwerveControlL2 command.
@@ -27,8 +30,8 @@ public class SwerveDriveManualControl extends Command {
         this.swerveDrive = swerveDrive;
         this.maxSpeed = maxSpeed;
         this.maxChassisTurnSpeed = maxChassisTurnSpeed;
-        addRequirements(swerveDrive); // This command requires the swerve drive subsystem
 
+        addRequirements(swerveDrive); // This command requires the swerve drive subsystem
     }
 
     /**
@@ -37,16 +40,32 @@ public class SwerveDriveManualControl extends Command {
      */
     @Override
     public void execute() {
-        // Calculate the x speed based on the joystick input
-        final var xSpeed = -controller.primaryController.getLeftY() * maxSpeed;
+        if ((controller.primaryController.getLeftStickButtonPressed()
+                && controller.primaryController.getRightStickButtonPressed())
+                || (locked && ((Math.abs(controller.primaryController.getLeftX()) > movementThreshold)
+                        || (Math.abs(controller.primaryController.getLeftY()) > movementThreshold)
+                        || (Math.abs(controller.primaryController.getRightX()) > movementThreshold)))) {
+            locked = !locked;
+        }
 
-        // Calculate the y speed based on the joystick input
-        final var ySpeed = -controller.primaryController.getLeftX() * maxSpeed;
+        if (controller.primaryController.getBackButtonPressed() && controller.primaryController.getBackButtonPressed()) {
+            fieldRelative = !fieldRelative;
+        }
 
-        // Calculate the rotation speed based on the joystick input
-        final var rot = -controller.primaryController.getRightX() * maxChassisTurnSpeed;
+        if (!locked) {
+            // Calculate the x speed based on the joystick input
+            final double xSpeed = -controller.getLeftY(Controller.controllers.PRIMARY) * maxSpeed;
 
-        swerveDrive.drive(xSpeed, ySpeed, rot, fieldRelative); // Drive the swerve drive
+            // Calculate the y speed based on the joystick input
+            final double ySpeed = -controller.getLeftX(Controller.controllers.PRIMARY) * maxSpeed;
+
+            // Calculate the rotation speed based on the joystick input
+            final double rot = -controller.getRightX(Controller.controllers.PRIMARY) * maxChassisTurnSpeed;
+
+            swerveDrive.drive(xSpeed, ySpeed, rot, fieldRelative); // Drive the swerve drive
+        } else {
+            swerveDrive.setSwerveModuleStates(Constants.Bot.defaultSwerveStates, true);
+        }
     }
 
     /**
