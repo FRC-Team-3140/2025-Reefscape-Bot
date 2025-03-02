@@ -70,18 +70,19 @@ public final class Constants {
     public static final int BR = 3;
 
     // Elevator
-    public static final int ElevEncoder = 4;
 
+    public static final int ElevEncoderRight = 4;
+    public static final int ElevEncoderLeft = 5;
+    
     // Algae Intake
-    public static final int AIEncoder = 5;
+    public static final int AIEncoder = 6;
 
     // Ground Intake
-    public static final int GIEncoder = 6;
+    // public static final int GIEncoder = 6;
 
+    // End Effector
     public static final int EECoralSensor = 7;
 
-    // Reef Alignment
-    public static final int[] distanceSensorArray = { 8, 9, 10, 11 };
   }
 
   public static class Bot {
@@ -104,13 +105,14 @@ public final class Constants {
 
     // Swerve Module Base Angles
     public static final double FLBaseAngle = 0.701239;
-
     public static final double FRBaseAngle = 0.707867;
-
     public static final double BLBaseAngle = 0.219279;
-
     public static final double BRBaseAngle = 0.447409;
 
+    public static final double leftElevatorBaseAngle = 0.0;
+    public static final double rightElevatorBaseAngle = 0.0;
+
+    public static final double elevatorEncoderDegreesToMeters = 0.001;
   }
 
   public static class Limits {
@@ -142,9 +144,8 @@ public final class Constants {
   }
 
   public static class Constraints {
-    // Elevator
-    public static final TrapezoidProfile.Constraints ElevConstraints = new TrapezoidProfile.Constraints(1, 1);
-
+    public static final double elevatorMaxVelocity = 1;
+    public static final double elevatorMaxAcceleration = 1;
     // Ground Intake
     public static final TrapezoidProfile.Constraints GIConstraints = new TrapezoidProfile.Constraints(1, 1);
   }

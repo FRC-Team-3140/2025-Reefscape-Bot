@@ -7,7 +7,7 @@ public class AbsoluteEncoder extends AnalogEncoder {
     
     public AbsoluteEncoder(int analogID, double baseAngle) {
         // Initializes an encoder on a DIO port and uses 360 as full range and 180 as half of the range
-        super(analogID, 360.0, 0.0);
+        super(analogID, 10000, 0.0);
 
         this.baseAngle = baseAngle;
     }

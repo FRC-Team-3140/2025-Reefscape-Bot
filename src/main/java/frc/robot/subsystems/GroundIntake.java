@@ -49,6 +49,8 @@ public class GroundIntake extends SubsystemBase {
   private boolean intakeActive = false;
   private boolean coralHeld = false;
 
+ 
+
   private SparkMaxConfig leftMNCoast = new SparkMaxConfig();
   private SparkMaxConfig leftMNBrake = new SparkMaxConfig();
 
@@ -92,7 +94,8 @@ public class GroundIntake extends SubsystemBase {
 
     liftN.configure(liftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    liftPos = new DutyCycleEncoder(Constants.SensorIDs.GIEncoder);
+    liftPos = null; // new DutyCycleEncoder(Constants.SensorIDs.GIEncoder);
+  
 
     pEntry = inst.getTable("Ground Intake").getSubTable("PID Values").getEntry("P: ");
     iEntry = inst.getTable("Ground Intake").getSubTable("PID Values").getEntry("I: ");
