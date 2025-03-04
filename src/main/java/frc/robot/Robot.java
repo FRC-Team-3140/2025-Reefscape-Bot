@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.swerveDrive.SwerveDriveManualControl;
-import frc.robot.commands.swerveDrive.resetSwerveStates;
+import frc.robot.commands.swerveDrive.setSwerveStates;
 import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.TestRunner;
 
@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_testRunner.stopAll();
 
-    m_robotContainer.swerveDrive.setDefaultCommand(new resetSwerveStates(m_robotContainer.swerveDrive));
+    m_robotContainer.swerveDrive.setDefaultCommand(new setSwerveStates(m_robotContainer.swerveDrive));
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
@@ -119,7 +119,7 @@ public class Robot extends TimedRobot {
   public void testInit() {
     m_testRunner.stopAll();
 
-    m_robotContainer.swerveDrive.setDefaultCommand(new resetSwerveStates(m_robotContainer.swerveDrive));
+    m_robotContainer.swerveDrive.setDefaultCommand(new setSwerveStates(m_robotContainer.swerveDrive));
 
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
