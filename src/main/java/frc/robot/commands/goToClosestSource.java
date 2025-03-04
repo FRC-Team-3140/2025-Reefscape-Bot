@@ -13,17 +13,18 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.libs.FeildAprilTags;
 import frc.robot.subsystems.odometry.Odometry;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class goToClosestSource extends Command {
   private Odometry odometry = null;
 
-  private Pose2d LeftSource = new Pose2d(1, 14, new Rotation2d());
-  private Pose2d RightSource = new Pose2d(1, 1, new Rotation2d());
+  private Pose2d LeftSource;
+  private Pose2d RightSource;
 
   private enum coralStations {
     LEFT,
@@ -47,6 +48,18 @@ public class goToClosestSource extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    // Figure out alliance and which stations to calculate from
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      LeftSource = FeildAprilTags.getInstance()
+          .getTagPose(DriverStation.getAlliance().get() == DriverStation.Alliance.Red ? 2 : 13);
+      RightSource = FeildAprilTags.getInstance()
+          .getTagPose(DriverStation.getAlliance().get() == DriverStation.Alliance.Red ? 1 : 12);
+    } else {
+      System.err.println("Driverstation alliance wasn't present when command was called.");
+      end(true);
+    }
+
     Pose2d curPose = odometry.getPose();
 
     double leftDist = Math.sqrt(sqr(LeftSource.getY() - curPose.getY()) + sqr(LeftSource.getX() - curPose.getX()));
@@ -87,7 +100,7 @@ public class goToClosestSource extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // Should end immedately since another command is scheduled in init. 
+    // Should end immedately since another command is scheduled in init.
     return true;
   }
 }

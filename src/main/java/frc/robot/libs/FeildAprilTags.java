@@ -21,6 +21,8 @@ public class FeildAprilTags {
     private static FeildAprilTags instance = null;
 
     private final List<AprilTag> aprilTags;
+    private List<AprilTag> reefTags;
+    private final int[] reefIDs = { 6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22 };
     private final AprilTagFieldLayout field;
 
     private final Hashtable<Integer, AprilTag> aprilTagsHash = new Hashtable<>();
@@ -38,6 +40,10 @@ public class FeildAprilTags {
 
         for (AprilTag tag : aprilTags) {
             aprilTagsHash.put(tag.ID, tag);
+        }
+
+        for (int reefID : reefIDs) {
+            reefTags.add(aprilTagsHash.get(reefID));
         }
     }
 
@@ -65,6 +71,23 @@ public class FeildAprilTags {
 
         // Iterate through each AprilTag to find the closest one
         for (AprilTag tag : aprilTags) {
+            double distance = Math.sqrt(Math.pow(tag.pose.getX() - odometryPose.getX(), 2)
+                    + Math.pow(tag.pose.getY() - odometryPose.getY(), 2));
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestTag = tag;
+            }
+        }
+
+        return closestTag;
+    }
+
+    public AprilTag getClosestReefAprilTag(Pose2d odometryPose) {
+        AprilTag closestTag = null;
+        double minDistance = Double.MAX_VALUE;
+
+        // Iterate through each AprilTag to find the closest one
+        for (AprilTag tag : reefTags) {
             double distance = Math.sqrt(Math.pow(tag.pose.getX() - odometryPose.getX(), 2)
                     + Math.pow(tag.pose.getY() - odometryPose.getY(), 2));
             if (distance < minDistance) {

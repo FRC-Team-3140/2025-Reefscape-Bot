@@ -93,7 +93,7 @@ public class ScoreCoral extends Command {
     }
 
     // Figure out where to position robot on reef
-    AprilTag closestTag = FeildAprilTags.getInstance().getClosestAprilTag(odometry.getPose());
+    AprilTag closestTag = FeildAprilTags.getInstance().getClosestReefAprilTag(odometry.getPose());
     Pose3d pose = closestTag.pose;
 
     System.out.println("Cloest Tag ID: " + closestTag.ID);
