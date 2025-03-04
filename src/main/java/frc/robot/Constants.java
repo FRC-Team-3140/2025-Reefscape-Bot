@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -74,7 +75,7 @@ public final class Constants {
 
     public static final int ElevEncoderRight = 4;
     public static final int ElevEncoderLeft = 5;
-    
+
     // Algae Intake
     public static final int AIEncoder = 6;
 
@@ -104,7 +105,6 @@ public final class Constants {
     public static final double maxChassisTurnSpeed = maxChassisSpeed / botRadius;
     public static final double encoderRotationToMeters = 2 * Math.PI * ((wheelDiameter / 2) / gearRatio);
 
-   
     public static final double leftElevatorBaseAngle = 0.0;
     public static final double rightElevatorBaseAngle = 0.0;
 
@@ -168,8 +168,15 @@ public final class Constants {
   public static class Constraints {
     public static final double elevatorMaxVelocity = 1;
     public static final double elevatorMaxAcceleration = 3;
+
     // Ground Intake
     public static final TrapezoidProfile.Constraints GIConstraints = new TrapezoidProfile.Constraints(1, 1);
+
+    public static final PathConstraints pathplannerConstraints = new PathConstraints(
+        Constants.Bot.maxChassisSpeed,
+        4.0,
+        Units.degreesToRadians(540),
+        Units.degreesToRadians(720));
   }
 
   public static class Voltages {
@@ -180,7 +187,7 @@ public final class Constants {
 
   public static class CameraConstants {
     public static final double maxTimeBeteweenFrames = 0.1;
-    public static final double aprilOffsetToCenter = Units.inchesToMeters(6); 
+    public static final double aprilOffsetToCenter = Units.inchesToMeters(6);
   }
 
   public static class PathplannerConstants {
@@ -208,7 +215,6 @@ public final class Constants {
   }
 
   public static class ElevatorHeights {
-
     public static final double minimum = 0;
     public static final double maxiumum = 100;
 

@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -36,12 +35,6 @@ public class ScoreCoral extends Command {
   }
 
   private Position coralScorePos = null;
-
-  private PathConstraints constraints = new PathConstraints(
-      Constants.Bot.maxChassisSpeed,
-      4.0,
-      Units.degreesToRadians(540),
-      Units.degreesToRadians(720));
 
   private Command pathfindingCommand = null;
 
@@ -116,7 +109,7 @@ public class ScoreCoral extends Command {
             pose.getX() + distance * Math.cos(angle),
             pose.getY() + distance * Math.sin(angle),
             new Rotation2d(Units.degreesToRadians(pose.getRotation().getAngle()) + Math.PI / 2)),
-        constraints);
+        Constants.Constraints.pathplannerConstraints);
 
     // Schedule the pathfinding command to run along with this command that will
     // handle the elevator
@@ -148,6 +141,7 @@ public class ScoreCoral extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    // TODO: Must implement finish logic!
     return false;
   }
 }
