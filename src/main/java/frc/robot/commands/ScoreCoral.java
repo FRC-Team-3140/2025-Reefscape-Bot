@@ -15,13 +15,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.libs.FeildAprilTags;
-import frc.robot.sensors.Camera;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.odometry.Odometry;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ScoreCoral extends Command {
   private Elevator elevator = null;
+  private Odometry odometry = null;
+
+  private Pose2d finalPose = null;
+  private double minDistForElevator = 1;
 
   public enum Position {
     L_1,
@@ -41,13 +44,14 @@ public class ScoreCoral extends Command {
   private Double level = null;
 
   /** Creates a new ScoreCoral. */
-  public ScoreCoral(Elevator elevator, Camera camera, Odometry odometry, Position pos) {
+  public ScoreCoral(Elevator elevator, Odometry odometry, Position pos) {
     this.elevator = elevator;
+    this.odometry = odometry;
 
     coralScorePos = pos;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(elevator, camera, odometry);
+    addRequirements(elevator, odometry);
 
     String[] posParts = coralScorePos.name().split("_");
     String side = posParts[0];
@@ -103,12 +107,14 @@ public class ScoreCoral extends Command {
     double angle = pose.getRotation().getAngle() + posint * (Math.PI / 4);
     double distance = (Constants.Bot.botLength / 2) / Math.tan(angle);
 
+    finalPose = new Pose2d(
+        pose.getX() + distance * Math.cos(angle),
+        pose.getY() + distance * Math.sin(angle),
+        new Rotation2d(Units.degreesToRadians(pose.getRotation().getAngle()) + Math.PI / 2));
+
     // Put the edge of the bot theoretically touching the apriltag
     pathfindingCommand = AutoBuilder.pathfindToPose(
-        new Pose2d(
-            pose.getX() + distance * Math.cos(angle),
-            pose.getY() + distance * Math.sin(angle),
-            new Rotation2d(Units.degreesToRadians(pose.getRotation().getAngle()) + Math.PI / 2)),
+        finalPose,
         Constants.Constraints.pathplannerConstraints);
 
     // Schedule the pathfinding command to run along with this command that will
@@ -128,7 +134,6 @@ public class ScoreCoral extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevator.setHeight(level);
   }
 
   // Called once the command ends or is interrupted.
@@ -136,12 +141,24 @@ public class ScoreCoral extends Command {
   public void end(boolean interrupted) {
     if (interrupted)
       System.err.println("Interrupted or Issues encountered while running ScoreCoral command.");
+
+    elevator.setHeight(level);
+  }
+
+  private double sqr(double num) {
+    return (num * num);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // TODO: Must implement finish logic!
-    return false;
+    Pose2d curPose = odometry.getPose();
+    double distance = Math.sqrt(sqr(finalPose.getY() - curPose.getY()) + sqr(finalPose.getX() - curPose.getX()));
+
+    if (distance <= minDistForElevator) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
