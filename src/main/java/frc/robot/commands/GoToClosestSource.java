@@ -20,7 +20,7 @@ import frc.robot.libs.FeildAprilTags;
 import frc.robot.subsystems.odometry.Odometry;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class goToClosestSource extends Command {
+public class GoToClosestSource extends Command {
   private Odometry odometry = null;
 
   private Pose2d LeftSource;
@@ -34,7 +34,7 @@ public class goToClosestSource extends Command {
   private coralStations closestStation = null;
 
   /** Creates a new goToClosestSource. */
-  public goToClosestSource(Odometry odometry) {
+  public GoToClosestSource(Odometry odometry) {
     this.odometry = odometry;
 
     // Use addRequirements() here to declare subsystem dependencies.
@@ -73,7 +73,7 @@ public class goToClosestSource extends Command {
           .pathfindThenFollowPath(
               (closestStation == coralStations.LEFT ? PathPlannerPath.fromPathFile("Left Source Approach")
                   : PathPlannerPath.fromPathFile("Right Source Approach")),
-              Constants.Constraints.pathplannerConstraints)
+              Constants.PathplannerConstants.pathplannerConstraints)
           .schedule();
     } catch (FileVersionException e) {
       System.err.print("Error in goToClosestSourse.java: \n" + e);

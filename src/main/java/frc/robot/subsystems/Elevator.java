@@ -49,6 +49,9 @@ public class Elevator extends SubsystemBase {
 
   private double speed;
 
+  private double lEnc_offset = 0;
+  private double rEnc_offset = 0;
+
   public static Elevator getInstance() {
     if (instance == null) {
       instance = new Elevator();
@@ -101,8 +104,16 @@ public class Elevator extends SubsystemBase {
     return speed;
   }
 
+  private double getLeftEncoderVal() {
+    return LeftEncoder.get() + lEnc_offset;
+  }
+
+  private double getRightEncoderVal() {
+    return RightEncoder.get() + rEnc_offset;
+  }
+
   private double getEncoderAverage() {
-    return (LeftEncoder.get() + RightEncoder.get()) / 2;
+    return (getLeftEncoderVal() + getRightEncoderVal()) / 2;
   }
 
   @Override
@@ -117,11 +128,11 @@ public class Elevator extends SubsystemBase {
 
     ElevatorTable.getEntry("Current Height").setDouble(getHeight());
     ElevatorTable.getEntry("Target Height").setDouble(target);
-    speed = pidLeft.calculate(LeftEncoder.get(), new TrapezoidProfile.State(target, 0));
+    speed = pidLeft.calculate(getLeftEncoderVal(), new TrapezoidProfile.State(target, 0));
     if (Controller.getInstance().getControlMode() == Controller.ControlMode.MANUAL)
       return;
     LMot.set(speed);
-    RMot.set(pidRight.calculate(RightEncoder.get(), new TrapezoidProfile.State(target, 0)));
+    RMot.set(pidRight.calculate(getRightEncoderVal(), new TrapezoidProfile.State(target, 0)));
   }
 
   public void setHeight(double height) {
@@ -156,5 +167,10 @@ public class Elevator extends SubsystemBase {
   public Boolean[] isAtHeight(double height, double tolerance) {
     // 0: is within tolerance, 1: is staying in tolerance
     return new Boolean[] { Math.abs(getHeight() - height) < tolerance, Math.abs(target - height) < tolerance };
+  }
+
+  public void setZero() {
+    lEnc_offset = LeftEncoder.get();
+    rEnc_offset = RightEncoder.get();
   }
 }

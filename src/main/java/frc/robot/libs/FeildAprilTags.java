@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /** Add your docs here. */
 public class FeildAprilTags {
@@ -26,6 +27,23 @@ public class FeildAprilTags {
     private final AprilTagFieldLayout field;
 
     private final Hashtable<Integer, AprilTag> aprilTagsHash = new Hashtable<>();
+
+    public final Hashtable<Integer, AprilTag> blueReefTagsHash = new Hashtable<>();
+    public final Hashtable<Integer, AprilTag> redReefTagsHash = new Hashtable<>();
+
+    /**
+     * @param aprilTag
+     * @param reefSide
+     */
+    public class ReefAprilTag {
+        public final AprilTag aprilTag;
+        public final int reefSide;
+
+        public ReefAprilTag(AprilTag aprilTag, int reefSide) {
+            this.aprilTag = aprilTag;
+            this.reefSide = reefSide;
+        }
+    }
 
     public static FeildAprilTags getInstance() {
         if (instance == null) {
@@ -45,6 +63,21 @@ public class FeildAprilTags {
         for (int reefID : reefIDs) {
             reefTags.add(aprilTagsHash.get(reefID));
         }
+
+        // Side 0 is the side facing the driverstation and continues clockwise
+        blueReefTagsHash.put(0, aprilTagsHash.get(18));
+        blueReefTagsHash.put(1, aprilTagsHash.get(19));
+        blueReefTagsHash.put(2, aprilTagsHash.get(20));
+        blueReefTagsHash.put(3, aprilTagsHash.get(21));
+        blueReefTagsHash.put(4, aprilTagsHash.get(22));
+        blueReefTagsHash.put(5, aprilTagsHash.get(17));
+
+        redReefTagsHash.put(0, aprilTagsHash.get(7));
+        redReefTagsHash.put(1, aprilTagsHash.get(6));
+        redReefTagsHash.put(2, aprilTagsHash.get(11));
+        redReefTagsHash.put(3, aprilTagsHash.get(10));
+        redReefTagsHash.put(4, aprilTagsHash.get(9));
+        redReefTagsHash.put(5, aprilTagsHash.get(8));
     }
 
     public List<AprilTag> getTags() {
@@ -82,12 +115,21 @@ public class FeildAprilTags {
         return closestTag;
     }
 
-    public AprilTag getClosestReefAprilTag(Pose2d odometryPose) {
+    /**
+     * Returns an Apriltag and a Alliance relative reef side 0-5
+     * 
+     * @param odometryPose
+     * @return
+     */
+    public ReefAprilTag getClosestReefAprilTag(Pose2d odometryPose, DriverStation.Alliance alliance) {
         AprilTag closestTag = null;
         double minDistance = Double.MAX_VALUE;
 
+        Hashtable<Integer, AprilTag> closestHash = (alliance == DriverStation.Alliance.Blue ? blueReefTagsHash
+                : redReefTagsHash);
+
         // Iterate through each AprilTag to find the closest one
-        for (AprilTag tag : reefTags) {
+        for (AprilTag tag : closestHash.values()) {
             double distance = Math.sqrt(Math.pow(tag.pose.getX() - odometryPose.getX(), 2)
                     + Math.pow(tag.pose.getY() - odometryPose.getY(), 2));
             if (distance < minDistance) {
@@ -96,6 +138,15 @@ public class FeildAprilTags {
             }
         }
 
-        return closestTag;
+        int reefSide = -1;
+        
+        for (int key : closestHash.keySet()) {
+            if (closestTag.equals(closestHash.get(key))) {
+                reefSide = key;
+                break;
+            }
+        }
+
+        return new ReefAprilTag(closestTag, reefSide);
     }
 }

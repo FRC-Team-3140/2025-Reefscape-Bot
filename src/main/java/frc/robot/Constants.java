@@ -171,12 +171,6 @@ public final class Constants {
 
     // Ground Intake
     public static final TrapezoidProfile.Constraints GIConstraints = new TrapezoidProfile.Constraints(1, 1);
-
-    public static final PathConstraints pathplannerConstraints = new PathConstraints(
-        Constants.Bot.maxChassisSpeed,
-        4.0,
-        Units.degreesToRadians(540),
-        Units.degreesToRadians(720));
   }
 
   public static class Voltages {
@@ -202,6 +196,12 @@ public final class Constants {
     public static final double RotP = 5.0;
     public static final double RotI = 0.0;
     public static final double RotD = 0.0;
+
+    public static final PathConstraints pathplannerConstraints = new PathConstraints(
+        Constants.Bot.maxChassisSpeed,
+        4.0,
+        Units.degreesToRadians(540),
+        Units.degreesToRadians(720));
   }
 
   public static class AlgaeIntakeAngles {

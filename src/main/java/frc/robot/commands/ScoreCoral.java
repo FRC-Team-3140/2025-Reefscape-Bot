@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.util.Hashtable;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.apriltag.AprilTag;
@@ -11,6 +13,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorHeights;
@@ -43,8 +46,15 @@ public class ScoreCoral extends Command {
 
   private Double level = null;
 
-  /** Creates a new ScoreCoral. */
-  public ScoreCoral(Elevator elevator, Odometry odometry, Position pos) {
+  /**
+   * Creates a new ScoreCoral.
+   * 
+   * @param Elevator
+   * @param Odometry
+   * @param Position
+   * @param reefSide
+   */
+  public ScoreCoral(Elevator elevator, Odometry odometry, Position pos, int reefSide) {
     this.elevator = elevator;
     this.odometry = odometry;
 
@@ -97,10 +107,13 @@ public class ScoreCoral extends Command {
     }
 
     // Figure out where to position robot on reef
-    AprilTag closestTag = FeildAprilTags.getInstance().getClosestReefAprilTag(odometry.getPose());
-    Pose3d pose = closestTag.pose;
+    Hashtable<Integer, AprilTag> reef = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
+        ? FeildAprilTags.getInstance().blueReefTagsHash
+        : FeildAprilTags.getInstance().redReefTagsHash;
+    AprilTag reefTag = reef.get(reefSide);
+    Pose3d pose = reefTag.pose;
 
-    System.out.println("Cloest Tag ID: " + closestTag.ID);
+    System.out.println("Cloest Tag ID: " + reefTag.ID);
     System.out.println("Closets Tag Pose: \n" + "x:" + pose.getX() + "\n" + "y:"
         + pose.getY() + "\n" + "yaw:" + pose.getRotation().getAngle());
 
@@ -115,7 +128,7 @@ public class ScoreCoral extends Command {
     // Put the edge of the bot theoretically touching the apriltag
     pathfindingCommand = AutoBuilder.pathfindToPose(
         finalPose,
-        Constants.Constraints.pathplannerConstraints);
+        Constants.PathplannerConstants.pathplannerConstraints);
 
     // Schedule the pathfinding command to run along with this command that will
     // handle the elevator
