@@ -27,6 +27,8 @@ public class NetworkTables {
 
   private static NetworkTable devBoard = dash.getSubTable(Constants.NetworktablePaths.Test);
     public static NetworkTableEntry numOLoggedCmds_i = devBoard.getEntry("numOLoggedCmds_i");
+    
+    public static NetworkTableEntry cameraPose = devBoard.getEntry("cameraPose_ab");
 
     public static NetworkTableEntry measuredSwerveStates_da = devBoard.getEntry("measuredStates_da");
     public static NetworkTableEntry desiredSwerveStates_da = devBoard.getEntry("desiredStates_da");
@@ -49,8 +51,8 @@ public class NetworkTables {
     public static NetworkTableEntry globalCameraTimestamp = sensors.getEntry("timestamp");
 
     private static NetworkTable aprilTags = sensors.getSubTable("apriltags");
-      private static NetworkTable camera0 = aprilTags.getSubTable("camera0");
 
+    private static NetworkTable camera0 = aprilTags.getSubTable("camera0");
       public static NetworkTableEntry camera0_Timestamp = camera0.getEntry("timestamp");
 
       // X, Y, Z

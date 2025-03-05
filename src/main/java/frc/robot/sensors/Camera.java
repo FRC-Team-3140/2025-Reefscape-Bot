@@ -6,7 +6,6 @@ package frc.robot.sensors;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -22,6 +21,7 @@ public class Camera extends SubsystemBase {
 
   private double globalTime = -1;
   private double lastTime = -1;
+  private double frameTime = -1;
 
   private double lastAttemptReconnectIterration = 0;
 
@@ -51,6 +51,18 @@ public class Camera extends SubsystemBase {
 
   /**
    * Represents a camera used for vision processing.
+   * 
+   * @return instance of Camera class
+   */
+  public static Camera getInstance() {
+    if (instance == null) {
+      instance = new Camera();
+    }
+    return instance;
+  }
+
+  /**
+   * Represents a camera used for vision processing.
    * This class handles the connection and configuration of the camera.
    *
    * @param PhotonvisionConnectionAttempts The number of connection attempts to
@@ -69,8 +81,10 @@ public class Camera extends SubsystemBase {
     if (((Timer.getFPGATimestamp() - lastAttemptReconnectIterration)) > delayTime) {
       lastTime = globalTime;
       globalTime = NetworkTables.globalCameraTimestamp.getDouble(-1);
+      frameTime = NetworkTables.camera0_Timestamp.getDouble(-1);
 
-      if (globalTime == -1 || globalTime - lastTime > Constants.CameraConstants.maxTimeBeteweenFrames) {
+      if (globalTime == -1 || globalTime - frameTime > Constants.CameraConstants.maxTimeBeteweenFrames
+          || globalTime == lastTime) {
         connected = false;
       } else {
         connected = true;
@@ -78,18 +92,17 @@ public class Camera extends SubsystemBase {
 
       lastAttemptReconnectIterration = Timer.getFPGATimestamp();
     }
-  }
 
-  /**
-   * Represents a camera used for vision processing.
-   * 
-   * @return instance of Camera class
-   */
-  public static Camera getInstance() {
-    if (instance == null) {
-      instance = new Camera();
-    }
-    return instance;
+    // System.out.println(connected);
+
+    Pose2d camPose = getPoseFromCamera();
+    if (camPose != null)
+      NetworkTables.cameraPose
+          .setDoubleArray(new double[] {
+              camPose.getX(),
+              camPose.getY(),
+              camPose.getRotation().getDegrees()
+          });
   }
 
   public boolean isConnected() {
@@ -147,11 +160,14 @@ public class Camera extends SubsystemBase {
       double[] pose = NetworkTables.camera0_Position.getDoubleArray(new double[0]);
       double[] dir = NetworkTables.camera0_Direction.getDoubleArray(new double[0]);
 
-      Vector2 oneMUnitVec = new Vector2(dir[0], dir[1]).sub(new Vector2(pose[0], pose[1]));
-      Vector2 centerOfBot = oneMUnitVec.neg().mult(Constants.CameraConstants.aprilOffsetToCenter);
+      Vector2 poseVec = new Vector2(pose[0], pose[1]);
+      Vector2 dirVec = new Vector2(dir[0], dir[1]);
+
+      Vector2 oneMUnitVec = dirVec.sub(poseVec);
+      Vector2 centerOfBot = oneMUnitVec.neg().mult(Constants.CameraConstants.aprilOffsetToCenter).add(poseVec);
 
       return new Pose2d(centerOfBot.X, centerOfBot.Y,
-          new Rotation2d(Units.degreesToRadians(Math.atan2(oneMUnitVec.Y, oneMUnitVec.X))));
+          new Rotation2d(Math.atan2(oneMUnitVec.Y, oneMUnitVec.X)));
     } else {
       return null;
     }

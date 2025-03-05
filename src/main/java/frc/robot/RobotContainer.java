@@ -9,6 +9,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.sensors.Camera;
 import frc.robot.subsystems.*;
 
 /**
@@ -30,6 +31,8 @@ public class RobotContainer {
   // public GroundIntake groundIntake = GroundIntake.getInstance();
   public TestRunner testRunner = TestRunner.getInstance();
   public Controller controller = Controller.getInstance();
+
+  public Camera camera = Camera.getInstance();
 
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
