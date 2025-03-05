@@ -11,16 +11,20 @@ import frc.robot.subsystems.odometry.Odometry;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class Cycle extends SequentialCommandGroup {
+public class CycleHorizontal extends SequentialCommandGroup {
   /** Creates a new Cycle. */
-  public Cycle(int level, Elevator elevator, Odometry odometry) {
+  public CycleHorizontal(int level, Elevator elevator, Odometry odometry) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    for (int i = 0; i < 5; i++) {
+
+    // Loop through reef sides to build a complete auto (Won't fully complete bc of
+    // time limit)
+    for (int i = 0; i <= 5; i++) {
       super.addCommands(
           new ScoreCoral(elevator, odometry, ScoreCoral.Position.valueOf("R_" + level), i),
           new GoToClosestSource(odometry),
-          new ScoreCoral(elevator, odometry, ScoreCoral.Position.valueOf("L_" + level), i));
+          new ScoreCoral(elevator, odometry, ScoreCoral.Position.valueOf("L_" + level), i),
+          new GoToClosestSource(odometry));
     }
   }
 }

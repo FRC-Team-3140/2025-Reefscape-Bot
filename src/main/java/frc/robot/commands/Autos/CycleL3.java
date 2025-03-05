@@ -5,7 +5,7 @@
 package frc.robot.commands.Autos;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.Cycle;
+import frc.robot.commands.CycleHorizontal;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.odometry.Odometry;
 
@@ -26,7 +26,7 @@ public class CycleL3 extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    new Cycle(3, elev, odometry).schedule();
+    new CycleHorizontal(3, elev, odometry).schedule();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
