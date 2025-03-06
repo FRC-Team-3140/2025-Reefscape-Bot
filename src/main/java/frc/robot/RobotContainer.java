@@ -7,7 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.CycleHorizontal;
+import frc.robot.commands.Autos.CycleHorizontal;
 import frc.robot.commands.Autos.CycleVertical;
 import frc.robot.sensors.Camera;
 import frc.robot.subsystems.*;
@@ -34,6 +34,7 @@ public class RobotContainer {
   public Controller controller = Controller.getInstance();
   public Odometry odometry = Odometry.getInstance();
   public Camera camera = Camera.getInstance();
+  public SignalTower leds = SignalTower.getInstance();
 
   private SendableChooser<String> reefSide = new SendableChooser<>();
   private SendableChooser<String> cycleDirection = new SendableChooser<>();

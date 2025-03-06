@@ -128,7 +128,6 @@ public final class Constants {
         new SwerveModuleState()
     };
 
-    // nah
     public static final double[] lockedAngles = {
         45,
         315,
@@ -261,5 +260,11 @@ public final class Constants {
       public static final double algaeIntakeSpeed = 0.25;
       public static final double algaeProcessorSpeed = 0.25;
     }
+  }
+
+  public static class LED {
+    public static final int Port = 0;
+    public static final int LEDCount = 0;
+    public static final int RainbowSpan = 5;
   }
 }
