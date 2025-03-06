@@ -18,7 +18,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.libs.AbsoluteEncoder;
+import frc.robot.libs.OffsetDutyCycleEncoder;
 
 public class Elevator extends SubsystemBase {
   private static Elevator instance = null;
@@ -26,8 +26,8 @@ public class Elevator extends SubsystemBase {
   public final SparkMax LMot;
   public final SparkMax RMot;
 
-  private final AbsoluteEncoder LeftEncoder;
-  private final AbsoluteEncoder RightEncoder;
+  private final OffsetDutyCycleEncoder LeftEncoder;
+  private final OffsetDutyCycleEncoder RightEncoder;
 
   public final Constraints ElevConstraints = new Constraints(Constants.Constraints.elevatorMaxVelocity,
       Constants.Constraints.elevatorMaxAcceleration);
@@ -77,8 +77,12 @@ public class Elevator extends SubsystemBase {
     LMot.configure(lConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     RMot.configure(rConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    LeftEncoder = new AbsoluteEncoder(Constants.SensorIDs.ElevEncoderLeft, Constants.Bot.leftElevatorBaseAngle);
-    RightEncoder = new AbsoluteEncoder(Constants.SensorIDs.ElevEncoderRight, Constants.Bot.rightElevatorBaseAngle);
+    LeftEncoder = new OffsetDutyCycleEncoder(Constants.SensorIDs.ElevEncoderLeft, Constants.Bot.leftElevatorBaseAngle);
+    RightEncoder = new OffsetDutyCycleEncoder(Constants.SensorIDs.ElevEncoderRight,
+        Constants.Bot.rightElevatorBaseAngle);
+
+    ElevatorPIDs.getEntry("Left Encoder Angle").setDouble(LeftEncoder.getAbsolutePosition());
+    ElevatorPIDs.getEntry("Right Encoder Angle").setDouble(RightEncoder.getAbsolutePosition());
 
     ElevatorPIDs.getEntry("P").setDouble(kP);
     ElevatorPIDs.getEntry("I").setDouble(kI);
@@ -118,6 +122,9 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    ElevatorPIDs.getEntry("Left Encoder Angle").setDouble(LeftEncoder.getAbsolutePosition());
+    ElevatorPIDs.getEntry("Right Encoder Angle").setDouble(RightEncoder.getAbsolutePosition());
+
     pidLeft.setP(ElevatorPIDs.getEntry("P").getDouble(0));
     pidLeft.setI(ElevatorPIDs.getEntry("I").getDouble(0));
     pidLeft.setD(ElevatorPIDs.getEntry("D").getDouble(0));

@@ -73,17 +73,17 @@ public final class Constants {
 
     // Elevator
 
-    public static final int ElevEncoderRight = 4;
-    public static final int ElevEncoderLeft = 5;
+    public static final int ElevEncoderRight = 3;
+    public static final int ElevEncoderLeft = 2;
 
     // Algae Intake
-    public static final int AIEncoder = 6;
+    public static final int AIEncoder = 0;
 
     // Ground Intake
     // public static final int GIEncoder = 6;
 
     // End Effector
-    public static final int EECoralSensor = 7;
+    public static final int EECoralSensor = 1;
 
   }
 
@@ -105,8 +105,8 @@ public final class Constants {
     public static final double maxChassisTurnSpeed = maxChassisSpeed / botRadius;
     public static final double encoderRotationToMeters = 2 * Math.PI * ((wheelDiameter / 2) / gearRatio);
 
-    public static final double leftElevatorBaseAngle = 0.0;
-    public static final double rightElevatorBaseAngle = 0.0;
+    public static final double leftElevatorBaseAngle = 0.327;
+    public static final double rightElevatorBaseAngle = 0.283;
 
     public static final double elevatorEncoderDegreesToMeters = 0.001;
 

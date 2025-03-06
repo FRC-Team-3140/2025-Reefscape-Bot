@@ -54,9 +54,9 @@ public class RobotContainer {
     reefSide.addOption("Closest", "Closest");
     reefSide.addOption("Back", "Back");
     reefSide.addOption("Back Left", "Back Left");
-    reefSide.addOption("Front Right", "Front Left");
+    reefSide.addOption("Front Left", "Front Left");
     reefSide.addOption("Front", "Front");
-    reefSide.addOption("Front Left", "Front Right");
+    reefSide.addOption("Front Right", "Front Right");
     reefSide.addOption("Back Right", "Back Right");
 
     reefLevel.addOption("L4", 4);
@@ -81,6 +81,18 @@ public class RobotContainer {
     String cycleDirectionSelected = cycleDirection.getSelected();
     String reefSideSelected = reefSide.getSelected();
     Integer reefLevelSelected = reefLevel.getSelected();
+
+    ////////// Defaults //////////
+    if (cycleDirectionSelected == null)
+      cycleDirectionSelected = "Horizontal";
+
+    if (reefSideSelected == null)
+      reefSideSelected = "Closest";
+
+    if (reefLevelSelected == null)
+      reefLevelSelected = 4;
+
+    //////////////////////////////
 
     if (cycleDirectionSelected.equals("Horizontal")) {
 
