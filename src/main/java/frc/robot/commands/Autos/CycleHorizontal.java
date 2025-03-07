@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.GoToClosestSource;
 import frc.robot.commands.ScoreCoral;
-import frc.robot.libs.FeildAprilTags;
+import frc.robot.libs.FieldAprilTags;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.odometry.Odometry;
 
@@ -27,7 +27,7 @@ public class CycleHorizontal extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
 
-    int startingSide = FeildAprilTags.getInstance().getClosestReefAprilTag(odometry.getPose(),
+    int startingSide = FieldAprilTags.getInstance().getClosestReefAprilTag(odometry.getPose(),
         DriverStation.getAlliance().get()).reefSide;
 
     // Loop through reef sides to build a complete auto (Won't fully complete bc of

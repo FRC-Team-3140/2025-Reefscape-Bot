@@ -15,14 +15,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorHeights;
-import frc.robot.libs.FeildAprilTags;
+import frc.robot.libs.FieldAprilTags;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.odometry.Odometry;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class ScoreCoral extends Command {
+public class ScoreCoral extends ParallelCommandGroup {
   private Elevator elevator = null;
   private Odometry odometry = null;
 
@@ -108,8 +109,8 @@ public class ScoreCoral extends Command {
 
     // Figure out where to position robot on reef
     Hashtable<Integer, AprilTag> reef = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
-        ? FeildAprilTags.getInstance().blueReefTagsHash
-        : FeildAprilTags.getInstance().redReefTagsHash;
+        ? FieldAprilTags.getInstance().blueReefTagsHash
+        : FieldAprilTags.getInstance().redReefTagsHash;
     AprilTag reefTag = reef.get(reefSide);
     Pose3d pose = reefTag.pose;
 
@@ -132,46 +133,48 @@ public class ScoreCoral extends Command {
 
     // Schedule the pathfinding command to run along with this command that will
     // handle the elevator
-    this.alongWith(pathfindingCommand);
+    addCommands(pathfindingCommand, new elevatorCommand());
   }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    if (level == null) {
-      System.err.println("Error: Level is null. Exiting command.");
-      end(true);
+  private class elevatorCommand extends Command {
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+      if (level == null) {
+        System.err.println("Error: Level is null. Exiting command.");
+        end(true);
+      }
     }
-  }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-  }
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+    }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    if (interrupted)
-      System.err.println("Interrupted or Issues encountered while running ScoreCoral command.");
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+      if (interrupted)
+        System.err.println("Interrupted or Issues encountered while running ScoreCoral command.");
 
-    elevator.setHeight(level);
-  }
+      elevator.setHeight(level);
+    }
 
-  private double sqr(double num) {
-    return (num * num);
-  }
+    private double sqr(double num) {
+      return (num * num);
+    }
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    Pose2d curPose = odometry.getPose();
-    double distance = Math.sqrt(sqr(finalPose.getY() - curPose.getY()) + sqr(finalPose.getX() - curPose.getX()));
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+      Pose2d curPose = odometry.getPose();
+      double distance = Math.sqrt(sqr(finalPose.getY() - curPose.getY()) + sqr(finalPose.getX() - curPose.getX()));
 
-    if (distance <= minDistForElevator) {
-      return true;
-    } else {
-      return false;
+      if (distance <= minDistForElevator) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 }

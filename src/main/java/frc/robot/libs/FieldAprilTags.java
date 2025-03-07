@@ -4,6 +4,7 @@
 
 package frc.robot.libs;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Optional;
@@ -18,11 +19,11 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 
 /** Add your docs here. */
-public class FeildAprilTags {
-    private static FeildAprilTags instance = null;
+public class FieldAprilTags {
+    private static FieldAprilTags instance = null;
 
     private final List<AprilTag> aprilTags;
-    private List<AprilTag> reefTags;
+    private List<AprilTag> reefTags = new ArrayList<>();
     private final int[] reefIDs = { 6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22 };
     private final AprilTagFieldLayout field;
 
@@ -45,14 +46,14 @@ public class FeildAprilTags {
         }
     }
 
-    public static FeildAprilTags getInstance() {
+    public static FieldAprilTags getInstance() {
         if (instance == null) {
-            instance = new FeildAprilTags();
+            instance = new FieldAprilTags();
         }
         return instance;
     }
 
-    private FeildAprilTags() {
+    private FieldAprilTags() {
         field = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
         aprilTags = field.getTags();
 
@@ -139,7 +140,7 @@ public class FeildAprilTags {
         }
 
         int reefSide = -1;
-        
+
         for (int key : closestHash.keySet()) {
             if (closestTag.equals(closestHash.get(key))) {
                 reefSide = key;

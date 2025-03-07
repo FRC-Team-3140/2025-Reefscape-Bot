@@ -16,7 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.libs.FeildAprilTags;
+import frc.robot.libs.FieldAprilTags;
 import frc.robot.subsystems.odometry.Odometry;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -51,9 +51,9 @@ public class GoToClosestSource extends Command {
     // Figure out alliance and which stations to calculate from
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
-      LeftSource = FeildAprilTags.getInstance()
+      LeftSource = FieldAprilTags.getInstance()
           .getTagPose(DriverStation.getAlliance().get() == DriverStation.Alliance.Red ? 2 : 13);
-      RightSource = FeildAprilTags.getInstance()
+      RightSource = FieldAprilTags.getInstance()
           .getTagPose(DriverStation.getAlliance().get() == DriverStation.Alliance.Red ? 1 : 12);
     } else {
       System.err.println("Driverstation alliance wasn't present when command was called.");
