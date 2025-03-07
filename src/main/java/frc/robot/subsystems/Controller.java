@@ -7,14 +7,14 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-// import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.IntakeAlgaeReef;
-import frc.robot.commands.SourceCoralIntake;
+import frc.robot.commands.swerveDrive.SwerveDriveManualControl;
 import frc.robot.libs.NetworkTables;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -26,6 +26,8 @@ public class Controller extends SubsystemBase {
 
   private final Elevator elevator = Elevator.getInstance();
   private final EndEffector endEffector = EndEffector.getInstance();
+
+  private boolean fieldOriented = true;
 
   /** Creates a new Controller. */
   public Controller(int primary, int secondary) {
@@ -163,11 +165,20 @@ public class Controller extends SubsystemBase {
       return;
     }
 
-    elevator.setHeight(elevator.getTarget() * 0.05 - getRightY(controllers.SECONDARY));
+    elevator.setHeight(elevator.getTarget() - getRightY(controllers.SECONDARY)* 0.05);
 
     if (primaryController.getYButtonPressed()) {
-      // TODO: Look at resetGyro() in Odometry.java
       SwerveDrive.odometry.resetGyro();
+    }
+
+    if (primaryController.getXButtonPressed()) {
+      fieldOriented = !fieldOriented;
+      RobotContainer.swerveDrive.setDefaultCommand(
+          new SwerveDriveManualControl(
+              RobotContainer.swerveDrive,
+              Constants.Bot.maxChassisSpeed,
+              Constants.Bot.maxChassisTurnSpeed,
+              fieldOriented));
     }
   }
 
@@ -183,9 +194,24 @@ public class Controller extends SubsystemBase {
 
       return;
     }
+
+    if (primaryController.getXButtonPressed()) {
+      fieldOriented = !fieldOriented;
+      RobotContainer.swerveDrive.setDefaultCommand(
+          new SwerveDriveManualControl(
+              RobotContainer.swerveDrive,
+              Constants.Bot.maxChassisSpeed,
+              Constants.Bot.maxChassisTurnSpeed,
+              fieldOriented));
+    }
+
+    if (primaryController.getYButtonPressed()) {
+      SwerveDrive.odometry.resetGyro();
+    }
+
     double speed = -getRightY(controllers.SECONDARY);
     elevator.LMot.set(speed);
-    elevator.RMot.set(speed); 
+    elevator.RMot.set(speed);
 
     if (secondaryController.getBButtonPressed()) {
       // Elevator trough
@@ -210,13 +236,11 @@ public class Controller extends SubsystemBase {
     if (secondaryController.getStartButtonPressed()) {
       // Get Algae L2
       new IntakeAlgaeReef(endEffector, ElevatorHeights.reefAlgaeL1Height).schedule();
-      ;
     }
 
     if (secondaryController.getBackButtonPressed()) {
       // Get Algae L3
       new IntakeAlgaeReef(endEffector, ElevatorHeights.reefAlgaeL2Height).schedule();
-      ;
     }
 
     if (secondaryController.getRightTriggerAxis() > Constants.Controller.triggerThreshold) {
@@ -228,12 +252,15 @@ public class Controller extends SubsystemBase {
 
     if (secondaryController.getLeftBumperButtonPressed()) {
       // Ground Intake
-      // new GroundCoralIntake(GroundIntake.getInstance(), Elevator.getInstance()).schedule();
+      // new GroundCoralIntake(GroundIntake.getInstance(),
+      // Elevator.getInstance()).schedule();
     }
 
-    if (secondaryController.getRightBumperButtonPressed()) {
+    if (secondaryController.getRightBumperButton()) {
       // Source Intake
-      new SourceCoralIntake().schedule();
+      // new SourceCoralIntake().schedule();
+      EndEffector.getInstance().rightManipulatorMotorMN.set(-secondaryController.getLeftY() * 0.8);
+      EndEffector.getInstance().leftManipulatorMotorMN.set(-secondaryController.getLeftY() * 0.8);
     }
 
     if (secondaryController.getPOV() == 180) {

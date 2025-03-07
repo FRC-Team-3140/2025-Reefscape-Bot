@@ -66,7 +66,11 @@ public class EndEffector extends SubsystemBase {
 
     SparkMaxConfig config = new SparkMaxConfig();
 
-    config.inverted(true).idleMode(IdleMode.kBrake).follow(Constants.MotorIDs.EERight);
+    
+    //config.follow(Constants.MotorIDs.EERight);
+    config.inverted(true);
+    config.idleMode(IdleMode.kBrake);
+
     leftManipulatorMotorMN.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     rightManipulatorMotorMN.configure(breakModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

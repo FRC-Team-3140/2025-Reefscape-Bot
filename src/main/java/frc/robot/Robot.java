@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_testRunner.stopAll();
 
-    m_robotContainer.swerveDrive.setDefaultCommand(new setSwerveStates(m_robotContainer.swerveDrive));
+    RobotContainer.swerveDrive.setDefaultCommand(new setSwerveStates(RobotContainer.swerveDrive));
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
@@ -96,8 +96,8 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     m_testRunner.stopAll();
 
-    m_robotContainer.swerveDrive.setDefaultCommand(new SwerveDriveManualControl(m_robotContainer.swerveDrive,
-        Constants.Bot.maxChassisSpeed, Constants.Bot.maxChassisTurnSpeed));
+    RobotContainer.swerveDrive.setDefaultCommand(new SwerveDriveManualControl(RobotContainer.swerveDrive,
+        Constants.Bot.maxChassisSpeed, Constants.Bot.maxChassisTurnSpeed, true));
 
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
@@ -119,7 +119,7 @@ public class Robot extends TimedRobot {
   public void testInit() {
     m_testRunner.stopAll();
 
-    m_robotContainer.swerveDrive.setDefaultCommand(new setSwerveStates(m_robotContainer.swerveDrive));
+    RobotContainer.swerveDrive.setDefaultCommand(new setSwerveStates(RobotContainer.swerveDrive));
 
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();

@@ -26,15 +26,15 @@ public class RobotContainer {
   private static RobotContainer container = null;
 
   // The robot's subsystems and commands are defined here...
-  public SwerveDrive swerveDrive = SwerveDrive.getInstance();
-  public Elevator elevator = Elevator.getInstance();
-  public EndEffector endEffector = EndEffector.getInstance();
+  public static SwerveDrive swerveDrive = SwerveDrive.getInstance();
+  public static Elevator elevator = Elevator.getInstance();
+  public static EndEffector endEffector = EndEffector.getInstance();
   // public GroundIntake groundIntake = GroundIntake.getInstance();
-  public TestRunner testRunner = TestRunner.getInstance();
-  public Controller controller = Controller.getInstance();
-  public Odometry odometry = Odometry.getInstance();
-  public Camera camera = Camera.getInstance();
-  public SignalTower leds = SignalTower.getInstance();
+  public static TestRunner testRunner = TestRunner.getInstance();
+  public static Controller controller = Controller.getInstance();
+  public static Odometry odometry = Odometry.getInstance();
+  public static Camera camera = Camera.getInstance();
+  public static SignalTower leds = SignalTower.getInstance();
 
   private SendableChooser<String> reefSide = new SendableChooser<>();
   private SendableChooser<String> cycleDirection = new SendableChooser<>();

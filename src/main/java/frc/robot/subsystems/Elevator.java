@@ -18,7 +18,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.libs.OffsetDutyCycleEncoder;
+import frc.robot.libs.ElevatorOffsetDutyCycleEncoder;
 
 public class Elevator extends SubsystemBase {
   private static Elevator instance = null;
@@ -26,8 +26,8 @@ public class Elevator extends SubsystemBase {
   public final SparkMax LMot;
   public final SparkMax RMot;
 
-  private final OffsetDutyCycleEncoder LeftEncoder;
-  private final OffsetDutyCycleEncoder RightEncoder;
+  private final ElevatorOffsetDutyCycleEncoder LeftEncoder;
+  private final ElevatorOffsetDutyCycleEncoder RightEncoder;
 
   public final Constraints ElevConstraints = new Constraints(Constants.Constraints.elevatorMaxVelocity,
       Constants.Constraints.elevatorMaxAcceleration);
@@ -43,11 +43,14 @@ public class Elevator extends SubsystemBase {
   private final SparkMaxConfig lConfig;
   private final SparkMaxConfig rConfig;
 
-  private final double kP = 1;
+  private final double kP = 0.5;
   private final double kI = 0.0;
   private final double kD = 0.0;
 
-  private double speed;
+  private double retainingPower = 0.05;
+
+  private double speedL = 0;
+  private double speedR = 0;
 
   private double lEnc_offset = 0;
   private double rEnc_offset = 0;
@@ -77,9 +80,8 @@ public class Elevator extends SubsystemBase {
     LMot.configure(lConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     RMot.configure(rConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    LeftEncoder = new OffsetDutyCycleEncoder(Constants.SensorIDs.ElevEncoderLeft, Constants.Bot.leftElevatorBaseAngle);
-    RightEncoder = new OffsetDutyCycleEncoder(Constants.SensorIDs.ElevEncoderRight,
-        Constants.Bot.rightElevatorBaseAngle);
+    LeftEncoder = new ElevatorOffsetDutyCycleEncoder(Constants.SensorIDs.ElevEncoderLeft, false);
+    RightEncoder = new ElevatorOffsetDutyCycleEncoder(Constants.SensorIDs.ElevEncoderRight, true);
 
     ElevatorPIDs.getEntry("Left Encoder Angle").setDouble(LeftEncoder.getAbsolutePosition());
     ElevatorPIDs.getEntry("Right Encoder Angle").setDouble(RightEncoder.getAbsolutePosition());
@@ -87,6 +89,8 @@ public class Elevator extends SubsystemBase {
     ElevatorPIDs.getEntry("P").setDouble(kP);
     ElevatorPIDs.getEntry("I").setDouble(kI);
     ElevatorPIDs.getEntry("D").setDouble(kD);
+
+    ElevatorPIDs.getEntry("RP").setDouble(retainingPower);
 
     pidLeft = new ProfiledPIDController(
         ElevatorPIDs.getEntry("P").getDouble(0),
@@ -102,18 +106,21 @@ public class Elevator extends SubsystemBase {
     ElevatorPIDs.getEntry("P").setPersistent();
     ElevatorPIDs.getEntry("I").setPersistent();
     ElevatorPIDs.getEntry("D").setPersistent();
+    ElevatorPIDs.getEntry("RP").setPersistent();
+
+    setZero();
   }
 
   private double calculateSpeed() {
-    return speed;
+    return (speedL + speedR) / 2;
   }
 
   private double getLeftEncoderVal() {
-    return LeftEncoder.get() + lEnc_offset;
+    return LeftEncoder.getAbsolutePosition() + lEnc_offset;
   }
 
   private double getRightEncoderVal() {
-    return RightEncoder.get() + rEnc_offset;
+    return RightEncoder.getAbsolutePosition() + rEnc_offset;
   }
 
   private double getEncoderAverage() {
@@ -133,13 +140,22 @@ public class Elevator extends SubsystemBase {
     pidRight.setI(ElevatorPIDs.getEntry("I").getDouble(0));
     pidRight.setD(ElevatorPIDs.getEntry("D").getDouble(0));
 
+    retainingPower = ElevatorPIDs.getEntry("RP").getDouble(0);
+
     ElevatorTable.getEntry("Current Height").setDouble(getHeight());
     ElevatorTable.getEntry("Target Height").setDouble(target);
-    speed = pidLeft.calculate(getLeftEncoderVal(), new TrapezoidProfile.State(target, 0));
+
+    speedL = pidLeft.calculate(getLeftEncoderVal(), new TrapezoidProfile.State(target, 0)) + retainingPower;
+    speedR = pidRight.calculate(getRightEncoderVal(), new TrapezoidProfile.State(target, 0)) + retainingPower;
+
     if (Controller.getInstance().getControlMode() == Controller.ControlMode.MANUAL)
       return;
-    LMot.set(speed);
-    RMot.set(pidRight.calculate(getRightEncoderVal(), new TrapezoidProfile.State(target, 0)));
+
+    LMot.set(speedL);
+    ElevatorPIDs.getEntry("Left Speed").setDouble(speedL);
+
+    RMot.set(speedR);
+    ElevatorPIDs.getEntry("Right Speed").setDouble(speedR);
   }
 
   public void setHeight(double height) {
@@ -177,7 +193,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setZero() {
-    lEnc_offset = LeftEncoder.get();
-    rEnc_offset = RightEncoder.get();
+    lEnc_offset = LeftEncoder.getAbsolutePosition();
+    rEnc_offset = RightEncoder.getAbsolutePosition();
   }
 }

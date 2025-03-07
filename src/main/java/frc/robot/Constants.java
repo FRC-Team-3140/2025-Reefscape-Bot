@@ -105,9 +105,6 @@ public final class Constants {
     public static final double maxChassisTurnSpeed = maxChassisSpeed / botRadius;
     public static final double encoderRotationToMeters = 2 * Math.PI * ((wheelDiameter / 2) / gearRatio);
 
-    public static final double leftElevatorBaseAngle = 0.327;
-    public static final double rightElevatorBaseAngle = 0.283;
-
     public static final double elevatorEncoderDegreesToMeters = 0.001;
 
     // Swerve Module Base Angles
@@ -215,7 +212,7 @@ public final class Constants {
 
   public static class ElevatorHeights {
     public static final double minimum = 0;
-    public static final double maxiumum = 100;
+    public static final double maxiumum = 5.2;
 
     public static final double reefAlgaeL1Height = 0;
     public static final double reefAlgaeL2Height = 0;

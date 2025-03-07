@@ -26,10 +26,11 @@ public class SwerveDriveManualControl extends LoggedCommand {
      * @param maxSpeed            The maximum speed for the swerve drive
      * @param maxChassisTurnSpeed The maximum turn speed for the chassis
      */
-    public SwerveDriveManualControl(SwerveDrive swerveDrive, double maxSpeed, double maxChassisTurnSpeed) {
+    public SwerveDriveManualControl(SwerveDrive swerveDrive, double maxSpeed, double maxChassisTurnSpeed, boolean fieldRelative) {
         this.swerveDrive = swerveDrive;
         this.maxSpeed = maxSpeed;
         this.maxChassisTurnSpeed = maxChassisTurnSpeed;
+        this.fieldRelative = fieldRelative;
 
         addRequirements(swerveDrive); // This command requires the swerve drive subsystem
     }
