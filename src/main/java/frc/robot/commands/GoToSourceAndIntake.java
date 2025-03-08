@@ -4,15 +4,13 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import frc.robot.Constants;
-import frc.robot.commands.elevator.SetHeight;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.endeffector.EndEffectorIntakeCoral;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class SourceCoralIntake extends ParallelCommandGroup {
-  /** Creates a new SourceCoralIntake. */
-  public SourceCoralIntake() {
-    super(new SetHeight(Constants.ElevatorHeights.sourceIntake), new EndEffectorIntakeCoral());
+public class GoToSourceAndIntake extends SequentialCommandGroup {
+  /** Creates a new GoToSourceAndIntake. */
+  public GoToSourceAndIntake() {
+    super(new GoToClosestSource(), new EndEffectorIntakeCoral());
   }
 }

@@ -138,7 +138,7 @@ public final class Constants {
 
   public static class Limits {
     // Elevator
-    public static final double ElevMovement = 0.03;
+    public static final double ElevMovement = 0.06;
     public static final double CurrentHomeThreshold = 4;
     public static final double ElevPosThreshold = 0.5;
 
@@ -215,16 +215,16 @@ public final class Constants {
 
   public static class ElevatorHeights {
     public static final double minimum = 0;
-    public static final double maxiumum = 10800 * Bot.elevatorEncoderDegreesToMeters;
+    public static final double maxiumum = 10900 * Bot.elevatorEncoderDegreesToMeters;
 
     public static final double reefAlgaeL1Height = 0;
     public static final double reefAlgaeL2Height = 0;
-    public static final double reefCoralL1Height = 3.433625;
+    public static final double reefCoralL1Height = 3.5;
     public static final double reefCoralL2Height = 4.5;
     public static final double reefCoralL3Height = 7.054625;
     public static final double reefCoralL4Height = maxiumum;
 
-    public static final double sourceIntake = 1.748750;
+    public static final double sourceIntake = 1.75;
 
     public static final double groundIntake = Constants.ElevatorHeights.minimum;
 

@@ -140,7 +140,7 @@ public class GroundIntake extends SubsystemBase {
             }),
             new WaitUntilAngle(instance, SetPoints.handoff, Constants.Limits.GIAngleTolerance),
             new ParallelCommandGroup(
-                new EndEffectorIntakeCoral(null),
+                new EndEffectorIntakeCoral(),
                 new InstantCommand(() -> {
                   outtake();
                 })),

@@ -25,6 +25,8 @@ public class Camera extends SubsystemBase {
 
   private double lastAttemptReconnectIterration = 0;
 
+  private Pose2d lastPose = new Pose2d();
+
   /**
    * Represents a distance measurement obtained from a camera sensor.
    */
@@ -167,8 +169,14 @@ public class Camera extends SubsystemBase {
       Vector2 oneMUnitVec = dirVec.sub(poseVec);
       Vector2 centerOfBot = oneMUnitVec.neg().mult(Constants.CameraConstants.aprilOffsetToCenter).add(poseVec);
 
-      return new Pose2d(centerOfBot.X, centerOfBot.Y,
+      Pose2d curPose = new Pose2d(centerOfBot.X, centerOfBot.Y,
           new Rotation2d(Math.atan2(oneMUnitVec.Y, oneMUnitVec.X)));
+
+      if (curPose.getX() == lastPose.getX())
+        return null;
+
+      lastPose = curPose;
+      return curPose;
     } else {
       return null;
     }

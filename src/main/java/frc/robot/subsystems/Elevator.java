@@ -27,6 +27,8 @@ public class Elevator extends SubsystemBase {
 
   private final Encoder LeftEncoder;
   private final Encoder RightEncoder;
+//TODO: set to true when elevator is ready
+  public static final boolean elevatorEnabled = true;
 
   public final Constraints ElevConstraints = new Constraints(Constants.Constraints.elevatorMaxVelocity,
       Constants.Constraints.elevatorMaxAcceleration);
@@ -148,7 +150,7 @@ public class Elevator extends SubsystemBase {
 
     if (Controller.getInstance().getControlMode() == Controller.ControlMode.OHNO_MANUAL)
       return;
-
+    if(!elevatorEnabled)  return;
     LMot.set(speedL);
     RMot.set(speedR);
   }

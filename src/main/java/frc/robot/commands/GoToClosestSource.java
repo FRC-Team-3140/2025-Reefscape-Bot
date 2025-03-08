@@ -34,8 +34,8 @@ public class GoToClosestSource extends Command {
   private coralStations closestStation = null;
 
   /** Creates a new goToClosestSource. */
-  public GoToClosestSource(Odometry odometry) {
-    this.odometry = odometry;
+  public GoToClosestSource() {
+    this.odometry = Odometry.getInstance();
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(odometry);

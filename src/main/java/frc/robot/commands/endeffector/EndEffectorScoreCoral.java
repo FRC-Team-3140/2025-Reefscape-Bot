@@ -8,17 +8,17 @@ import frc.robot.libs.LoggedCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants;
 import frc.robot.subsystems.EndEffector;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class EndEffectorScoreCoral extends LoggedCommand {
 
   private EndEffector endEffector = null;
-  private double speed = Constants.MotorSpeeds.EndEffector.manipulatorScore;
+  private double speed;
 
   public EndEffectorScoreCoral(double speed) {
     this.endEffector = EndEffector.getInstance();
+    this.speed = speed;
     addRequirements(endEffector);
   }
 

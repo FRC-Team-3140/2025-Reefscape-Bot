@@ -71,7 +71,7 @@ public class EndEffector extends SubsystemBase {
   @Override
   public void periodic() {
     armAngle = AlgaeArmEncoder.get();
-    algaeIntakeRotateMotorN.set(AlgaeArmPID.calculate(armAngle, targetAngle));
+    //algaeIntakeRotateMotorN.set(AlgaeArmPID.calculate(armAngle, targetAngle));
   }
 
   public void setAlgaeIntakeAngle(double angle) {

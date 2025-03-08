@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ElevatorHeights;
+import frc.robot.commands.GoToSourceAndIntake;
 import frc.robot.commands.IntakeAlgaeReef;
 import frc.robot.commands.SourceCoralIntake;
 import frc.robot.commands.elevator.SetHeight;
@@ -39,6 +40,8 @@ public class Controller extends SubsystemBase {
   }
 
   private final double deadband = .07;
+
+  private final boolean testing = false;
 
   public enum controllers {
     PRIMARY, SECONDARY
@@ -154,6 +157,7 @@ public class Controller extends SubsystemBase {
   public ControlMode getControlMode() {
     return curControlMode;
   }
+
   private void updateControlMode() {
     if (secondaryController.getRightBumperButtonPressed()) {
       curControlMode = ControlMode.MANUAL;
@@ -169,16 +173,21 @@ public class Controller extends SubsystemBase {
       setRumbleBoth(controllers.SECONDARY, 0.1, 1);
     }
   }
+
   private void AutoMode() {
     if (secondaryController.getLeftStickButton() && secondaryController.getRightStickButton()) {
       updateControlMode();
       return;
     }
-    if(primaryController.getAButtonPressed()) {} //TODO: run algae intake auto based on web dash
-    if(primaryController.getXButtonPressed()) {} //TODO: run coral intake auto based on web dash
-    if(primaryController.getBButtonPressed()) {} //TODO: run auto pos to closest coral station, then run coral intake
+    if (primaryController.getAButtonPressed()) {
+    } // TODO: run algae intake auto based on web dash
+    if (primaryController.getXButtonPressed()) {
+    } // TODO: run coral intake auto based on web dash
+    if (primaryController.getBButtonPressed())
+      new GoToSourceAndIntake().schedule();
 
   }
+
   private void ManualMode() {
     if (secondaryController.getLeftStickButton() && secondaryController.getRightStickButton()) {
       updateControlMode();
@@ -187,7 +196,8 @@ public class Controller extends SubsystemBase {
     if (secondaryController.getRightBumperButtonPressed())
       new SequentialCommandGroup(
           new SetHeight(Constants.ElevatorHeights.sourceIntake), new SourceCoralIntake()).schedule();
-    if (secondaryController.getLeftBumperButtonPressed()) new EndEffectorScoreCoral(0.8).schedule();
+    if (secondaryController.getLeftBumperButtonPressed())
+      new EndEffectorScoreCoral(0.8).schedule();
     // elevator.setHeight(elevator.getTarget() - getRightY(controllers.SECONDARY) *
     // 0.9);
     if (secondaryController.getBButtonPressed()) {
@@ -212,7 +222,7 @@ public class Controller extends SubsystemBase {
     if (primaryController.getYButtonPressed()) {
       SwerveDrive.odometry.resetGyro();
     }
-    if(secondaryController.getPOV() == 180) {
+    if (secondaryController.getPOV() == 180) {
       elevator.setHeight(ElevatorHeights.minimum);
     }
 
@@ -248,9 +258,10 @@ public class Controller extends SubsystemBase {
     }
 
     double speed = -getRightY(controllers.SECONDARY);
-
-    elevator.LMot.set(speed);
-    elevator.RMot.set(speed);
+    if (Elevator.elevatorEnabled) {
+      elevator.LMot.set(speed);
+      elevator.RMot.set(speed);
+    }
 
     if (secondaryController.getBButtonPressed()) {
       // Elevator trough
@@ -316,17 +327,26 @@ public class Controller extends SubsystemBase {
     }
   }
 
+  private void testingMode() {
+    endEffector.algaeIntakeRotateMotorN.set(-getRightY(controllers.SECONDARY) * 0.25);
+    endEffector.algaeIntakeMotorN.set(-getLeftY(controllers.SECONDARY));
+  }
+
   public void periodic() {
     NetworkTables.driveModeManual_b.setBoolean(curControlMode == ControlMode.MANUAL);
+    if (testing) {
+      testingMode();
+      return;
+    }
     switch (curControlMode) {
       case AUTO:
-        AutoMode(); 
+        AutoMode();
         break;
       case MANUAL:
-        ManualMode(); 
+        ManualMode();
         break;
       case OHNO_MANUAL:
-        OHNOManualMode(); 
+        OHNOManualMode();
         break;
       default:
         // Integral to the code base DO NOT CHANGE! (Copilot did it!)

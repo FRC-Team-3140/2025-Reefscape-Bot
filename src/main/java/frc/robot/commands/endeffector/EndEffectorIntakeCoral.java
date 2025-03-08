@@ -13,8 +13,8 @@ public class EndEffectorIntakeCoral extends LoggedCommand {
   private EndEffector endEffector = null;
 
   /** Creates a new IntakeCoral. */
-  public EndEffectorIntakeCoral(EndEffector endEffector) {
-    this.endEffector = endEffector;
+  public EndEffectorIntakeCoral() {
+    this.endEffector = EndEffector.getInstance();
 
     addRequirements(endEffector);
   }

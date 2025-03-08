@@ -35,9 +35,9 @@ public class CycleVertical extends SequentialCommandGroup {
       for (int j = 4; j >= 1; j--) {
         super.addCommands(
             new ScoreCoral(elevator, odometry, ScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
-            new GoToClosestSource(odometry),
+            new GoToClosestSource(),
             new ScoreCoral(elevator, odometry, ScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
-            new GoToClosestSource(odometry));
+            new GoToClosestSource());
       }
     }
   }
@@ -59,9 +59,9 @@ public class CycleVertical extends SequentialCommandGroup {
       for (int j = 4; j >= 1; j--) {
         super.addCommands(
             new ScoreCoral(elevator, odometry, ScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
-            new GoToClosestSource(odometry),
+            new GoToClosestSource(),
             new ScoreCoral(elevator, odometry, ScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
-            new GoToClosestSource(odometry));
+            new GoToClosestSource());
       }
     }
   }
