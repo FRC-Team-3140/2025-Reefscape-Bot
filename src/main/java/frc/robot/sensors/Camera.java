@@ -202,7 +202,19 @@ public class Camera extends SubsystemBase {
         return null;
       if (curPose.getX() == lastPose.getX())
         return null;
-
+      
+      NetworkTables.frontCameraPose
+          .setDoubleArray(new double[] {
+              centerOfBot0.X, 
+              centerOfBot0.Y,
+              new Rotation2d(Math.atan2(mUnitVec0.Y, mUnitVec0.X)).getDegrees()
+          });
+      NetworkTables.backCameraPose
+          .setDoubleArray(new double[] {
+              centerOfBot2.X, 
+              centerOfBot2.Y,
+              new Rotation2d(Math.atan2(mUnitVec2.neg().Y, mUnitVec2.neg().X)).getDegrees()
+          });
       lastPose = curPose;
       return curPose;
     } else {

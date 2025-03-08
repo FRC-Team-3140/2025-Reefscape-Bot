@@ -29,6 +29,8 @@ public class NetworkTables {
     public static NetworkTableEntry numOLoggedCmds_i = devBoard.getEntry("numOLoggedCmds_i");
     
     public static NetworkTableEntry cameraPose = devBoard.getEntry("cameraPose_ab");
+    public static NetworkTableEntry backCameraPose = devBoard.getEntry("backCameraPose_ad");
+    public static NetworkTableEntry frontCameraPose = devBoard.getEntry("frontCameraPose_ab");
 
     public static NetworkTableEntry measuredSwerveStates_da = devBoard.getEntry("measuredStates_da");
     public static NetworkTableEntry desiredSwerveStates_da = devBoard.getEntry("desiredStates_da");
