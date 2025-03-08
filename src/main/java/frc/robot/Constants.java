@@ -205,11 +205,13 @@ public final class Constants {
   }
 
   public static class AlgaeIntakeAngles {
-    public static final double stowed = 180;
-    public static final double stowedAlgaeTop = 10;
-    public static final double stowedAlgaeBottom = 100;
-    public static final double groundIntake = 75;
-    public static final double reefIntake = 30;
+    public static final double min = 0.45;
+    public static final double max = 0.98;
+    public static final double stowed = max;
+    public static final double stowedAlgaeTop = 0;
+    public static final double stowedAlgaeBottom = 0;
+    public static final double groundIntake = 0;
+    public static final double reefIntake = 0;
     public static final double processorScoreBottom = stowedAlgaeBottom;
     public static final double processorScoreTop = stowedAlgaeTop;
   }
