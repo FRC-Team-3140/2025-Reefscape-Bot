@@ -191,18 +191,30 @@ public class Camera extends SubsystemBase {
       if (camera0Exists && camera2Exists) {
         curPose = new Pose2d((centerOfBot0.X + centerOfBot2.X) / 2, (centerOfBot0.Y + centerOfBot2.Y) / 2,
             new Rotation2d(
-                (Math.atan2(mUnitVec0.Y, mUnitVec0.X) + Math.atan2(mUnitVec2.Y, mUnitVec2.X) + Math.PI) / 2));
+                (Math.atan2(mUnitVec0.Y, mUnitVec0.X) + Math.atan2(mUnitVec2.neg().Y, mUnitVec2.neg().X)) / 2));
       } else if (camera0Exists) {
         curPose = new Pose2d(centerOfBot0.X, centerOfBot0.Y,
             new Rotation2d(Math.atan2(mUnitVec0.Y, mUnitVec0.X)));
       } else if (camera2Exists) {
         curPose = new Pose2d(centerOfBot2.X, centerOfBot2.Y,
-            new Rotation2d(Math.atan2(mUnitVec2.Y, mUnitVec2.X) + Math.PI));
+            new Rotation2d(Math.atan2(mUnitVec2.neg().Y, mUnitVec2.neg().X)));
       } else
         return null;
       if (curPose.getX() == lastPose.getX())
         return null;
-
+      
+      NetworkTables.frontCameraPose
+          .setDoubleArray(new double[] {
+              centerOfBot0.X, 
+              centerOfBot0.Y,
+              new Rotation2d(Math.atan2(mUnitVec0.Y, mUnitVec0.X)).getDegrees()
+          });
+      NetworkTables.backCameraPose
+          .setDoubleArray(new double[] {
+              centerOfBot2.X, 
+              centerOfBot2.Y,
+              new Rotation2d(Math.atan2(mUnitVec2.neg().Y, mUnitVec2.neg().X)).getDegrees()
+          });
       lastPose = curPose;
       return curPose;
     } else {
