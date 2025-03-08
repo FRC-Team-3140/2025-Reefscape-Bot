@@ -21,7 +21,7 @@ public class CustomOdometry extends Odometry {
     private Double lastUpdateT = null;
     private boolean knowsPosition = false;
 
-    private CustomOdometry() {
+    protected CustomOdometry() {
         super();
     }
 

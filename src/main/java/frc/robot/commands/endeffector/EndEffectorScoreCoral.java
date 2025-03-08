@@ -17,8 +17,8 @@ public class EndEffectorScoreCoral extends LoggedCommand {
   private EndEffector endEffector = null;
   private double speed = Constants.MotorSpeeds.EndEffector.manipulatorScore;
 
-  public EndEffectorScoreCoral(EndEffector endEffector, double speed) {
-    this.endEffector = endEffector;
+  public EndEffectorScoreCoral(double speed) {
+    this.endEffector = EndEffector.getInstance();
     addRequirements(endEffector);
   }
 

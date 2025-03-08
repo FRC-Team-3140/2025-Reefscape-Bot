@@ -14,6 +14,9 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.IntakeAlgaeReef;
+import frc.robot.commands.SourceCoralIntake;
+import frc.robot.commands.elevator.SetHeight;
+import frc.robot.commands.endeffector.EndEffectorScoreCoral;
 import frc.robot.commands.swerveDrive.SwerveDriveManualControl;
 import frc.robot.libs.NetworkTables;
 import edu.wpi.first.wpilibj.XboxController;
@@ -164,9 +167,31 @@ public class Controller extends SubsystemBase {
 
       return;
     }
+    if (secondaryController.getRightBumperButtonPressed())
+      new SequentialCommandGroup(
+          new SetHeight(Constants.ElevatorHeights.sourceIntake), new SourceCoralIntake()).schedule();
+    if (secondaryController.getLeftBumperButtonPressed()) new EndEffectorScoreCoral(0.8).schedule();
+    // elevator.setHeight(elevator.getTarget() - getRightY(controllers.SECONDARY) *
+    // 0.9);
+    if (secondaryController.getBButtonPressed()) {
+      // Elevator trough
+      elevator.setHeight(ElevatorHeights.reefCoralL1Height);
+    }
 
-    elevator.setHeight(elevator.getTarget() - getRightY(controllers.SECONDARY)* 0.05);
+    if (secondaryController.getAButtonPressed()) {
+      // Elevator level reef 1
+      elevator.setHeight(ElevatorHeights.reefCoralL2Height);
+    }
 
+    if (secondaryController.getXButtonPressed()) {
+      // Elevator level reef 2
+      elevator.setHeight(ElevatorHeights.reefCoralL3Height);
+    }
+
+    if (secondaryController.getYButtonPressed()) {
+      // Elevator level reef 3
+      elevator.setHeight(ElevatorHeights.reefCoralL4Height);
+    }
     if (primaryController.getYButtonPressed()) {
       SwerveDrive.odometry.resetGyro();
     }
@@ -210,6 +235,7 @@ public class Controller extends SubsystemBase {
     }
 
     double speed = -getRightY(controllers.SECONDARY);
+
     elevator.LMot.set(speed);
     elevator.RMot.set(speed);
 

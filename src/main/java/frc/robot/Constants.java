@@ -72,9 +72,12 @@ public final class Constants {
     public static final int BR = 3;
 
     // Elevator
+    
+    public static final int ElevEncoderRightA = 2;
+    public static final int ElevEncoderRightB = 3;
+    public static final int ElevEncoderLeftA = 4;
+    public static final int ElevEncoderLeftB = 5;
 
-    public static final int ElevEncoderRight = 3;
-    public static final int ElevEncoderLeft = 2;
 
     // Algae Intake
     public static final int AIEncoder = 0;
@@ -212,16 +215,17 @@ public final class Constants {
 
   public static class ElevatorHeights {
     public static final double minimum = 0;
-    public static final double maxiumum = 5.2;
+    public static final double maxiumum = 10800 * Bot.elevatorEncoderDegreesToMeters;
 
     public static final double reefAlgaeL1Height = 0;
     public static final double reefAlgaeL2Height = 0;
-    public static final double reefCoralL1Height = 0;
-    public static final double reefCoralL2Height = 0;
-    public static final double reefCoralL3Height = 0;
-    public static final double reefCoralL4Height = 0;
+    public static final double reefCoralL1Height = 3.433625;
+    public static final double reefCoralL2Height = 4.5;
+    public static final double reefCoralL3Height = 7.054625;
+    public static final double reefCoralL4Height = maxiumum;
 
-    public static final double sourceIntake = 0;
+    public static final double sourceIntake = 1.748750;
+
     public static final double groundIntake = Constants.ElevatorHeights.minimum;
 
     public static final double processerHeight = 0;
@@ -261,7 +265,7 @@ public final class Constants {
 
   public static class LED {
     public static final int Port = 0;
-    public static final int LEDCount = 0;
+    public static final int LEDCount = 76;
     public static final int RainbowSpan = 5;
   }
 }

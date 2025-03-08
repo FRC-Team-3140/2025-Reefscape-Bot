@@ -93,8 +93,6 @@ public class Camera extends SubsystemBase {
       lastAttemptReconnectIterration = Timer.getFPGATimestamp();
     }
 
-    // System.out.println(connected);
-
     Pose2d camPose = getPoseFromCamera();
     if (camPose != null)
       NetworkTables.cameraPose
@@ -160,6 +158,9 @@ public class Camera extends SubsystemBase {
       double[] pose = NetworkTables.camera0_Position.getDoubleArray(new double[0]);
       double[] dir = NetworkTables.camera0_Direction.getDoubleArray(new double[0]);
 
+      if (pose.length == 0 || dir.length == 0)
+        return null;
+
       Vector2 poseVec = new Vector2(pose[0], pose[1]);
       Vector2 dirVec = new Vector2(dir[0], dir[1]);
 
@@ -176,6 +177,10 @@ public class Camera extends SubsystemBase {
   public int[] getDetectedTags() {
     if (connected) {
       double[] detectedTags = NetworkTables.camera0_IDs.getDoubleArray(new double[0]);
+
+      if (detectedTags.length == 0)
+        return null;
+
       int[] detectedTagsInt = new int[detectedTags.length];
 
       for (int i = 0; i < detectedTags.length; i++) {

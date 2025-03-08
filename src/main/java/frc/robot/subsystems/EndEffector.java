@@ -73,6 +73,8 @@ public class EndEffector extends SubsystemBase {
 
     leftManipulatorMotorMN.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+    // TODO: Reverse inversions
+
     rightManipulatorMotorMN.configure(breakModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     algaeIntakeMotorN.configure(breakModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -91,7 +93,9 @@ public class EndEffector extends SubsystemBase {
   }
 
   public void setManipulatorSpeed(double speed) {
-    rightManipulatorMotorMN.set(speed);
+    // TODO: Reverse inversions
+    rightManipulatorMotorMN.set(-Math.min(speed, 0.25));
+    leftManipulatorMotorMN.set(-Math.min(speed, 0.25));
   }
 
   public void setBeltSpeed(double speed) {

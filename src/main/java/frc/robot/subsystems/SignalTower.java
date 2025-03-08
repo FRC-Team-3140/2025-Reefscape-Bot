@@ -66,7 +66,7 @@ public class SignalTower extends SubsystemBase {
       hue = (rainbowFirstPixelHue + i * ledRainbowSpan) % 180;
       buffer.setHSV(i, hue, 255, 128);
     }
-    rainbowFirstPixelHue += 3;
+    rainbowFirstPixelHue += 1;
     led.setData(buffer);
   }
 
