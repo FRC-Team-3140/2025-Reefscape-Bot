@@ -157,21 +157,49 @@ public class Camera extends SubsystemBase {
 
   public Pose2d getPoseFromCamera() {
     if (connected) {
-      double[] pose = NetworkTables.camera0_Position.getDoubleArray(new double[0]);
-      double[] dir = NetworkTables.camera0_Direction.getDoubleArray(new double[0]);
+      boolean camera0Exists = false;
+      boolean camera2Exists = false;
+      // Camera 0 Calculation
+      double[] pose0 = NetworkTables.camera0_Position.getDoubleArray(new double[0]);
+      double[] dir0 = NetworkTables.camera0_Direction.getDoubleArray(new double[0]);
+      Vector2 poseVec0 = null, dirVec0 = null, mUnitVec0 = null, centerOfBot0 = null;
 
-      if (pose.length == 0 || dir.length == 0)
+      if (pose0.length != 0 && dir0.length != 0) {
+        poseVec0 = new Vector2(pose0[0], pose0[1]);
+        dirVec0 = new Vector2(dir0[0], dir0[1]);
+
+        mUnitVec0 = dirVec0.sub(poseVec0);
+        centerOfBot0 = mUnitVec0.neg().mult(Constants.CameraConstants.aprilOffsetToCenter0).add(poseVec0);
+
+        camera0Exists = true;
+      }
+
+      // Camera 2 Calculation
+      double[] pose2 = NetworkTables.camera2_Position.getDoubleArray(new double[0]);
+      double[] dir2 = NetworkTables.camera2_Direction.getDoubleArray(new double[0]);
+      Vector2 poseVec2 = null, dirVec2 = null, mUnitVec2 = null, centerOfBot2 = null;
+      if (pose2.length != 0 && dir0.length != 0) {
+        poseVec2 = new Vector2(pose2[0], pose2[1]);
+        dirVec2 = new Vector2(dir2[0], dir2[1]);
+
+        mUnitVec2 = dirVec2.sub(poseVec2);
+        centerOfBot2 = mUnitVec2.neg().mult(Constants.CameraConstants.aprilOffsetToCenter2).add(poseVec2);
+
+        camera2Exists = true;
+      }
+      Pose2d curPose = null;
+      if (camera0Exists && camera2Exists) {
+        curPose = new Pose2d((centerOfBot0.X + centerOfBot2.X) / 2, (centerOfBot0.Y + centerOfBot2.Y) / 2,
+            new Rotation2d(
+                (Math.atan2(mUnitVec0.Y, mUnitVec0.X) + Math.atan2(mUnitVec2.Y, mUnitVec2.X) + Math.PI) / 2));
+      } else if (camera0Exists) {
+        curPose = new Pose2d(centerOfBot0.X, centerOfBot0.Y,
+            new Rotation2d(Math.atan2(mUnitVec0.Y, mUnitVec0.X)));
+      } else if (camera2Exists) {
+        curPose = new Pose2d(centerOfBot2.X, centerOfBot2.Y,
+            new Rotation2d(Math.atan2(mUnitVec2.Y, mUnitVec2.X) + Math.PI));
+      } else
         return null;
-
-      Vector2 poseVec = new Vector2(pose[0], pose[1]);
-      Vector2 dirVec = new Vector2(dir[0], dir[1]);
-
-      Vector2 oneMUnitVec = dirVec.sub(poseVec);
-      Vector2 centerOfBot = oneMUnitVec.neg().mult(Constants.CameraConstants.aprilOffsetToCenter).add(poseVec);
-
-      Pose2d curPose = new Pose2d(centerOfBot.X, centerOfBot.Y,
-          new Rotation2d(Math.atan2(oneMUnitVec.Y, oneMUnitVec.X)));
-
       if (curPose.getX() == lastPose.getX())
         return null;
 
