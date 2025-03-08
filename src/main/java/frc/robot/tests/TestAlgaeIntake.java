@@ -24,7 +24,7 @@ public class TestAlgaeIntake extends Test {
     }
 
     public void Periodic() {
-        algaeIntake.setBeltSpeed(voltage);
+    
     }
 
     @Override

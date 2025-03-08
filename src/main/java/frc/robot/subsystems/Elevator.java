@@ -146,7 +146,7 @@ public class Elevator extends SubsystemBase {
     ElevatorPIDs.getEntry("Left Speed").setDouble(speedL);
     ElevatorPIDs.getEntry("Right Speed").setDouble(speedR);
 
-    if (Controller.getInstance().getControlMode() == Controller.ControlMode.MANUAL)
+    if (Controller.getInstance().getControlMode() == Controller.ControlMode.OHNO_MANUAL)
       return;
 
     LMot.set(speedL);

@@ -45,7 +45,7 @@ public class Controller extends SubsystemBase {
   }
 
   public enum ControlMode {
-    AUTO, MANUAL
+    AUTO, MANUAL, OHNO_MANUAL
   }
 
   private ControlMode curControlMode = ControlMode.MANUAL; // Default to auto when auto is implemented
@@ -154,17 +154,34 @@ public class Controller extends SubsystemBase {
   public ControlMode getControlMode() {
     return curControlMode;
   }
-
-  private void autoControlMode() {
+  private void updateControlMode() {
+    if (secondaryController.getRightBumperButtonPressed()) {
+      curControlMode = ControlMode.MANUAL;
+      System.out.println("Control Mode: " + curControlMode);
+      setRumbleBoth(controllers.SECONDARY, 0.1, 1);
+    } else if (secondaryController.getLeftBumperButtonPressed()) {
+      curControlMode = ControlMode.AUTO;
+      System.out.println("Control Mode: " + curControlMode);
+      setRumbleBoth(controllers.SECONDARY, 0.1, 1);
+    } else if (secondaryController.getRightTriggerAxis() > 0.5 && secondaryController.getLeftTriggerAxis() > 0.5) {
+      curControlMode = ControlMode.OHNO_MANUAL;
+      System.out.println("Control Mode: " + curControlMode);
+      setRumbleBoth(controllers.SECONDARY, 0.1, 1);
+    }
+  }
+  private void AutoMode() {
     if (secondaryController.getLeftStickButton() && secondaryController.getRightStickButton()) {
-      if (secondaryController.getRightBumperButtonPressed()) {
-        curControlMode = ControlMode.MANUAL;
-        System.out.println("Control Mode: " + curControlMode);
-      } else if (secondaryController.getLeftBumperButtonPressed()) {
-        curControlMode = ControlMode.AUTO;
-        System.out.println("Control Mode: " + curControlMode);
-      }
+      updateControlMode();
+      return;
+    }
+    if(primaryController.getAButtonPressed()) {} //TODO: run algae intake auto based on web dash
+    if(primaryController.getXButtonPressed()) {} //TODO: run coral intake auto based on web dash
+    if(primaryController.getBButtonPressed()) {} //TODO: run auto pos to closest coral station, then run coral intake
 
+  }
+  private void ManualMode() {
+    if (secondaryController.getLeftStickButton() && secondaryController.getRightStickButton()) {
+      updateControlMode();
       return;
     }
     if (secondaryController.getRightBumperButtonPressed())
@@ -195,6 +212,9 @@ public class Controller extends SubsystemBase {
     if (primaryController.getYButtonPressed()) {
       SwerveDrive.odometry.resetGyro();
     }
+    if(secondaryController.getPOV() == 180) {
+      elevator.setHeight(ElevatorHeights.minimum);
+    }
 
     if (primaryController.getXButtonPressed()) {
       fieldOriented = !fieldOriented;
@@ -207,20 +227,13 @@ public class Controller extends SubsystemBase {
     }
   }
 
-  private void manualControlMode() {
+  private void OHNOManualMode() {
     if (secondaryController.getLeftStickButton() && secondaryController.getRightStickButton()) {
-      if (secondaryController.getRightBumperButtonPressed()) {
-        curControlMode = ControlMode.MANUAL;
-        System.out.println("Control Mode: " + curControlMode);
-      } else if (secondaryController.getLeftBumperButtonPressed()) {
-        curControlMode = ControlMode.AUTO;
-        System.out.println("Control Mode: " + curControlMode);
-      }
-
+      updateControlMode();
       return;
     }
 
-    if (primaryController.getXButtonPressed()) {
+    if (primaryController.getStartButtonPressed()) {
       fieldOriented = !fieldOriented;
       RobotContainer.swerveDrive.setDefaultCommand(
           new SwerveDriveManualControl(
@@ -307,10 +320,13 @@ public class Controller extends SubsystemBase {
     NetworkTables.driveModeManual_b.setBoolean(curControlMode == ControlMode.MANUAL);
     switch (curControlMode) {
       case AUTO:
-        autoControlMode();
+        AutoMode(); 
         break;
       case MANUAL:
-        manualControlMode();
+        ManualMode(); 
+        break;
+      case OHNO_MANUAL:
+        OHNOManualMode(); 
         break;
       default:
         // Integral to the code base DO NOT CHANGE! (Copilot did it!)

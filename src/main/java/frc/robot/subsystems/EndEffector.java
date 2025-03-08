@@ -21,14 +21,12 @@ public class EndEffector extends SubsystemBase {
 
   static EndEffector instance = null;
 
-  SparkMax beltMotorMN;
   SparkMax leftManipulatorMotorMN;
   SparkMax rightManipulatorMotorMN;
 
   SparkMax algaeIntakeMotorN;
   SparkMax algaeIntakeRotateMotorN;
 
-  SparkMaxConfig breakModeConfig = new SparkMaxConfig();
 
   DutyCycleEncoder AlgaeArmEncoder;
 
@@ -52,12 +50,8 @@ public class EndEffector extends SubsystemBase {
 
   public EndEffector() {
     AlgaeArmPID = new PIDController(P, I, D);
-
-    breakModeConfig.idleMode(IdleMode.kBrake);
-
     AlgaeArmEncoder = new DutyCycleEncoder(Constants.SensorIDs.AIEncoder);
 
-    beltMotorMN = new SparkMax(Constants.MotorIDs.EETop, MotorType.kBrushless);
     leftManipulatorMotorMN = new SparkMax(Constants.MotorIDs.EELeft, MotorType.kBrushless);
     rightManipulatorMotorMN = new SparkMax(Constants.MotorIDs.EERight, MotorType.kBrushless);
 
@@ -65,21 +59,13 @@ public class EndEffector extends SubsystemBase {
     algaeIntakeRotateMotorN = new SparkMax(Constants.MotorIDs.AIRotate, MotorType.kBrushless);
 
     SparkMaxConfig config = new SparkMaxConfig();
-
+    config.inverted(true).idleMode(IdleMode.kBrake);
+    rightManipulatorMotorMN.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     
-    //config.follow(Constants.MotorIDs.EERight);
-    config.inverted(true);
-    config.idleMode(IdleMode.kBrake);
-
+    config.inverted(false);
     leftManipulatorMotorMN.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-    // TODO: Reverse inversions
-
-    rightManipulatorMotorMN.configure(breakModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-    algaeIntakeMotorN.configure(breakModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-    algaeIntakeRotateMotorN.configure(breakModeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    algaeIntakeMotorN.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    algaeIntakeRotateMotorN.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
@@ -93,13 +79,8 @@ public class EndEffector extends SubsystemBase {
   }
 
   public void setManipulatorSpeed(double speed) {
-    // TODO: Reverse inversions
-    rightManipulatorMotorMN.set(-Math.min(speed, 0.25));
-    leftManipulatorMotorMN.set(-Math.min(speed, 0.25));
-  }
-
-  public void setBeltSpeed(double speed) {
-    beltMotorMN.set(speed);
+    rightManipulatorMotorMN.set(Math.min(speed, 0.8));
+    leftManipulatorMotorMN.set(Math.min(speed, 0.8));
   }
 
   public void setAlgaeIntakeSpeed(double speed) {
