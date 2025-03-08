@@ -28,9 +28,9 @@ public class NetworkTables {
   private static NetworkTable devBoard = dash.getSubTable(Constants.NetworktablePaths.Test);
     public static NetworkTableEntry numOLoggedCmds_i = devBoard.getEntry("numOLoggedCmds_i");
     
-    public static NetworkTableEntry cameraPose = devBoard.getEntry("cameraPose_ab");
+    public static NetworkTableEntry cameraPose = devBoard.getEntry("cameraPose_ad");
     public static NetworkTableEntry backCameraPose = devBoard.getEntry("backCameraPose_ad");
-    public static NetworkTableEntry frontCameraPose = devBoard.getEntry("frontCameraPose_ab");
+    public static NetworkTableEntry frontCameraPose = devBoard.getEntry("frontCameraPose_ad");
 
     public static NetworkTableEntry measuredSwerveStates_da = devBoard.getEntry("measuredStates_da");
     public static NetworkTableEntry desiredSwerveStates_da = devBoard.getEntry("desiredStates_da");

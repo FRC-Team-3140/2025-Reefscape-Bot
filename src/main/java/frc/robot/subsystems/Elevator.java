@@ -28,7 +28,7 @@ public class Elevator extends SubsystemBase {
   private final Encoder LeftEncoder;
   private final Encoder RightEncoder;
 //TODO: set to true when elevator is ready
-  public static final boolean elevatorEnabled = false;
+  public static final boolean elevatorEnabled = true;
 
   public final Constraints ElevConstraints = new Constraints(Constants.Constraints.elevatorMaxVelocity,
       Constants.Constraints.elevatorMaxAcceleration);

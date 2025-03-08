@@ -26,6 +26,8 @@ public class Camera extends SubsystemBase {
   private double lastAttemptReconnectIterration = 0;
 
   private Pose2d lastPose = new Pose2d();
+  private Vector2 lastVecFront = new Vector2();
+  private Vector2 lastVecBack = new Vector2();
 
   /**
    * Represents a distance measurement obtained from a camera sensor.
@@ -187,7 +189,18 @@ public class Camera extends SubsystemBase {
 
         camera2Exists = true;
       }
+      if (camera0Exists && poseVec0.X == lastVecFront.X)
+        camera0Exists = false;
+
+      lastVecFront = poseVec0;
+
+      if (camera2Exists && poseVec2.X == lastVecBack.X)
+        camera2Exists = false;
+
+      lastVecBack = poseVec2;
+
       Pose2d curPose = null;
+
       if (camera0Exists && camera2Exists) {
         curPose = new Pose2d((centerOfBot0.X + centerOfBot2.X) / 2, (centerOfBot0.Y + centerOfBot2.Y) / 2,
             new Rotation2d(
@@ -202,19 +215,22 @@ public class Camera extends SubsystemBase {
         return null;
       if (curPose.getX() == lastPose.getX())
         return null;
-      
-      NetworkTables.frontCameraPose
-          .setDoubleArray(new double[] {
-              centerOfBot0.X, 
-              centerOfBot0.Y,
-              new Rotation2d(Math.atan2(mUnitVec0.Y, mUnitVec0.X)).getDegrees()
-          });
-      NetworkTables.backCameraPose
-          .setDoubleArray(new double[] {
-              centerOfBot2.X, 
-              centerOfBot2.Y,
-              new Rotation2d(Math.atan2(mUnitVec2.neg().Y, mUnitVec2.neg().X)).getDegrees()
-          });
+      if (camera0Exists) {
+        NetworkTables.frontCameraPose
+            .setDoubleArray(new double[] {
+                centerOfBot0.X,
+                centerOfBot0.Y,
+                new Rotation2d(Math.atan2(mUnitVec0.Y, mUnitVec0.X)).getDegrees()
+            });
+      }
+      if (camera2Exists) {
+        NetworkTables.backCameraPose
+            .setDoubleArray(new double[] {
+                centerOfBot2.X,
+                centerOfBot2.Y,
+                new Rotation2d(Math.atan2(mUnitVec2.neg().Y, mUnitVec2.neg().X)).getDegrees()
+            });
+      }
       lastPose = curPose;
       return curPose;
     } else {

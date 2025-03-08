@@ -41,7 +41,7 @@ public class Controller extends SubsystemBase {
 
   private final double deadband = .07;
 
-  private final boolean testing = true;
+  private final boolean testing = false;
 
   public enum controllers {
     PRIMARY, SECONDARY

@@ -60,9 +60,12 @@ public class EndEffector extends SubsystemBase {
     algaeIntakeRotateMotorN = new SparkMax(Constants.MotorIDs.AIRotate, MotorType.kBrushless);
 
     SparkMaxConfig config = new SparkMaxConfig();
+
+    config.inverted(false).idleMode(IdleMode.kBrake);
+    leftManipulatorMotorMN.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
     config.inverted(true).idleMode(IdleMode.kBrake);
     rightManipulatorMotorMN.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    leftManipulatorMotorMN.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     algaeIntakeMotorN.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     algaeIntakeRotateMotorN.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
