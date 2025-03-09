@@ -17,6 +17,10 @@ public class PoseOdometry extends Odometry {
     private boolean knowsPosition = false;
     private Pose2d nullPose = new Pose2d(0, 0, new Rotation2d(0));
 
+    private Pose2d startingPose = new Pose2d();
+    private final int startingCameraPasses = 10;
+    private int cameraPasses = 0;
+
     protected PoseOdometry() {
         super();
     }
@@ -70,11 +74,21 @@ public class PoseOdometry extends Odometry {
             estimator = new SwerveDrivePoseEstimator(drive.kinematics, getGyroRotation(), positions, new Pose2d());
         }
         if (pose != null) {
-            if (!knowsPosition) {
-                knowsPosition = true;
-                estimator.resetPose(pose);
+            if (cameraPasses < startingCameraPasses) {
+                startingPose = startingPose.interpolate(pose, 0.5);
+                cameraPasses++;
+            } else if (cameraPasses == startingCameraPasses) {
+                estimator.resetPose(startingPose);
+                cameraPasses++;
             } else {
-                estimator.addVisionMeasurement(pose, Timer.getFPGATimestamp());
+                if (!knowsPosition) {
+                    knowsPosition = true;
+                    estimator.resetPose(pose);
+                } else {
+                    if (Math.abs(Math.pow(pose.getTranslation().getX(), 2) + Math.pow(pose.getTranslation().getY(), 2)
+                            - Math.pow(getX(), 2) - Math.pow(getY(), 2)) < 1)
+                        estimator.addVisionMeasurement(pose, Timer.getFPGATimestamp());
+                }
             }
         }
 

@@ -41,13 +41,10 @@ public class NetworkTables {
     public static NetworkTableEntry swerveButton_b = devBoard.getEntry("Swerve_b");
     public static NetworkTableEntry algaeButton_b = devBoard.getEntry("Algae Intake_b");
     public static NetworkTableEntry effectorButton_b = devBoard.getEntry("End Effector_b");
-    public static NetworkTableEntry groundButton_b = devBoard.getEntry("Ground Intake_b");
     public static NetworkTableEntry elevatorButton_b = devBoard.getEntry("Elevator_b");
-    public static NetworkTableEntry handoffButton_b = devBoard.getEntry("Ground Handoff_b");
     public static NetworkTableEntry sourceButton_b = devBoard.getEntry("Source Handoff_b");
     public static NetworkTableEntry reefButton_b = devBoard.getEntry("Algae Reef_b");
     public static NetworkTableEntry algaeGroundButton_b = devBoard.getEntry("Algae Ground_b");
-    public static NetworkTableEntry homeElevatorButton_b = devBoard.getEntry("Home Elevator Button_b");
 
   private static NetworkTable sensors = inst.getTable(Constants.NetworktablePaths.Sensors);
     public static NetworkTableEntry globalCameraTimestamp = sensors.getEntry("timestamp");

@@ -7,7 +7,7 @@ package frc.robot.commands.Autos;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.GoToClosestSource;
-import frc.robot.commands.ScoreCoral;
+import frc.robot.commands.compoundCommands.PositionAndScoreCoral;
 import frc.robot.libs.FieldAprilTags;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.odometry.Odometry;
@@ -34,9 +34,9 @@ public class CycleVertical extends SequentialCommandGroup {
     for (int i = 0; i <= 5; i++) {
       for (int j = 4; j >= 1; j--) {
         super.addCommands(
-            new ScoreCoral(elevator, odometry, ScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
+            new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
             new GoToClosestSource(),
-            new ScoreCoral(elevator, odometry, ScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
+            new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
             new GoToClosestSource());
       }
     }
@@ -58,9 +58,9 @@ public class CycleVertical extends SequentialCommandGroup {
     for (int i = 0; i <= 5; i++) {
       for (int j = 4; j >= 1; j--) {
         super.addCommands(
-            new ScoreCoral(elevator, odometry, ScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
+            new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
             new GoToClosestSource(),
-            new ScoreCoral(elevator, odometry, ScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
+            new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
             new GoToClosestSource());
       }
     }

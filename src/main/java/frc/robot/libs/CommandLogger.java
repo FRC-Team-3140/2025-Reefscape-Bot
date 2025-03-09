@@ -18,6 +18,5 @@ public class CommandLogger {
         Integer[] commandStatesArray = new Integer[commandStates.size()];
         commandStates.toArray(commandStatesArray);
         NetworkTables.commandStatuses.setNumberArray(commandStatesArray);
-
     }
 }

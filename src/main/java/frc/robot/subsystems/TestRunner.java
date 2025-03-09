@@ -10,12 +10,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.tests.TestAlgaeIntake;
 import frc.robot.tests.TestAlgaeReef;
 import frc.robot.libs.NetworkTables;
-import frc.robot.tests.HomeElevator;
 import frc.robot.tests.Test;
 import frc.robot.tests.TestElevator;
 import frc.robot.tests.TestEndEffector;
-import frc.robot.tests.TestGroundHandoff;
-import frc.robot.tests.TestGroundIntake;
 import frc.robot.tests.TestSwerve;
 
 public class TestRunner extends SubsystemBase {
@@ -25,13 +22,10 @@ public class TestRunner extends SubsystemBase {
     SWERVE,
     ALGAE_INTAKE,
     END_EFFECTOR,
-    GROUND_INTAKE,
     ELEVATOR,
-    GROUND_HANDOFF,
     SOURCE_HANDOFF,
     ALGAE_REEF,
     ALGAE_GROUND, 
-    HOME_ELEVATOR
   };
 
   private final HashMap<TestType, Test> tests = new HashMap<TestType, Test>();
@@ -43,19 +37,17 @@ public class TestRunner extends SubsystemBase {
     return instance;
   }
 
-  // TODO: Figure out why Test Ground Intake, Test Elevator, Algae Reef, and Test
-  // Groud are not working
   private TestRunner() {
+    // Subsystems
     tests.put(TestType.SWERVE, new TestSwerve(NetworkTables.swerveButton_b, TestType.SWERVE));
     tests.put(TestType.ALGAE_INTAKE, new TestAlgaeIntake(NetworkTables.algaeButton_b, TestType.ALGAE_INTAKE));
     tests.put(TestType.END_EFFECTOR, new TestEndEffector(NetworkTables.effectorButton_b, TestType.END_EFFECTOR));
-    // tests.put(TestType.GROUND_INTAKE, new TestGroundIntake(NetworkTables.groundButton_b, TestType.GROUND_INTAKE));
     tests.put(TestType.ELEVATOR, new TestElevator(NetworkTables.elevatorButton_b, TestType.ELEVATOR));
-    tests.put(TestType.GROUND_HANDOFF, new TestGroundHandoff(NetworkTables.handoffButton_b, TestType.GROUND_HANDOFF));
-    tests.put(TestType.GROUND_HANDOFF, new TestGroundHandoff(NetworkTables.sourceButton_b, TestType.SOURCE_HANDOFF));
-    tests.put(TestType.GROUND_INTAKE, new TestGroundIntake(NetworkTables.reefButton_b, TestType.GROUND_INTAKE));
-    tests.put(TestType.ALGAE_REEF, new TestAlgaeReef(NetworkTables.algaeButton_b, TestType.ALGAE_REEF));
-    tests.put(TestType.HOME_ELEVATOR, new HomeElevator(NetworkTables.homeElevatorButton_b, TestType.HOME_ELEVATOR));
+
+    // Tests
+    tests.put(TestType.ALGAE_GROUND, new TestAlgaeIntake(NetworkTables.algaeGroundButton_b, TestType.ALGAE_GROUND));
+    tests.put(TestType.SOURCE_HANDOFF, new TestAlgaeIntake(NetworkTables.sourceButton_b, TestType.SOURCE_HANDOFF));
+    tests.put(TestType.ALGAE_REEF, new TestAlgaeReef(NetworkTables.reefButton_b, TestType.ALGAE_REEF));
   }
 
   @Override

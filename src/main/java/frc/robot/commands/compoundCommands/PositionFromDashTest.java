@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.compoundCommands;
 
 import java.util.Hashtable;
 
@@ -23,7 +23,7 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.odometry.Odometry;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class ScoreCoral extends ParallelCommandGroup {
+public class PositionFromDashTest extends ParallelCommandGroup {
   private Elevator elevator = null;
   private Odometry odometry = null;
 
@@ -55,9 +55,9 @@ public class ScoreCoral extends ParallelCommandGroup {
    * @param Position
    * @param reefSide
    */
-  public ScoreCoral(Elevator elevator, Odometry odometry, Position pos, int reefSide) {
-    this.elevator = elevator;
-    this.odometry = odometry;
+  public PositionFromDashTest(Position pos, int reefSide) {
+    this.elevator = Elevator.getInstance();
+    this.odometry = Odometry.getInstance();
 
     coralScorePos = pos;
 
