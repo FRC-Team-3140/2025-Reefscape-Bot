@@ -21,7 +21,6 @@ import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.endeffector.EndEffectorScoreCoral;
 import frc.robot.commands.swerveDrive.SwerveDriveManualControl;
 import frc.robot.libs.NetworkTables;
-import edu.wpi.first.networktables.NetworkTableInstance.NetworkMode;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class Controller extends SubsystemBase {
