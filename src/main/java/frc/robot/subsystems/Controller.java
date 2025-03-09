@@ -15,11 +15,13 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.IntakeAlgaeReef;
 import frc.robot.commands.compoundCommands.GoToSourceAndIntake;
+import frc.robot.commands.compoundCommands.PositionFromDashTest;
 import frc.robot.commands.compoundCommands.SourceCoralIntake;
 import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.endeffector.EndEffectorScoreCoral;
 import frc.robot.commands.swerveDrive.SwerveDriveManualControl;
 import frc.robot.libs.NetworkTables;
+import edu.wpi.first.networktables.NetworkTableInstance.NetworkMode;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class Controller extends SubsystemBase {
@@ -331,16 +333,20 @@ public class Controller extends SubsystemBase {
     // endEffector.algaeIntakeRotateMotorN.set(-getRightY(controllers.SECONDARY) * 0.25);
     // endEffector.algaeIntakeMotorN.set(-getLeftY(controllers.SECONDARY));
 
-    if (secondaryController.getXButtonPressed()) {
-      endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.max);
-    }
+    // if (secondaryController.getXButtonPressed()) {
+    //   endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.max);
+    // }
 
-    if (secondaryController.getAButtonPressed()) {
-      endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.max/2);
-    }
+    // if (secondaryController.getAButtonPressed()) {
+    //   endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.max/2);
+    // }
 
-    if (secondaryController.getBButtonPressed()) {
-      endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.min);
+    // if (secondaryController.getBButtonPressed()) {
+    //   endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.min);
+    // }
+
+    if(secondaryController.getXButtonPressed()) {
+      new PositionFromDashTest(NetworkTables.loc_s.getString("L4")).schedule();
     }
   }
 
