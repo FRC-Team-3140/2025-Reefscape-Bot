@@ -91,7 +91,7 @@ public final class Constants {
 
   public static class Bot {
     public static final double gearRatio = 6.12;
-    public static final double botMass = 24.4; // TODO: Update Bot Mass
+    public static final double botMass = 48.988;
     public static final double wheelDiameter = Units.inchesToMeters(4);
     public static final double botLength = Units.inchesToMeters(29);
 
@@ -150,10 +150,7 @@ public final class Constants {
 
     public static final double GIAngleTolerance = 5;
 
-    // End Effector TODO: Update these values
-    public static final double EEIntakeAngleMin = 0;
-    public static final double EEIntakeAngleMax = 180;
-    public static final double EEIntakeCurrentThreshold = 10;
+    public static final double EEAlgaeIntakeCurrentThreshold = 10;
   }
 
   public static class Controller {

@@ -43,6 +43,6 @@ public class IntakeAlgaeReef extends LoggedCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return endEffector.getAlgaeIntakeCurrent() > Constants.Limits.EEIntakeCurrentThreshold;
+    return endEffector.getAlgaeIntakeCurrent() > Constants.Limits.EEAlgaeIntakeCurrentThreshold;
   }
 }
