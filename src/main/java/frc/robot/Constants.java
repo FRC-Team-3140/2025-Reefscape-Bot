@@ -8,7 +8,6 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -54,11 +53,6 @@ public final class Constants {
     // Algae Intake
     public static final int AIRotate = 14;
     public static final int AIIntake = 15;
-
-    // Ground Intake
-    public static final int GILeft = 16;
-    public static final int GIRight = 17;
-    public static final int GILift = 18;
   }
 
   public static class SensorIDs {
@@ -80,9 +74,6 @@ public final class Constants {
 
     // Algae Intake
     public static final int AIEncoder = 0;
-
-    // Ground Intake
-    // public static final int GIEncoder = 6;
 
     // End Effector
     public static final int EECoralSensor = 1;
@@ -141,15 +132,7 @@ public final class Constants {
     public static final double CurrentHomeThreshold = 4;
     public static final double ElevPosThreshold = 0.5;
 
-    // Ground Intake
-    public static final double GIMinAngle = 0;
-
-    public static final double GIMaxAngle = 180;
-
-    public static final double GICoralDetectionCurrentThreshold = 10;
-
-    public static final double GIAngleTolerance = 5;
-
+    // Endeffector
     public static final double EEAlgaeIntakeCurrentThreshold = 10;
   }
 
@@ -163,15 +146,6 @@ public final class Constants {
   public static class Constraints {
     public static final double elevatorMaxVelocity = 1;
     public static final double elevatorMaxAcceleration = 3;
-
-    // Ground Intake
-    public static final TrapezoidProfile.Constraints GIConstraints = new TrapezoidProfile.Constraints(1, 1);
-  }
-
-  public static class Voltages {
-    // Ground Intake
-    public static final double GIVoltage = 8;
-
   }
 
   public static class CameraConstants {

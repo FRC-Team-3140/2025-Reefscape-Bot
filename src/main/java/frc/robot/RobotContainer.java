@@ -29,7 +29,6 @@ public class RobotContainer {
   public static SwerveDrive swerveDrive = SwerveDrive.getInstance();
   public static Elevator elevator = Elevator.getInstance();
   public static EndEffector endEffector = EndEffector.getInstance();
-  // public GroundIntake groundIntake = GroundIntake.getInstance();
   public static TestRunner testRunner = TestRunner.getInstance();
   public static Controller controller = Controller.getInstance();
   public static Odometry odometry = Odometry.getInstance();

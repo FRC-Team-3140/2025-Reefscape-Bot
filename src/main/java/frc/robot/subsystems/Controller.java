@@ -180,13 +180,14 @@ public class Controller extends SubsystemBase {
       updateControlMode();
       return;
     }
+
     if (primaryController.getAButtonPressed()) {
     } // TODO: run algae intake auto based on web dash
     if (primaryController.getXButtonPressed()) {
     } // TODO: run coral intake auto based on web dash
+
     if (primaryController.getBButtonPressed())
       new GoToSourceAndIntake().schedule();
-
   }
 
   private void ManualMode() {
@@ -194,13 +195,14 @@ public class Controller extends SubsystemBase {
       updateControlMode();
       return;
     }
+
     if (secondaryController.getRightBumperButtonPressed())
       new SequentialCommandGroup(
           new SetHeight(Constants.ElevatorHeights.sourceIntake), new SourceCoralIntake()).schedule();
+
     if (secondaryController.getLeftBumperButtonPressed())
       new EndEffectorScoreCoral(0.8).schedule();
-    // elevator.setHeight(elevator.getTarget() - getRightY(controllers.SECONDARY) *
-    // 0.9);
+
     if (secondaryController.getBButtonPressed()) {
       // Elevator trough
       elevator.setHeight(ElevatorHeights.reefCoralL1Height);
@@ -220,12 +222,15 @@ public class Controller extends SubsystemBase {
       // Elevator level reef 3
       elevator.setHeight(ElevatorHeights.reefCoralL4Height);
     }
+
     if (primaryController.getYButtonPressed()) {
       SwerveDrive.odometry.resetGyro();
     }
+
     if (primaryController.getStartButtonPressed()) {
       RobotContainer.odometry.recalibrateCameraPose();
     }
+
     if (secondaryController.getPOV() == 180) {
       elevator.setHeight(ElevatorHeights.minimum);
     }
@@ -302,12 +307,6 @@ public class Controller extends SubsystemBase {
       endEffector.setManipulatorSpeed(Constants.MotorSpeeds.EndEffector.manipulatorScore);
     } else {
       endEffector.setManipulatorSpeed(0);
-    }
-
-    if (secondaryController.getLeftBumperButtonPressed()) {
-      // Ground Intake
-      // new GroundCoralIntake(GroundIntake.getInstance(),
-      // Elevator.getInstance()).schedule();
     }
 
     if (secondaryController.getRightBumperButton()) {
