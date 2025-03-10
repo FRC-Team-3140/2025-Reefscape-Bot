@@ -66,7 +66,10 @@ public class PoseOdometry extends Odometry {
     public Pose2d getPose() {
         return estimator == null ? nullPose : estimator.getEstimatedPosition();
     }
-
+    
+    public void recalibrateCameraPose() {
+        cameraPasses = 0;
+    }
     public void updatePosition(SwerveModulePosition[] positions) {
         SwerveDrive drive = SwerveDrive.getInstance();
         Pose2d pose = calculatePoseFromTags();
@@ -86,8 +89,11 @@ public class PoseOdometry extends Odometry {
                     estimator.resetPose(pose);
                 } else {
                     if (Math.abs(Math.pow(pose.getTranslation().getX(), 2) + Math.pow(pose.getTranslation().getY(), 2)
-                            - Math.pow(getX(), 2) - Math.pow(getY(), 2)) < 1)
+                            - Math.pow(getX(), 2) - Math.pow(getY(), 2)) < 3)
+                        {
                         estimator.addVisionMeasurement(pose, Timer.getFPGATimestamp());
+                            System.out.println("Adding vision measurement");
+                   }
                 }
             }
         }

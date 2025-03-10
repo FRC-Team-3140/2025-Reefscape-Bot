@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.DigitalInput;
-
+// TODO: fix algae intake spazzing
 public class EndEffector extends SubsystemBase {
 
   static EndEffector instance = null;
@@ -75,7 +75,7 @@ public class EndEffector extends SubsystemBase {
     armAngle = AlgaeArmEncoder.get();
     NetworkTableInstance.getDefault().getEntry("Endeffector").setDouble(armAngle);
     AlgaeArmPID.setGoal(targetAngle);
-    algaeIntakeRotateMotorN.set(AlgaeArmPID.calculate(armAngle, targetAngle));
+    //algaeIntakeRotateMotorN.set(AlgaeArmPID.calculate(armAngle, targetAngle));
   }
 
   public void setAlgaeIntakeAngle(double angle) {
