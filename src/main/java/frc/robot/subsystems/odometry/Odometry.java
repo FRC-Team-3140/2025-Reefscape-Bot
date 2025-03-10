@@ -60,6 +60,8 @@ abstract public class Odometry extends SubsystemBase {
 
   abstract public boolean knowsPose();
 
+  abstract public void recalibrateCameraPose();
+
   public Rotation2d getGyroRotation() {
     return gyro.getRotation2d();
   }

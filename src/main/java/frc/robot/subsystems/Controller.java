@@ -21,6 +21,7 @@ import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.endeffector.EndEffectorScoreCoral;
 import frc.robot.commands.swerveDrive.SwerveDriveManualControl;
 import frc.robot.libs.NetworkTables;
+import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class Controller extends SubsystemBase {
@@ -222,6 +223,9 @@ public class Controller extends SubsystemBase {
     }
     if (primaryController.getYButtonPressed()) {
       SwerveDrive.odometry.resetGyro();
+    }
+    if(primaryController.getStartButtonPressed()) {
+      RobotContainer.odometry.recalibrateCameraPose();
     }
     if (secondaryController.getPOV() == 180) {
       elevator.setHeight(ElevatorHeights.minimum);
