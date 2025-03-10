@@ -189,6 +189,7 @@ public class Camera extends SubsystemBase {
 
         camera2Exists = true;
       }
+
       if (camera0Exists && poseVec0.X == lastVecFront.X)
         camera0Exists = false;
 
@@ -211,10 +212,13 @@ public class Camera extends SubsystemBase {
       } else if (camera2Exists) {
         curPose = new Pose2d(centerOfBot2.X, centerOfBot2.Y,
             new Rotation2d(Math.atan2(mUnitVec2.neg().Y, mUnitVec2.neg().X)));
-      } else
+      } else {
         return null;
+      }
+
       if (curPose.getX() == lastPose.getX())
         return null;
+
       if (camera0Exists) {
         NetworkTables.frontCameraPose
             .setDoubleArray(new double[] {
@@ -223,6 +227,7 @@ public class Camera extends SubsystemBase {
                 new Rotation2d(Math.atan2(mUnitVec0.Y, mUnitVec0.X)).getDegrees()
             });
       }
+
       if (camera2Exists) {
         NetworkTables.backCameraPose
             .setDoubleArray(new double[] {
@@ -231,6 +236,7 @@ public class Camera extends SubsystemBase {
                 new Rotation2d(Math.atan2(mUnitVec2.neg().Y, mUnitVec2.neg().X)).getDegrees()
             });
       }
+
       lastPose = curPose;
       return curPose;
     } else {

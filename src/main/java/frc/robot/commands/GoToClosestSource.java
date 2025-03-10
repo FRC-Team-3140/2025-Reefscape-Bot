@@ -41,10 +41,6 @@ public class GoToClosestSource extends Command {
     addRequirements(odometry);
   }
 
-  private double sqr(double num) {
-    return (num * num);
-  }
-
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -62,8 +58,8 @@ public class GoToClosestSource extends Command {
 
     Pose2d curPose = odometry.getPose();
 
-    double leftDist = Math.sqrt(sqr(LeftSource.getY() - curPose.getY()) + sqr(LeftSource.getX() - curPose.getX()));
-    double rightDist = Math.sqrt(sqr(RightSource.getY() - curPose.getY()) + sqr(RightSource.getX() - curPose.getX()));
+    double leftDist = Math.sqrt(Math.pow(LeftSource.getY() - curPose.getY(), 2) + Math.pow(LeftSource.getX() - curPose.getX(), 2));
+    double rightDist = Math.sqrt(Math.pow(RightSource.getY() - curPose.getY(), 2) + Math.pow(RightSource.getX() - curPose.getX(), 2));
 
     double minDist = Math.min(leftDist, rightDist);
     closestStation = (minDist == leftDist) ? coralStations.LEFT : coralStations.RIGHT;

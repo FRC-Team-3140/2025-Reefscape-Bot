@@ -4,12 +4,15 @@
 
 package frc.robot.tests;
 
+import frc.robot.commands.endeffector.EndEffectorIntakeAlgae;
 import frc.robot.subsystems.TestRunner.TestType;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 
 /** Add your docs here. */
 public class TestAlgaeGround extends Test {
+    private final EndEffectorIntakeAlgae intakeCommand = new EndEffectorIntakeAlgae(
+            EndEffectorIntakeAlgae.Level.Ground);
+
     public TestAlgaeGround(NetworkTableEntry entry, TestType type) {
         super(entry, type);
     }
@@ -20,8 +23,9 @@ public class TestAlgaeGround extends Test {
     }
 
     public void Periodic() {
-        // TODO: Implement this method
-        new PrintCommand("GroundIntake").schedule();
+        if (!intakeCommand.isScheduled()) {
+            intakeCommand.schedule();
+        }
     }
 
     @Override

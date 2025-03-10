@@ -20,7 +20,8 @@ public class setSwerveStates extends Command {
    * 
    * @param swerve The SwerveDrive subsystem used by this command.
    * 
-   * If no state is passed, it will use the default state in Constants.java
+   *               If no state is passed, it will use the default state in
+   *               Constants.java
    */
   public setSwerveStates(SwerveDrive swerve) {
     this.swerve = swerve;
@@ -33,16 +34,17 @@ public class setSwerveStates extends Command {
    * Creates a new setSwerveStates command.
    * 
    * @param swerve The SwerveDrive subsystem used by this command.
-   * @param state An array of SwerveModuleStates FL, FR, BL, BR
+   * @param state  An array of SwerveModuleStates FL, FR, BL, BR
    * 
-   * Will use the provided state
+   *               Will use the provided state
    */
   public setSwerveStates(SwerveDrive swerve, SwerveModuleState[] state) {
     this.swerve = swerve;
     if (state.length == swerve.modules.length) {
       this.state = state;
     } else {
-      // In this scenario, the code will continue with the default states like the constructor
+      // In this scenario, the code will continue with the default states like the
+      // constructor
       // above.
       System.err.println("resetSwerveStates was called with an invalid state array.");
     }

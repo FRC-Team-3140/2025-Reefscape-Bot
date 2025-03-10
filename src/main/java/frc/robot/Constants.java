@@ -72,12 +72,11 @@ public final class Constants {
     public static final int BR = 3;
 
     // Elevator
-    
+
     public static final int ElevEncoderRightA = 2;
     public static final int ElevEncoderRightB = 3;
     public static final int ElevEncoderLeftA = 4;
     public static final int ElevEncoderLeftB = 5;
-
 
     // Algae Intake
     public static final int AIEncoder = 0;

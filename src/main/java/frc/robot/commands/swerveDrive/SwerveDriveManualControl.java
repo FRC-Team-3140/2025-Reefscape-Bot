@@ -26,7 +26,8 @@ public class SwerveDriveManualControl extends LoggedCommand {
      * @param maxSpeed            The maximum speed for the swerve drive
      * @param maxChassisTurnSpeed The maximum turn speed for the chassis
      */
-    public SwerveDriveManualControl(SwerveDrive swerveDrive, double maxSpeed, double maxChassisTurnSpeed, boolean fieldRelative) {
+    public SwerveDriveManualControl(SwerveDrive swerveDrive, double maxSpeed, double maxChassisTurnSpeed,
+            boolean fieldRelative) {
         this.swerveDrive = swerveDrive;
         this.maxSpeed = maxSpeed;
         this.maxChassisTurnSpeed = maxChassisTurnSpeed;
@@ -49,7 +50,8 @@ public class SwerveDriveManualControl extends LoggedCommand {
             locked = !locked;
         }
 
-        if (controller.primaryController.getBackButtonPressed() && controller.primaryController.getBackButtonPressed()) {
+        if (controller.primaryController.getBackButtonPressed()
+                && controller.primaryController.getBackButtonPressed()) {
             fieldRelative = !fieldRelative;
         }
 

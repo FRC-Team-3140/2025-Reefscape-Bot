@@ -27,7 +27,8 @@ public class Elevator extends SubsystemBase {
 
   private final Encoder LeftEncoder;
   private final Encoder RightEncoder;
-//TODO: set to true when elevator is ready
+  
+  // Boolean disables all elevator motors
   public static final boolean elevatorEnabled = true;
 
   public final Constraints ElevConstraints = new Constraints(Constants.Constraints.elevatorMaxVelocity,
@@ -121,8 +122,10 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    ElevatorPIDs.getEntry("Left Encoder Distance").setDouble(LeftEncoder.getDistance() * Constants.Bot.elevatorEncoderDegreesToMeters);
-    ElevatorPIDs.getEntry("Right Encoder Distance").setDouble(RightEncoder.getDistance() * Constants.Bot.elevatorEncoderDegreesToMeters);
+    ElevatorPIDs.getEntry("Left Encoder Distance")
+        .setDouble(LeftEncoder.getDistance() * Constants.Bot.elevatorEncoderDegreesToMeters);
+    ElevatorPIDs.getEntry("Right Encoder Distance")
+        .setDouble(RightEncoder.getDistance() * Constants.Bot.elevatorEncoderDegreesToMeters);
 
     pidLeft.setP(ElevatorPIDs.getEntry("P").getDouble(0));
     pidLeft.setI(ElevatorPIDs.getEntry("I").getDouble(0));
@@ -150,7 +153,8 @@ public class Elevator extends SubsystemBase {
 
     if (Controller.getInstance().getControlMode() == Controller.ControlMode.OHNO_MANUAL)
       return;
-    if(!elevatorEnabled)  return;
+    if (!elevatorEnabled)
+      return;
     LMot.set(speedL);
     RMot.set(speedR);
   }

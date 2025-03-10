@@ -13,6 +13,7 @@ public class setLEDColor extends Command {
   public setLEDColor(int R, int G, int B) {
     SignalTower.getInstance().setSolid(R, G, B);
   }
+
   @Override
   public boolean isFinished() {
     return true;

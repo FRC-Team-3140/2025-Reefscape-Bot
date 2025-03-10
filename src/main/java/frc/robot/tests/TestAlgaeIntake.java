@@ -6,13 +6,14 @@ package frc.robot.tests;
 
 import frc.robot.subsystems.TestRunner.TestType;
 import edu.wpi.first.networktables.NetworkTableEntry;
-// import frc.robot.subsystems.EndEffector;
+import frc.robot.Constants;
+import frc.robot.subsystems.EndEffector;
 
 /** Add your docs here. */
 public class TestAlgaeIntake extends Test {
-    // private final EndEffector algaeIntake = EndEffector.getInstance();
+    private final EndEffector algaeIntake = EndEffector.getInstance();
 
-    // private final double voltage = 0.4;
+    private final double speed = 0.4;
 
     public TestAlgaeIntake(NetworkTableEntry entry, TestType type) {
         super(entry, type);
@@ -24,7 +25,8 @@ public class TestAlgaeIntake extends Test {
     }
 
     public void Periodic() {
-    
+        algaeIntake.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.reefIntake);
+        algaeIntake.setAlgaeIntakeSpeed(speed);
     }
 
     @Override

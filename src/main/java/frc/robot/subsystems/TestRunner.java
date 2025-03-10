@@ -25,7 +25,7 @@ public class TestRunner extends SubsystemBase {
     ELEVATOR,
     SOURCE_HANDOFF,
     ALGAE_REEF,
-    ALGAE_GROUND, 
+    ALGAE_GROUND,
   };
 
   private final HashMap<TestType, Test> tests = new HashMap<TestType, Test>();

@@ -9,13 +9,12 @@ import frc.robot.Constants;
 import frc.robot.commands.LEDs.setLEDColor;
 import frc.robot.commands.LEDs.setRainbow;
 import frc.robot.commands.elevator.SetHeight;
-import frc.robot.commands.endeffector.EndEffectorIntakeCoral;
+import frc.robot.commands.endeffector.EndEffectorIntakeAlgae;
 
-// TODO: test if squential works (instead of parallel)
-public class SourceCoralIntake extends SequentialCommandGroup {
+public class GetAlgaeGroundManual extends SequentialCommandGroup {
   /** Creates a new SourceCoralIntake. */
-  public SourceCoralIntake() {
-    super(new setLEDColor(255, 0, 0), new SetHeight(Constants.ElevatorHeights.sourceIntake), new setLEDColor(0, 255, 0),
-        new EndEffectorIntakeCoral(), new setRainbow());
+  public GetAlgaeGroundManual(EndEffectorIntakeAlgae.Level level) {
+    super(new SetHeight(Constants.ElevatorHeights.groundIntake), new setLEDColor(0, 255, 0),
+        new EndEffectorIntakeAlgae(level), new setRainbow());
   }
 }

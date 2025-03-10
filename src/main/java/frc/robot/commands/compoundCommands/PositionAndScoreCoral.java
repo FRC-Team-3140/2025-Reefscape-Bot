@@ -160,15 +160,11 @@ public class PositionAndScoreCoral extends ParallelCommandGroup {
       elevator.setHeight(level);
     }
 
-    private double sqr(double num) {
-      return (num * num);
-    }
-
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
       Pose2d curPose = odometry.getPose();
-      double distance = Math.sqrt(sqr(finalPose.getY() - curPose.getY()) + sqr(finalPose.getX() - curPose.getX()));
+      double distance = Math.sqrt(Math.pow(finalPose.getY() - curPose.getY(), 2) + Math.pow(finalPose.getX() - curPose.getX(), 2));
 
       if (distance <= minDistForElevator) {
         return true;

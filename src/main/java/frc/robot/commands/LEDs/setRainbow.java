@@ -4,7 +4,6 @@
 
 package frc.robot.commands.LEDs;
 
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SignalTower;
 
@@ -14,6 +13,7 @@ public class setRainbow extends Command {
   public setRainbow() {
     SignalTower.getInstance().setRainbow();
   }
+
   @Override
   public boolean isFinished() {
     return true;

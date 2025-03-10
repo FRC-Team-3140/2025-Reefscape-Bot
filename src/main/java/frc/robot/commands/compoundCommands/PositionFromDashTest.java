@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands.compoundCommands;
+
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.elevator.SetHeight;
 import frc.robot.libs.LoggedCommand;
@@ -46,11 +47,12 @@ public class PositionFromDashTest extends LoggedCommand {
         break;
     }
   }
+
   @Override
   public void end(boolean interrupted) {
     new SetHeight(level).schedule();
     super.end(interrupted);
-  } 
+  }
 
   public boolean isFinished() {
     return true;

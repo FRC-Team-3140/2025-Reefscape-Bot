@@ -4,12 +4,14 @@
 
 package frc.robot.tests;
 
+import frc.robot.commands.compoundCommands.SourceCoralIntake;
 import frc.robot.subsystems.TestRunner.TestType;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 
 /** Add your docs here. */
 public class TestSourceHandoff extends Test {
+    private SourceCoralIntake intakeCommand = new SourceCoralIntake();
+
     public TestSourceHandoff(NetworkTableEntry entry, TestType type) {
         super(entry, type);
     }
@@ -20,8 +22,9 @@ public class TestSourceHandoff extends Test {
     }
 
     public void Periodic() {
-        // TODO: Implement this method
-        new PrintCommand("Soruce Handoff").schedule();
+        if (!intakeCommand.isScheduled()) {
+            intakeCommand.schedule();
+        }
     }
 
     @Override

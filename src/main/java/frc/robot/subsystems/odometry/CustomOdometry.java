@@ -131,7 +131,6 @@ public class CustomOdometry extends Odometry {
         if (lastUpdateT == null) {
             lastUpdateT = Timer.getFPGATimestamp();
         }
-        
 
         double deltaTime = Timer.getFPGATimestamp() - lastUpdateT;
         lastUpdateT += deltaTime;
@@ -142,7 +141,7 @@ public class CustomOdometry extends Odometry {
             knowsPosition = true;
             position = new Vector2(tagPose.getX(), tagPose.getY());
             angle = tagPose.getRotation().getRadians();
-        } 
+        }
 
         // incase these values are null, we can't do anything
         if (position == null || angle == null) {

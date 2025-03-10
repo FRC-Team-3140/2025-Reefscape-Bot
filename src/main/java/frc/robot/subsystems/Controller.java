@@ -329,22 +329,23 @@ public class Controller extends SubsystemBase {
   }
 
   private void testingMode() {
-    // endEffector.algaeIntakeRotateMotorN.set(-getRightY(controllers.SECONDARY) * 0.25);
+    // endEffector.algaeIntakeRotateMotorN.set(-getRightY(controllers.SECONDARY) *
+    // 0.25);
     // endEffector.algaeIntakeMotorN.set(-getLeftY(controllers.SECONDARY));
 
     // if (secondaryController.getXButtonPressed()) {
-    //   endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.max);
+    // endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.max);
     // }
 
     // if (secondaryController.getAButtonPressed()) {
-    //   endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.max/2);
+    // endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.max/2);
     // }
 
     // if (secondaryController.getBButtonPressed()) {
-    //   endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.min);
+    // endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.min);
     // }
 
-    if(secondaryController.getXButtonPressed()) {
+    if (secondaryController.getXButtonPressed()) {
       new PositionFromDashTest(NetworkTables.loc_s.getString("L4")).schedule();
     }
   }
