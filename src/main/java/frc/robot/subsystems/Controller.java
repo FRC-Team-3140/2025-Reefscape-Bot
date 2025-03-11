@@ -17,6 +17,7 @@ import frc.robot.commands.IntakeAlgaeReef;
 import frc.robot.commands.compoundCommands.GoToSourceAndIntake;
 import frc.robot.commands.compoundCommands.PositionFromDashTest;
 import frc.robot.commands.compoundCommands.SourceCoralIntake;
+import frc.robot.commands.elevator.ReturnToStowed;
 import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.endeffector.EndEffectorScoreCoral;
 import frc.robot.commands.swerveDrive.SwerveDriveManualControl;
@@ -196,6 +197,24 @@ public class Controller extends SubsystemBase {
       return;
     }
 
+    if (primaryController.getYButtonPressed()) {
+      SwerveDrive.odometry.resetGyro();
+    }
+
+    if (primaryController.getStartButtonPressed()) {
+      RobotContainer.odometry.recalibrateCameraPose();
+    }
+
+    if (primaryController.getXButtonPressed()) {
+      fieldOriented = !fieldOriented;
+      RobotContainer.swerveDrive.setDefaultCommand(
+          new SwerveDriveManualControl(
+              RobotContainer.swerveDrive,
+              Constants.Bot.maxChassisSpeed,
+              Constants.Bot.maxChassisTurnSpeed,
+              fieldOriented));
+    }
+
     if (secondaryController.getRightBumperButtonPressed())
       new SequentialCommandGroup(
           new SetHeight(Constants.ElevatorHeights.sourceIntake), new SourceCoralIntake()).schedule();
@@ -223,26 +242,8 @@ public class Controller extends SubsystemBase {
       elevator.setHeight(ElevatorHeights.reefCoralL4Height);
     }
 
-    if (primaryController.getYButtonPressed()) {
-      SwerveDrive.odometry.resetGyro();
-    }
-
-    if (primaryController.getStartButtonPressed()) {
-      RobotContainer.odometry.recalibrateCameraPose();
-    }
-
     if (secondaryController.getPOV() == 180) {
-      elevator.setHeight(ElevatorHeights.minimum);
-    }
-
-    if (primaryController.getXButtonPressed()) {
-      fieldOriented = !fieldOriented;
-      RobotContainer.swerveDrive.setDefaultCommand(
-          new SwerveDriveManualControl(
-              RobotContainer.swerveDrive,
-              Constants.Bot.maxChassisSpeed,
-              Constants.Bot.maxChassisTurnSpeed,
-              fieldOriented));
+      new ReturnToStowed().schedule();
     }
   }
 
@@ -294,12 +295,12 @@ public class Controller extends SubsystemBase {
 
     if (secondaryController.getStartButtonPressed()) {
       // Get Algae L2
-      new IntakeAlgaeReef(endEffector, ElevatorHeights.reefAlgaeL1Height).schedule();
+      new IntakeAlgaeReef(ElevatorHeights.reefAlgaeL1Height).schedule();
     }
 
     if (secondaryController.getBackButtonPressed()) {
       // Get Algae L3
-      new IntakeAlgaeReef(endEffector, ElevatorHeights.reefAlgaeL2Height).schedule();
+      new IntakeAlgaeReef(ElevatorHeights.reefAlgaeL2Height).schedule();
     }
     if (secondaryController.getLeftTriggerAxis() > Constants.Controller.triggerThreshold) {
       // Score coral
@@ -323,7 +324,7 @@ public class Controller extends SubsystemBase {
 
     if (secondaryController.getPOV() == 180) {
       // Stow elevator
-      elevator.setHeight(ElevatorHeights.safeStowed);
+      new ReturnToStowed().schedule();
     }
   }
 

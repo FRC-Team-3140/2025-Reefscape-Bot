@@ -5,13 +5,14 @@
 package frc.robot.commands.compoundCommands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants;
 import frc.robot.commands.GoToClosestSource;
-import frc.robot.commands.endeffector.EndEffectorIntakeCoral;
+import frc.robot.commands.elevator.SetHeight;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class GoToSourceAndIntake extends SequentialCommandGroup {
   /** Creates a new GoToSourceAndIntake. */
   public GoToSourceAndIntake() {
-    super(new SourceCoralIntake(), new GoToClosestSource(), new EndEffectorIntakeCoral());
+    super(new SetHeight(Constants.ElevatorHeights.sourceIntake), new GoToClosestSource(), new SourceCoralIntake());
   }
 }

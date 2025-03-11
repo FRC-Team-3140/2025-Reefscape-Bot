@@ -10,11 +10,12 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
 
 public class IntakeAlgaeReef extends LoggedCommand {
+  // TODO: we currently have 2 algae cmds
   EndEffector endEffector = null;
   double height = Constants.ElevatorHeights.minimum;
 
-  public IntakeAlgaeReef(EndEffector endEffector, double intakeHeight) {
-    this.endEffector = endEffector;
+  public IntakeAlgaeReef(double intakeHeight) {
+    this.endEffector = EndEffector.getInstance();
     height = intakeHeight;
 
     addRequirements(endEffector);
