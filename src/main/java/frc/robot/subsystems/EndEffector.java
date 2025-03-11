@@ -79,7 +79,8 @@ public class EndEffector extends SubsystemBase {
   }
 
   public void setAlgaeIntakeAngle(double angle) {
-    targetAngle = angle;
+    targetAngle = Math.min(Math.max(angle, Constants.AlgaeIntakeAngles.min), Constants.AlgaeIntakeAngles.max);
+    
   }
 
   public void setManipulatorSpeed(double speed) {

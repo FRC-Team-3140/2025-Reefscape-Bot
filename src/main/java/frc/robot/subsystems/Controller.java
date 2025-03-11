@@ -40,7 +40,7 @@ public class Controller extends SubsystemBase {
     secondaryController = new XboxController(secondary);
   }
 
-  private final double deadband = .07;
+  private final double deadband = .1;
 
   private final boolean testing = false;
 
@@ -301,14 +301,19 @@ public class Controller extends SubsystemBase {
       // Get Algae L3
       new IntakeAlgaeReef(endEffector, ElevatorHeights.reefAlgaeL2Height).schedule();
     }
-
+    if (secondaryController.getLeftTriggerAxis() > Constants.Controller.triggerThreshold) {
+      // Score coral
+      endEffector.setAlgaeIntakeSpeed(-secondaryController.getLeftTriggerAxis());
+    } else {
+      endEffector.setAlgaeIntakeSpeed(0);
+    }
     if (secondaryController.getRightTriggerAxis() > Constants.Controller.triggerThreshold) {
       // Score coral
-      endEffector.setManipulatorSpeed(Constants.MotorSpeeds.EndEffector.manipulatorScore);
-    } else {
-      endEffector.setManipulatorSpeed(0);
+      endEffector.setAlgaeIntakeSpeed(secondaryController.getRightTriggerAxis());
+    } else if (secondaryController.getLeftTriggerAxis() < Constants.Controller.triggerThreshold) {
+      endEffector.setAlgaeIntakeSpeed(0);
     }
-
+    EndEffector.getInstance().setAlgaeIntakeAngle(EndEffector.getInstance().getAlgaeIntakeAngle() - getLeftY(controllers.SECONDARY) * 0.1);
     if (secondaryController.getRightBumperButton()) {
       // Source Intake
       // new SourceCoralIntake().schedule();
@@ -319,14 +324,6 @@ public class Controller extends SubsystemBase {
     if (secondaryController.getPOV() == 180) {
       // Stow elevator
       elevator.setHeight(ElevatorHeights.safeStowed);
-    }
-
-    if (secondaryController.getLeftTriggerAxis() > Constants.Controller.triggerThreshold) {
-      // Intake Algae
-      endEffector.setAlgaeIntakeSpeed(Constants.MotorSpeeds.EndEffector.algaeProcessorSpeed);
-      endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.processorScoreTop);
-    } else {
-      endEffector.setAlgaeIntakeSpeed(0);
     }
   }
 
@@ -347,8 +344,11 @@ public class Controller extends SubsystemBase {
     // endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.min);
     // }
 
-    if (secondaryController.getXButtonPressed()) {
-      new PositionFromDashTest(NetworkTables.loc_s.getString("L4")).schedule();
+    // if (secondaryController.getXButtonPressed()) {
+    //   new PositionFromDashTest(NetworkTables.loc_s.getString("L4")).schedule();
+    // }
+    for(int i = 0; i < 4; i++) {
+      SwerveDrive.getInstance().modules[i].turnMotor.set(getRightX(controllers.PRIMARY));
     }
   }
 
