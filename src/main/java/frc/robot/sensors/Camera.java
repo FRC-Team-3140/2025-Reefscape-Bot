@@ -97,14 +97,14 @@ public class Camera extends SubsystemBase {
       lastAttemptReconnectIterration = Timer.getFPGATimestamp();
     }
 
-    Pose2d camPose = getPoseFromCamera();
-    if (camPose != null)
-      NetworkTables.cameraPose
-          .setDoubleArray(new double[] {
-              camPose.getX(),
-              camPose.getY(),
-              camPose.getRotation().getDegrees()
-          });
+    // Pose2d camPose = getPoseFromCamera();
+    // if (camPose != null)
+    //   NetworkTables.cameraPose
+    //       .setDoubleArray(new double[] {
+    //           camPose.getX(),
+    //           camPose.getY(),
+    //           camPose.getRotation().getDegrees()
+    //       });
   }
 
   public boolean isConnected() {

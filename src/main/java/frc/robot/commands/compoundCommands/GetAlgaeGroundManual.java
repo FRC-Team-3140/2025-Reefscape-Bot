@@ -14,7 +14,7 @@ import frc.robot.commands.endeffector.EndEffectorIntakeAlgae;
 public class GetAlgaeGroundManual extends SequentialCommandGroup {
   /** Creates a new SourceCoralIntake. */
   public GetAlgaeGroundManual(EndEffectorIntakeAlgae.Level level) {
-    super(new SetHeight(Constants.ElevatorHeights.groundIntake), new setLEDColor(0, 255, 0),
+    super(new SetHeight(Constants.ElevatorHeights.groudAlgaeHeight), new setLEDColor(0, 255, 0),
         new EndEffectorIntakeAlgae(level), new setRainbow());
   }
 }

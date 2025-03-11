@@ -42,7 +42,6 @@ abstract public class Odometry extends SubsystemBase {
   }
 
   protected Pose2d calculatePoseFromTags() {
-
     return Camera.getInstance().getPoseFromCamera();
   }
 

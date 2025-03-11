@@ -12,19 +12,23 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorHeights;
+import frc.robot.commands.swerveDrive.setSwerveStates;
+import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.odometry.Odometry;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class PositionAndScoreCoral extends ParallelCommandGroup {
+public class PositionAndScoreCoral extends SequentialCommandGroup {
   private Elevator elevator = null;
   private Odometry odometry = null;
 
   private Pose2d finalPose = null;
-  private double minDistForElevator = 0.2;
+  private double minDistForElevator = 0.5;
 
   private Hashtable<Integer, Pose2d> reefPoses = new Hashtable<>();
 
@@ -200,11 +204,17 @@ public class PositionAndScoreCoral extends ParallelCommandGroup {
     // Put the edge of the bot theoretically touching the apriltag
     pathfindingCommand = AutoBuilder.pathfindToPose(
         finalPose,
-        Constants.PathplannerConstants.pathplannerConstraints);
+        Constants.PathplannerConstants.pathplannerConstraints, 0.0);
 
     // Schedule the pathfinding command to run along with this command that will
     // handle the elevator
-    addCommands(pathfindingCommand, new elevatorCommand());
+    addCommands(new InstantCommand(() -> NetworkTables.cameraPose
+        .setDoubleArray(new double[] {
+            finalPose.getX(),
+            finalPose.getY(),
+            finalPose.getRotation().getDegrees() })),
+        pathfindingCommand, new setSwerveStates(SwerveDrive.getInstance(), Constants.Bot.defaultSwerveStates),
+        new elevatorCommand());
   }
 
   private class elevatorCommand extends Command {

@@ -13,14 +13,13 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ElevatorHeights;
-import frc.robot.commands.IntakeAlgaeReef;
 import frc.robot.commands.compoundCommands.GoToSourceAndIntake;
-import frc.robot.commands.compoundCommands.PositionFromDashTest;
 import frc.robot.commands.compoundCommands.SourceCoralIntake;
 import frc.robot.commands.elevator.ReturnToStowed;
 import frc.robot.commands.elevator.SetHeight;
+import frc.robot.commands.endeffector.EndEffectorIntakeAlgae;
 import frc.robot.commands.endeffector.EndEffectorScoreCoral;
-import frc.robot.commands.swerveDrive.SwerveDriveManualControl;
+import frc.robot.commands.endeffector.ScoreAlgae;
 import frc.robot.libs.NetworkTables;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -32,8 +31,6 @@ public class Controller extends SubsystemBase {
 
   private final Elevator elevator = Elevator.getInstance();
   private final EndEffector endEffector = EndEffector.getInstance();
-
-  private boolean fieldOriented = true;
 
   /** Creates a new Controller. */
   public Controller(int primary, int secondary) {
@@ -205,14 +202,8 @@ public class Controller extends SubsystemBase {
       RobotContainer.odometry.recalibrateCameraPose();
     }
 
-    if (primaryController.getXButtonPressed()) {
-      fieldOriented = !fieldOriented;
-      RobotContainer.swerveDrive.setDefaultCommand(
-          new SwerveDriveManualControl(
-              RobotContainer.swerveDrive,
-              Constants.Bot.maxChassisSpeed,
-              Constants.Bot.maxChassisTurnSpeed,
-              fieldOriented));
+    if (primaryController.getLeftBumperButtonPressed()) {
+      new ScoreAlgae().schedule();
     }
 
     if (secondaryController.getRightBumperButtonPressed())
@@ -242,6 +233,21 @@ public class Controller extends SubsystemBase {
       elevator.setHeight(ElevatorHeights.reefCoralL4Height);
     }
 
+    if (secondaryController.getLeftTriggerAxis() > Constants.Controller.triggerThreshold) {
+      // Get Algae Ground
+      new EndEffectorIntakeAlgae(EndEffectorIntakeAlgae.Level.Ground).schedule();
+    }
+
+    if (secondaryController.getStartButtonPressed()) {
+      // Get Algae L2
+      new EndEffectorIntakeAlgae(EndEffectorIntakeAlgae.Level.AlgaeL2).schedule();
+    }
+
+    if (secondaryController.getBackButtonPressed()) {
+      // Get Algae L3
+      new EndEffectorIntakeAlgae(EndEffectorIntakeAlgae.Level.AlgaeL1).schedule();
+    }
+
     if (secondaryController.getPOV() == 180) {
       new ReturnToStowed().schedule();
     }
@@ -251,16 +257,6 @@ public class Controller extends SubsystemBase {
     if (secondaryController.getLeftStickButton() && secondaryController.getRightStickButton()) {
       updateControlMode();
       return;
-    }
-
-    if (primaryController.getStartButtonPressed()) {
-      fieldOriented = !fieldOriented;
-      RobotContainer.swerveDrive.setDefaultCommand(
-          new SwerveDriveManualControl(
-              RobotContainer.swerveDrive,
-              Constants.Bot.maxChassisSpeed,
-              Constants.Bot.maxChassisTurnSpeed,
-              fieldOriented));
     }
 
     if (primaryController.getYButtonPressed()) {
@@ -293,15 +289,6 @@ public class Controller extends SubsystemBase {
       elevator.setHeight(ElevatorHeights.reefCoralL4Height);
     }
 
-    if (secondaryController.getStartButtonPressed()) {
-      // Get Algae L2
-      new IntakeAlgaeReef(ElevatorHeights.reefAlgaeL1Height).schedule();
-    }
-
-    if (secondaryController.getBackButtonPressed()) {
-      // Get Algae L3
-      new IntakeAlgaeReef(ElevatorHeights.reefAlgaeL2Height).schedule();
-    }
     if (secondaryController.getLeftTriggerAxis() > Constants.Controller.triggerThreshold) {
       // Score coral
       endEffector.setAlgaeIntakeSpeed(-secondaryController.getLeftTriggerAxis());
@@ -314,7 +301,8 @@ public class Controller extends SubsystemBase {
     } else if (secondaryController.getLeftTriggerAxis() < Constants.Controller.triggerThreshold) {
       endEffector.setAlgaeIntakeSpeed(0);
     }
-    EndEffector.getInstance().setAlgaeIntakeAngle(EndEffector.getInstance().getAlgaeIntakeAngle() - getLeftY(controllers.SECONDARY) * 0.1);
+    EndEffector.getInstance()
+        .setAlgaeIntakeAngle(EndEffector.getInstance().getAlgaeIntakeAngle() - getLeftY(controllers.SECONDARY) * 0.1);
     if (secondaryController.getRightBumperButton()) {
       // Source Intake
       // new SourceCoralIntake().schedule();
@@ -346,11 +334,13 @@ public class Controller extends SubsystemBase {
     // }
 
     // if (secondaryController.getXButtonPressed()) {
-    //   new PositionFromDashTest(NetworkTables.loc_s.getString("L4")).schedule();
+    // new PositionFromDashTest(NetworkTables.loc_s.getString("L4")).schedule();
     // }
-    for(int i = 0; i < 4; i++) {
-      SwerveDrive.getInstance().modules[i].turnMotor.set(getRightX(controllers.PRIMARY));
-    }
+    // for(int i = 0; i < 4; i++) {
+    // SwerveDrive.getInstance().modules[i].turnMotor.set(getRightX(controllers.PRIMARY));
+    // }
+    if (secondaryController.getAButtonPressed())
+      new SourceCoralIntake().schedule();
   }
 
   public void periodic() {

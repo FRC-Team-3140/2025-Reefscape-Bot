@@ -50,10 +50,8 @@ public class SwerveDriveManualControl extends LoggedCommand {
             locked = !locked;
         }
 
-        if (controller.primaryController.getBackButtonPressed()
-                && controller.primaryController.getBackButtonPressed()) {
+        if (controller.primaryController.getXButtonPressed())
             fieldRelative = !fieldRelative;
-        }
 
         if (!locked) {
             // Calculate the x speed based on the joystick input

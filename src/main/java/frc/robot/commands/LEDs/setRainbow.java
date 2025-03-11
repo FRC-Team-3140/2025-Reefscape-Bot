@@ -11,6 +11,11 @@ import frc.robot.subsystems.SignalTower;
 public class setRainbow extends Command {
   /** Creates a new setRainbow. */
   public setRainbow() {
+
+  }
+
+  @Override
+  public void end(boolean interrupted) {
     SignalTower.getInstance().setRainbow();
   }
 

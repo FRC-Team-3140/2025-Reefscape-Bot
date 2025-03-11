@@ -14,6 +14,9 @@ public class ReturnToStowed extends SequentialCommandGroup {
   /** Creates a new ReturnToStowed. */
   public ReturnToStowed() {
     super(new SetHeight(Constants.ElevatorHeights.safeStowed),
-        new InstantCommand(() -> EndEffector.getInstance().setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.stowed)));
+        new InstantCommand(() -> {
+          EndEffector.getInstance().setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.stowed);
+          EndEffector.getInstance().setAlgaeIntakeSpeed(0);
+        }));
   }
 }

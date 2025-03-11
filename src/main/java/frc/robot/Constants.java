@@ -7,6 +7,7 @@ package frc.robot;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
@@ -109,21 +110,22 @@ public final class Constants {
 
     public static final double BRZeroOffset = 312.425;
 
-    // Default swerve state
-    // new SwerveModuleState initializes states with 0s for angle and velocity
-    public static final SwerveModuleState[] defaultSwerveStates = {
-        new SwerveModuleState(),
-        new SwerveModuleState(),
-        new SwerveModuleState(),
-        new SwerveModuleState()
-    };
-
     public static final double[] lockedAngles = {
         45,
         315,
         315,
         45
     };
+
+    // Default swerve state
+    // new SwerveModuleState initializes states with 0s for angle and velocity
+    public static final SwerveModuleState[] defaultSwerveStates = {
+        new SwerveModuleState(0, new Rotation2d(lockedAngles[0])),
+        new SwerveModuleState(0, new Rotation2d(lockedAngles[1])),
+        new SwerveModuleState(0, new Rotation2d(lockedAngles[2])),
+        new SwerveModuleState(0, new Rotation2d(lockedAngles[3]))
+    };
+
   }
 
   public static class Limits {
@@ -133,7 +135,7 @@ public final class Constants {
     public static final double ElevPosThreshold = 0.5;
 
     // Endeffector
-    public static final double EEAlgaeIntakeCurrentThreshold = 10;
+    public static final double EEAlgaeIntakeCurrentThreshold = 20;
   }
 
   public static class Controller {
@@ -152,6 +154,7 @@ public final class Constants {
     public static final double maxTimeBeteweenFrames = 0.1;
     public static final double aprilOffsetToCenter0 = Units.inchesToMeters(13);
     public static final double aprilOffsetToCenter2 = Units.inchesToMeters(13);
+    public static final double maxValidDistance = 3;
   }
 
   public static class PathplannerConstants {
@@ -159,16 +162,16 @@ public final class Constants {
 
     // Translation PID Values
     public static final double TransP = 5.0;
-    public static final double TransI = 0.0;
-    public static final double TransD = 0.0;
+    public static final double TransI = 1.0;
+    public static final double TransD = 0.2;
 
     // Rotation PID Values
     public static final double RotP = 5.0;
-    public static final double RotI = 0.0;
-    public static final double RotD = 0.0;
+    public static final double RotI = 1.0;
+    public static final double RotD = 0.2;
 
     public static final PathConstraints pathplannerConstraints = new PathConstraints(
-        Constants.Bot.maxChassisSpeed,
+        Constants.Bot.maxChassisSpeed/10,
         4.0,
         Units.degreesToRadians(540),
         Units.degreesToRadians(720));
@@ -180,13 +183,10 @@ public final class Constants {
     public static final double stowed = max;
     public static final double stowedAlgaeTop = 0;
     public static final double stowedAlgaeBottom = 0;
-    public static final double groundIntake = 0;
-    public static final double reefIntake = 0.792665;
+    public static final double groundIntake = 0.7;
+    public static final double reefIntake = 0.8;
     public static final double processorScoreBottom = stowedAlgaeBottom;
     public static final double processorScoreTop = stowedAlgaeTop;
-
-    public static final double algaeGround = 0.7;
-
   }
 
   public static class ElevatorHeights {
@@ -195,16 +195,14 @@ public final class Constants {
 
     public static final double groudAlgaeHeight = 2;
 
-    public static final double reefAlgaeL1Height = 4.3;
-    public static final double reefAlgaeL2Height = 7.3 ;
+    public static final double reefAlgaeL1Height = 4.55;
+    public static final double reefAlgaeL2Height = 7.3;
     public static final double reefCoralL1Height = 3.5;
     public static final double reefCoralL2Height = 4.5;
     public static final double reefCoralL3Height = 7.054625;
     public static final double reefCoralL4Height = maxiumum;
 
     public static final double sourceIntake = 1.75;
-
-    public static final double groundIntake = Constants.ElevatorHeights.minimum;
 
     public static final double processerHeight = 0;
     public static final double safeStowed = 0;

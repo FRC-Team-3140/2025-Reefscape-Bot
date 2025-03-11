@@ -39,7 +39,7 @@ public class EndEffectorIntakeAlgae extends LoggedCommand {
     } else if (level == Level.AlgaeL2) {
       elevator.setHeight(Constants.ElevatorHeights.reefAlgaeL2Height);
     } else if (level == Level.Ground) {
-      elevator.setHeight(Constants.ElevatorHeights.groundIntake);
+      elevator.setHeight(Constants.ElevatorHeights.groudAlgaeHeight);
     } else {
       System.err.println("Invalid position for End Effector Intake Algae.");
       end(true);
@@ -51,7 +51,10 @@ public class EndEffectorIntakeAlgae extends LoggedCommand {
       endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.reefIntake);
     }
 
-    endEffector.setAlgaeIntakeSpeed(0.7);
+    endEffector.setAlgaeIntakeSpeed(-0.9);
+
+    Timer.delay(0.1);
+
     super.initialize();
   }
 
@@ -64,7 +67,7 @@ public class EndEffectorIntakeAlgae extends LoggedCommand {
   @Override
   public void end(boolean interrupted) {
     Timer.delay(0.25);
-    endEffector.setAlgaeIntakeSpeed(0);
+    endEffector.setAlgaeIntakeSpeed(-0.15);
     System.out.println("EndEffectorIntakeAlgae ended");
     super.end(interrupted);
   }
