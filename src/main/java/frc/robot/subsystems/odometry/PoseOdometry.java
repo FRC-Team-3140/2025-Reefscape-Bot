@@ -91,8 +91,8 @@ public class PoseOdometry extends Odometry {
                     if (Math.abs(Math.pow(pose.getTranslation().getX(), 2) + Math.pow(pose.getTranslation().getY(), 2)
                             - Math.pow(getX(), 2) - Math.pow(getY(), 2)) < 3)
                         {
-                        estimator.addVisionMeasurement(pose, Timer.getFPGATimestamp());
-                            System.out.println("Adding vision measurement");
+                        estimator.addVisionMeasurement(new Pose2d(pose.getX(), pose.getY(), getGyroRotation()), Timer.getFPGATimestamp());
+                            // System.out.println("Adding vision measurement");
                    }
                 }
             }

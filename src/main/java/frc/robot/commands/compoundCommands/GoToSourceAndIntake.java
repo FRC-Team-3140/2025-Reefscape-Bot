@@ -12,6 +12,6 @@ import frc.robot.commands.endeffector.EndEffectorIntakeCoral;
 public class GoToSourceAndIntake extends SequentialCommandGroup {
   /** Creates a new GoToSourceAndIntake. */
   public GoToSourceAndIntake() {
-    super(new GoToClosestSource(), new EndEffectorIntakeCoral());
+    super(new SourceCoralIntake(), new GoToClosestSource(), new EndEffectorIntakeCoral());
   }
 }

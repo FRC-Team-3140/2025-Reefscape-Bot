@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.wpilibj.RobotController;
@@ -39,6 +40,9 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_testRunner = TestRunner.getInstance();
     m_robotContainer = RobotContainer.getInstance();
+
+    // Get Pathplanner ready for autos
+    PathfindingCommand.warmupCommand().schedule();
   }
 
   /**

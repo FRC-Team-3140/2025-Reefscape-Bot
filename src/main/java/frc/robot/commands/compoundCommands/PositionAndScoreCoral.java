@@ -8,17 +8,13 @@ import java.util.Hashtable;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
-import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorHeights;
-import frc.robot.libs.FieldAprilTags;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.odometry.Odometry;
 
@@ -28,7 +24,9 @@ public class PositionAndScoreCoral extends ParallelCommandGroup {
   private Odometry odometry = null;
 
   private Pose2d finalPose = null;
-  private double minDistForElevator = 1;
+  private double minDistForElevator = 0.2;
+
+  private Hashtable<Integer, Pose2d> reefPoses = new Hashtable<>();
 
   public enum Position {
     L_1,
@@ -63,6 +61,19 @@ public class PositionAndScoreCoral extends ParallelCommandGroup {
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator, odometry);
+
+    reefPoses.put(0, new Pose2d(3.915, 3.85, new Rotation2d(Units.degreesToRadians(0))));
+    reefPoses.put(1, new Pose2d(3.915, 4.18, new Rotation2d(Units.degreesToRadians(0))));
+    reefPoses.put(2, new Pose2d(3.683, 5.062, new Rotation2d(Units.degreesToRadians(-60))));
+    reefPoses.put(3, new Pose2d(3.978, 5.245, new Rotation2d(Units.degreesToRadians(-60))));
+    reefPoses.put(4, new Pose2d(4.994, 5.235, new Rotation2d(Units.degreesToRadians(-120))));
+    reefPoses.put(5, new Pose2d(5.299, 5.082, new Rotation2d(Units.degreesToRadians(-120))));
+    reefPoses.put(6, new Pose2d(5.7787, 4.18, new Rotation2d(Units.degreesToRadians(180))));
+    reefPoses.put(7, new Pose2d(5.7787, 3.85, new Rotation2d(Units.degreesToRadians(180))));
+    reefPoses.put(8, new Pose2d(5.289, 2.988, new Rotation2d(Units.degreesToRadians(120))));
+    reefPoses.put(9, new Pose2d(5, 2.805, new Rotation2d(Units.degreesToRadians(120))));
+    reefPoses.put(10, new Pose2d(3.967, 2.815, new Rotation2d(Units.degreesToRadians(60))));
+    reefPoses.put(11, new Pose2d(3.693, 2.978, new Rotation2d(Units.degreesToRadians(60))));
 
     String[] posParts = coralScorePos.name().split("_");
     String side = posParts[0];
@@ -107,24 +118,84 @@ public class PositionAndScoreCoral extends ParallelCommandGroup {
         break;
     }
 
-    // Figure out where to position robot on reef
-    Hashtable<Integer, AprilTag> reef = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
-        ? FieldAprilTags.getInstance().blueReefTagsHash
-        : FieldAprilTags.getInstance().redReefTagsHash;
-    AprilTag reefTag = reef.get(reefSide);
-    Pose3d pose = reefTag.pose;
+    // TODO: Will have to duplicate the reefPoses for the red alliance and get the
+    // measurements
+    // boolean allianceBlue = DriverStation.getAlliance().get() ==
+    // DriverStation.Alliance.Blue;
 
-    System.out.println("Cloest Tag ID: " + reefTag.ID);
-    System.out.println("Closets Tag Pose: \n" + "x:" + pose.getX() + "\n" + "y:"
-        + pose.getY() + "\n" + "yaw:" + pose.getRotation().getAngle());
+    switch (posint) {
+      case -1:
+        // Right = even
+        switch (reefSide) {
+          case 0:
+            finalPose = reefPoses.get(0);
+            break;
 
-    double angle = pose.getRotation().getAngle() + posint * (Math.PI / 4);
-    double distance = (Constants.Bot.botLength / 2) / Math.tan(angle);
+          case 1:
+            finalPose = reefPoses.get(2);
+            break;
 
-    finalPose = new Pose2d(
-        pose.getX() + distance * Math.cos(angle),
-        pose.getY() + distance * Math.sin(angle),
-        new Rotation2d(Units.degreesToRadians(pose.getRotation().getAngle()) + Math.PI / 2));
+          case 2:
+            finalPose = reefPoses.get(4);
+            break;
+
+          case 3:
+            finalPose = reefPoses.get(6);
+            break;
+
+          case 4:
+            finalPose = reefPoses.get(8);
+            break;
+
+          case 5:
+            finalPose = reefPoses.get(10);
+            break;
+
+          default:
+            end(true);
+            break;
+        }
+        break;
+
+      case 1:
+        // Left = odd
+        switch (reefSide) {
+          case 0:
+            finalPose = reefPoses.get(1);
+            break;
+
+          case 1:
+            finalPose = reefPoses.get(3);
+            break;
+
+          case 2:
+            finalPose = reefPoses.get(5);
+            break;
+
+          case 3:
+            finalPose = reefPoses.get(7);
+            break;
+
+          case 4:
+            finalPose = reefPoses.get(9);
+            break;
+
+          case 5:
+            finalPose = reefPoses.get(11);
+            break;
+
+          default:
+            end(true);
+            break;
+        }
+        break;
+
+      default:
+        end(true);
+        break;
+    }
+
+    System.out.println(finalPose.getX() + " " + finalPose.getY() + " " + finalPose.getRotation());
 
     // Put the edge of the bot theoretically touching the apriltag
     pathfindingCommand = AutoBuilder.pathfindToPose(
@@ -164,7 +235,8 @@ public class PositionAndScoreCoral extends ParallelCommandGroup {
     @Override
     public boolean isFinished() {
       Pose2d curPose = odometry.getPose();
-      double distance = Math.sqrt(Math.pow(finalPose.getY() - curPose.getY(), 2) + Math.pow(finalPose.getX() - curPose.getX(), 2));
+      double distance = Math
+          .sqrt(Math.pow(finalPose.getY() - curPose.getY(), 2) + Math.pow(finalPose.getX() - curPose.getX(), 2));
 
       if (distance <= minDistForElevator) {
         return true;

@@ -193,12 +193,14 @@ public class Camera extends SubsystemBase {
       if (camera0Exists && poseVec0.X == lastVecFront.X)
         camera0Exists = false;
 
-      lastVecFront = poseVec0;
+      if (camera0Exists)
+        lastVecFront = poseVec0;
 
       if (camera2Exists && poseVec2.X == lastVecBack.X)
         camera2Exists = false;
 
-      lastVecBack = poseVec2;
+      if (camera2Exists)
+        lastVecBack = poseVec2;
 
       Pose2d curPose = null;
 

@@ -88,7 +88,7 @@ public final class Constants {
 
     // In meters per second, determined from the free speed of the bot via
     // SwerveDriveSpecialties
-    public static final double maxChassisSpeed = 5.8969405214990;
+    public static final double maxChassisSpeed = 1;//5.8969405214990;
     public static final double maxModuleSpeed = maxChassisSpeed / wheelDiameter / Math.PI;
     public static final double maxTurnSpeed = Double.MAX_VALUE; // These are basically infinite for our purposes
     public static final double maxAcceleration = 4000;
@@ -181,7 +181,7 @@ public final class Constants {
     public static final double stowedAlgaeTop = 0;
     public static final double stowedAlgaeBottom = 0;
     public static final double groundIntake = 0;
-    public static final double reefIntake = 0;
+    public static final double reefIntake = 0.792665;
     public static final double processorScoreBottom = stowedAlgaeBottom;
     public static final double processorScoreTop = stowedAlgaeTop;
   }
@@ -190,8 +190,8 @@ public final class Constants {
     public static final double minimum = 0;
     public static final double maxiumum = 10900 * Bot.elevatorEncoderDegreesToMeters;
 
-    public static final double reefAlgaeL1Height = 0;
-    public static final double reefAlgaeL2Height = 0;
+    public static final double reefAlgaeL1Height = 2.244;
+    public static final double reefAlgaeL2Height = 4.93;
     public static final double reefCoralL1Height = 3.5;
     public static final double reefCoralL2Height = 4.5;
     public static final double reefCoralL3Height = 7.054625;

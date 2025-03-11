@@ -6,8 +6,9 @@ package frc.robot.commands.Autos;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.GoToClosestSource;
+import frc.robot.commands.compoundCommands.GoToSourceAndIntake;
 import frc.robot.commands.compoundCommands.PositionAndScoreCoral;
+import frc.robot.commands.endeffector.EndEffectorScoreCoral;
 import frc.robot.libs.FieldAprilTags;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.odometry.Odometry;
@@ -16,6 +17,8 @@ import frc.robot.subsystems.odometry.Odometry;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class CycleHorizontal extends SequentialCommandGroup {
+  private final double speed = 0.8;
+
   /**
    * Creates a new Cycle.
    * 
@@ -35,9 +38,11 @@ public class CycleHorizontal extends SequentialCommandGroup {
     for (int i = 0; i <= 5; i++) {
       super.addCommands(
           new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + level), ((i + startingSide) % 6)),
-          new GoToClosestSource(),
+          new EndEffectorScoreCoral(speed),
+          new GoToSourceAndIntake(),
           new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + level), ((i + startingSide) % 6)),
-          new GoToClosestSource());
+          new EndEffectorScoreCoral(speed),
+          new GoToSourceAndIntake());
     }
   }
 
@@ -58,9 +63,11 @@ public class CycleHorizontal extends SequentialCommandGroup {
     for (int i = 0; i <= 5; i++) {
       super.addCommands(
           new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + level), ((i + startingSide) % 6)),
-          new GoToClosestSource(),
+          new EndEffectorScoreCoral(speed),
+          new GoToSourceAndIntake(),
           new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + level), ((i + startingSide) % 6)),
-          new GoToClosestSource());
+          new EndEffectorScoreCoral(speed),
+          new GoToSourceAndIntake());
     }
   }
 }
