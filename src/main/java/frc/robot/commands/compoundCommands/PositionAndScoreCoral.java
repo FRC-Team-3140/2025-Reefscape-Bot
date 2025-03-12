@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorHeights;
+import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.swerveDrive.setSwerveStates;
 import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.Elevator;
@@ -213,8 +214,10 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
             finalPose.getX(),
             finalPose.getY(),
             finalPose.getRotation().getDegrees() })),
-        pathfindingCommand, new setSwerveStates(SwerveDrive.getInstance(), Constants.Bot.defaultSwerveStates),
-        new elevatorCommand());
+        pathfindingCommand,
+        new setSwerveStates(SwerveDrive.getInstance(), Constants.Bot.defaultSwerveStates),
+        new elevatorCommand(),
+        new SetHeight(level));
   }
 
   private class elevatorCommand extends Command {
@@ -237,8 +240,6 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
     public void end(boolean interrupted) {
       if (interrupted)
         System.err.println("Interrupted or Issues encountered while running ScoreCoral command.");
-
-      elevator.setHeight(level);
     }
 
     // Returns true when the command should end.

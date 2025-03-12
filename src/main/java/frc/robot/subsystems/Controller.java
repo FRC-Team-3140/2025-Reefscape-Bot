@@ -16,9 +16,9 @@ import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.compoundCommands.GoToSourceAndIntake;
 import frc.robot.commands.compoundCommands.SourceCoralIntake;
 import frc.robot.commands.elevator.ReturnToStowed;
-import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.endeffector.EndEffectorIntakeAlgae;
 import frc.robot.commands.endeffector.EndEffectorScoreCoral;
+import frc.robot.commands.endeffector.OuttakeAlgae;
 import frc.robot.commands.endeffector.ScoreAlgae;
 import frc.robot.libs.NetworkTables;
 import edu.wpi.first.wpilibj.XboxController;
@@ -207,8 +207,7 @@ public class Controller extends SubsystemBase {
     }
 
     if (secondaryController.getRightBumperButtonPressed())
-      new SequentialCommandGroup(
-          new SetHeight(Constants.ElevatorHeights.sourceIntake), new SourceCoralIntake()).schedule();
+      new SourceCoralIntake().schedule();
 
     if (secondaryController.getLeftBumperButtonPressed())
       new EndEffectorScoreCoral(0.8).schedule();
@@ -246,6 +245,10 @@ public class Controller extends SubsystemBase {
     if (secondaryController.getBackButtonPressed()) {
       // Get Algae L3
       new EndEffectorIntakeAlgae(EndEffectorIntakeAlgae.Level.AlgaeL1).schedule();
+    }
+
+    if (secondaryController.getPOV() == 0) {
+      new OuttakeAlgae().schedule();
     }
 
     if (secondaryController.getPOV() == 180) {
@@ -351,12 +354,15 @@ public class Controller extends SubsystemBase {
     }
     switch (curControlMode) {
       case AUTO:
+        NetworkTables.driveModeManual_b.setBoolean(false);
         AutoMode();
         break;
       case MANUAL:
+        NetworkTables.driveModeManual_b.setBoolean(true);
         ManualMode();
         break;
       case OHNO_MANUAL:
+        NetworkTables.driveModeManual_b.setBoolean(true);
         OHNOManualMode();
         break;
       default:

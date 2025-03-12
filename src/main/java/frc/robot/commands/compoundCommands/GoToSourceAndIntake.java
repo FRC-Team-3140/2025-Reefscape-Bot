@@ -4,6 +4,7 @@
 
 package frc.robot.commands.compoundCommands;
 
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.commands.GoToClosestSource;
@@ -13,6 +14,7 @@ import frc.robot.commands.elevator.SetHeight;
 public class GoToSourceAndIntake extends SequentialCommandGroup {
   /** Creates a new GoToSourceAndIntake. */
   public GoToSourceAndIntake() {
-    super(new SetHeight(Constants.ElevatorHeights.sourceIntake), new GoToClosestSource(), new SourceCoralIntake());
+    super(new SetHeight(Constants.ElevatorHeights.sourceIntake),
+        new ParallelDeadlineGroup(new SourceCoralIntake(), new GoToClosestSource()));
   }
 }

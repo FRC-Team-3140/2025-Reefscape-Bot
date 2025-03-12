@@ -7,7 +7,6 @@ package frc.robot;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
@@ -120,10 +119,10 @@ public final class Constants {
     // Default swerve state
     // new SwerveModuleState initializes states with 0s for angle and velocity
     public static final SwerveModuleState[] defaultSwerveStates = {
-        new SwerveModuleState(0, new Rotation2d(lockedAngles[0])),
-        new SwerveModuleState(0, new Rotation2d(lockedAngles[1])),
-        new SwerveModuleState(0, new Rotation2d(lockedAngles[2])),
-        new SwerveModuleState(0, new Rotation2d(lockedAngles[3]))
+        new SwerveModuleState(),
+        new SwerveModuleState(),
+        new SwerveModuleState(),
+        new SwerveModuleState()
     };
 
   }
@@ -171,7 +170,7 @@ public final class Constants {
     public static final double RotD = 0.2;
 
     public static final PathConstraints pathplannerConstraints = new PathConstraints(
-        Constants.Bot.maxChassisSpeed/10,
+        Constants.Bot.maxChassisSpeed / 10,
         4.0,
         Units.degreesToRadians(540),
         Units.degreesToRadians(720));

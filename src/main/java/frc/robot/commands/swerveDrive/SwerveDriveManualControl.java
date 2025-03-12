@@ -2,6 +2,7 @@ package frc.robot.commands.swerveDrive;
 
 import frc.robot.Constants;
 import frc.robot.libs.LoggedCommand;
+import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.SwerveDrive;
 //Works Well
@@ -67,6 +68,8 @@ public class SwerveDriveManualControl extends LoggedCommand {
         } else {
             swerveDrive.setSwerveModuleStates(Constants.Bot.defaultSwerveStates, true);
         }
+
+        NetworkTables.fieldOriented_b.setBoolean(fieldRelative);
     }
 
     /**

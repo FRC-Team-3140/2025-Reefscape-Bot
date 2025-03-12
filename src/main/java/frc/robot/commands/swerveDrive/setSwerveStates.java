@@ -15,6 +15,8 @@ public class setSwerveStates extends Command {
 
   private SwerveModuleState[] state = null;
 
+  private boolean locked = false;
+
   /**
    * Creates a new setSwerveStates command.
    * 
@@ -25,6 +27,14 @@ public class setSwerveStates extends Command {
    */
   public setSwerveStates(SwerveDrive swerve) {
     this.swerve = swerve;
+
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(swerve);
+  }
+
+  public setSwerveStates(SwerveDrive swerve, boolean locked) {
+    this.swerve = swerve;
+    this.locked = locked;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(swerve);
@@ -61,7 +71,7 @@ public class setSwerveStates extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    swerve.setSwerveModuleStates(state == null ? Constants.Bot.defaultSwerveStates : state, false);
+    swerve.setSwerveModuleStates(state == null ? Constants.Bot.defaultSwerveStates : state, locked);
   }
 
   // Called once the command ends or is interrupted.
@@ -72,6 +82,6 @@ public class setSwerveStates extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

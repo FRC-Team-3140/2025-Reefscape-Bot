@@ -4,27 +4,26 @@
 
 package frc.robot.commands.endeffector;
 
-import frc.robot.libs.LoggedCommand;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.EndEffector;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class EndEffectorScoreCoral extends LoggedCommand {
+public class OuttakeAlgae extends Command {
+  private final EndEffector endEffector;
 
-  private EndEffector endEffector = null;
-  private double speed;
-
-  public EndEffectorScoreCoral(double speed) {
+  /** Creates a new OuttakeAlgae. */
+  public OuttakeAlgae() {
     this.endEffector = EndEffector.getInstance();
-    this.speed = speed;
+
+    // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(endEffector);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    endEffector.setManipulatorSpeed(speed);
-    super.initialize();
+    endEffector.setAlgaeIntakeSpeed(1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -35,14 +34,13 @@ public class EndEffectorScoreCoral extends LoggedCommand {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Timer.delay(1);
-    endEffector.setManipulatorSpeed(0);
-    super.end(interrupted);
+    endEffector.setAlgaeIntakeSpeed(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !endEffector.hasCoral();
+    Timer.delay(0.25);
+    return true;
   }
 }

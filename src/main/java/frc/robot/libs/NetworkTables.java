@@ -93,5 +93,6 @@ public class NetworkTables {
   
   private static NetworkTable misc = dash.getSubTable(Constants.NetworktablePaths.Misc);
     public static NetworkTableEntry driveModeManual_b = misc.getEntry("driveModeManual_b");
+    public static NetworkTableEntry fieldOriented_b = misc.getEntry("fieldOriented_b");
 }
   
