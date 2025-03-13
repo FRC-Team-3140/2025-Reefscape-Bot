@@ -14,13 +14,17 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.compoundCommands.GoToSourceAndIntake;
+import frc.robot.commands.compoundCommands.PositionAndScoreCoral;
 import frc.robot.commands.compoundCommands.SourceCoralIntake;
 import frc.robot.commands.elevator.ReturnToStowed;
 import frc.robot.commands.endeffector.EndEffectorIntakeAlgae;
 import frc.robot.commands.endeffector.EndEffectorScoreCoral;
 import frc.robot.commands.endeffector.OuttakeAlgae;
 import frc.robot.commands.endeffector.ScoreAlgae;
+import frc.robot.libs.FieldAprilTags;
 import frc.robot.libs.NetworkTables;
+import frc.robot.subsystems.odometry.Odometry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class Controller extends SubsystemBase {
@@ -180,8 +184,11 @@ public class Controller extends SubsystemBase {
     }
 
     if (primaryController.getAButtonPressed()) {
+      // TODO: Finish this.
+      new PositionAndScoreCoral(null, FieldAprilTags.getInstance().getClosestReefAprilTag(Odometry.getInstance().getPose(), DriverStation.getAlliance().get()).reefSide);
     } // TODO: run algae intake auto based on web dash
     if (primaryController.getBButtonPressed()) {
+
     } // TODO: run coral intake auto based on web dash
 
     if (primaryController.getBButtonPressed())
