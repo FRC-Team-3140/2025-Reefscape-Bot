@@ -29,7 +29,7 @@ public class ScoreAlgae extends ParallelCommandGroup {
       addCommands(
           new InstantCommand(() -> endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.processorScoreBottom)),
           new WaitCommand(1),
-          new InstantCommand(() -> endEffector.setAlgaeIntakeSpeed(0.75)), 
+          new InstantCommand(() -> endEffector.setAlgaeIntakeSpeed(0.75)),
           new WaitCommand(2),
           new InstantCommand(() -> {
             endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.stowed);

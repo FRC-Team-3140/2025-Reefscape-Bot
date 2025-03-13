@@ -34,10 +34,10 @@ public class EndEffectorIntakeCoral extends LoggedCommand {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    super.end(interrupted);
     Timer.delay(0.25);
     endEffector.setManipulatorSpeed(0);
     System.out.println("EndEffectorIntakeCoral ended");
-    super.end(interrupted);
   }
 
   // Returns true when the command should end.

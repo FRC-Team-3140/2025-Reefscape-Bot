@@ -27,7 +27,7 @@ public class Elevator extends SubsystemBase {
 
   private final Encoder LeftEncoder;
   private final Encoder RightEncoder;
-  
+
   // Boolean disables all elevator motors
   public static final boolean elevatorEnabled = true;
 

@@ -17,6 +17,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.swerveDrive.SetSwerveStates;
+import frc.robot.libs.LoggedCommand;
 import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.SwerveDrive;
@@ -119,11 +120,6 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
         break;
     }
 
-    // TODO: Will have to duplicate the reefPoses for the red alliance and get the
-    // measurements
-    // boolean allianceBlue = DriverStation.getAlliance().get() ==
-    // DriverStation.Alliance.Blue;
-
     switch (posint) {
       case -1:
         // Right = even
@@ -216,10 +212,12 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
         new SetHeight(level));
   }
 
-  private class elevatorCommand extends Command {
+  private class elevatorCommand extends LoggedCommand {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+      super.initialize();
+
       if (level == null) {
         System.err.println("Error: Level is null. Exiting command.");
         end(true);
@@ -236,6 +234,8 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
     public void end(boolean interrupted) {
       if (interrupted)
         System.err.println("Interrupted or Issues encountered while running ScoreCoral command.");
+
+      super.end(interrupted);
     }
 
     // Returns true when the command should end.

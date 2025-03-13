@@ -14,13 +14,13 @@ import com.pathplanner.lib.util.FileVersionException;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.libs.FieldAprilTags;
+import frc.robot.libs.LoggedCommand;
 import frc.robot.subsystems.odometry.Odometry;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class GoToClosestSource extends Command {
+public class GoToClosestSource extends LoggedCommand {
   private Odometry odometry = null;
 
   private Pose2d LeftSource;
@@ -44,6 +44,8 @@ public class GoToClosestSource extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    super.initialize();
+
     // Figure out alliance and which stations to calculate from
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
@@ -58,8 +60,10 @@ public class GoToClosestSource extends Command {
 
     Pose2d curPose = odometry.getPose();
 
-    double leftDist = Math.sqrt(Math.pow(LeftSource.getY() - curPose.getY(), 2) + Math.pow(LeftSource.getX() - curPose.getX(), 2));
-    double rightDist = Math.sqrt(Math.pow(RightSource.getY() - curPose.getY(), 2) + Math.pow(RightSource.getX() - curPose.getX(), 2));
+    double leftDist = Math
+        .sqrt(Math.pow(LeftSource.getY() - curPose.getY(), 2) + Math.pow(LeftSource.getX() - curPose.getX(), 2));
+    double rightDist = Math
+        .sqrt(Math.pow(RightSource.getY() - curPose.getY(), 2) + Math.pow(RightSource.getX() - curPose.getX(), 2));
 
     double minDist = Math.min(leftDist, rightDist);
     closestStation = (minDist == leftDist) ? coralStations.LEFT : coralStations.RIGHT;
@@ -91,6 +95,7 @@ public class GoToClosestSource extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    super.end(interrupted);
   }
 
   // Returns true when the command should end.

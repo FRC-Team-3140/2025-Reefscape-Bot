@@ -23,8 +23,8 @@ public class EndEffectorScoreCoral extends LoggedCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    endEffector.setManipulatorSpeed(speed);
     super.initialize();
+    endEffector.setManipulatorSpeed(speed);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -35,9 +35,9 @@ public class EndEffectorScoreCoral extends LoggedCommand {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    super.end(interrupted);
     Timer.delay(1);
     endEffector.setManipulatorSpeed(0);
-    super.end(interrupted);
   }
 
   // Returns true when the command should end.

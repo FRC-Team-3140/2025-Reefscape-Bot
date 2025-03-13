@@ -50,8 +50,8 @@ public class PositionFromDashTest extends LoggedCommand {
 
   @Override
   public void end(boolean interrupted) {
-    new SetHeight(level).schedule();
     super.end(interrupted);
+    new SetHeight(level).schedule();
   }
 
   public boolean isFinished() {

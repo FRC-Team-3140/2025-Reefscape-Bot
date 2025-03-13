@@ -60,7 +60,8 @@ public class CustomOdometry extends Odometry {
         return gyro.getRotation2d();
     }
 
-    public void recalibrateCameraPose() {}
+    public void recalibrateCameraPose() {
+    }
 
     private double optimizeAngle(double baseline, double angle) {
         while (Math.abs(angle - baseline) > Math.PI) {

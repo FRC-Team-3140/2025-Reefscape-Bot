@@ -25,8 +25,8 @@ public class SetHeight extends LoggedCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elev.setHeight(height);
     super.initialize();
+    elev.setHeight(height);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

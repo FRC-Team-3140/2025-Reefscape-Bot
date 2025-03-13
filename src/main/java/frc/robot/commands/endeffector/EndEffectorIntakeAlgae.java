@@ -34,6 +34,8 @@ public class EndEffectorIntakeAlgae extends LoggedCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    super.initialize();
+
     if (level == Level.AlgaeL1) {
       elevator.setHeight(Constants.ElevatorHeights.reefAlgaeL1Height);
     } else if (level == Level.AlgaeL2) {
@@ -54,8 +56,6 @@ public class EndEffectorIntakeAlgae extends LoggedCommand {
     endEffector.setAlgaeIntakeSpeed(-0.9);
 
     Timer.delay(0.1);
-
-    super.initialize();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -66,10 +66,10 @@ public class EndEffectorIntakeAlgae extends LoggedCommand {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    super.end(interrupted);
     Timer.delay(0.25);
     endEffector.setAlgaeIntakeSpeed(-0.15);
     System.out.println("EndEffectorIntakeAlgae ended");
-    super.end(interrupted);
   }
 
   // Returns true when the command should end.

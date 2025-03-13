@@ -4,18 +4,24 @@
 
 package frc.robot.commands.LEDs;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.libs.LoggedCommand;
 import frc.robot.subsystems.SignalTower;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class setRainbow extends Command {
+public class SetRainbow extends LoggedCommand {
   /** Creates a new setRainbow. */
-  public setRainbow() {
+  public SetRainbow() {
 
   }
 
   @Override
+  public void initialize() {
+    super.initialize();
+  }
+
+  @Override
   public void end(boolean interrupted) {
+    super.end(interrupted);
     SignalTower.getInstance().setRainbow();
   }
 

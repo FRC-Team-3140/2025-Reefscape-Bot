@@ -101,7 +101,7 @@ public class Robot extends TimedRobot {
     m_testRunner.stopAll();
 
     RobotContainer.swerveDrive.setDefaultCommand(new SwerveDriveManualControl(RobotContainer.swerveDrive,
-       Constants.Bot.maxChassisSpeed, Constants.Bot.maxChassisTurnSpeed, true));
+        Constants.Bot.maxChassisSpeed, Constants.Bot.maxChassisTurnSpeed, true));
 
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to

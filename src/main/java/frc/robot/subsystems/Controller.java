@@ -181,7 +181,7 @@ public class Controller extends SubsystemBase {
 
     if (primaryController.getAButtonPressed()) {
     } // TODO: run algae intake auto based on web dash
-    if (primaryController.getXButtonPressed()) {
+    if (primaryController.getBButtonPressed()) {
     } // TODO: run coral intake auto based on web dash
 
     if (primaryController.getBButtonPressed())

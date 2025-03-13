@@ -6,8 +6,8 @@ package frc.robot.commands.compoundCommands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
-import frc.robot.commands.LEDs.setLEDColor;
-import frc.robot.commands.LEDs.setRainbow;
+import frc.robot.commands.LEDs.SetLEDColor;
+import frc.robot.commands.LEDs.SetRainbow;
 import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.endeffector.EndEffectorIntakeAlgae;
 
@@ -17,7 +17,7 @@ public class GetAlgaeReefManual extends SequentialCommandGroup {
     super(
         new SetHeight(level == EndEffectorIntakeAlgae.Level.AlgaeL1 ? Constants.ElevatorHeights.reefAlgaeL1Height
             : Constants.ElevatorHeights.reefAlgaeL2Height),
-        new setLEDColor(0, 255, 0),
-        new EndEffectorIntakeAlgae(level), new setRainbow());
+        new SetLEDColor(0, 255, 0),
+        new EndEffectorIntakeAlgae(level), new SetRainbow());
   }
 }
