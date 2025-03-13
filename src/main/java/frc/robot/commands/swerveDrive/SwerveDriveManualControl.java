@@ -51,7 +51,7 @@ public class SwerveDriveManualControl extends LoggedCommand {
             locked = !locked;
         }
 
-        if (controller.primaryController.getXButtonPressed())
+        if (controller.primaryController.getBackButtonPressed())
             fieldRelative = !fieldRelative;
 
         if (!locked) {

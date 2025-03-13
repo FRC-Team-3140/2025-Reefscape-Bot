@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,6 +40,7 @@ public class RobotContainer {
   private SendableChooser<String> reefSide = new SendableChooser<>();
   private SendableChooser<String> cycleDirection = new SendableChooser<>();
   private SendableChooser<Integer> reefLevel = new SendableChooser<>();
+  private SendableChooser<Command> PathPlanner = new SendableChooser<>();
 
   // Get the singleton instance or create it if it doesn't exist
   public static RobotContainer getInstance() {
@@ -67,9 +70,12 @@ public class RobotContainer {
     cycleDirection.addOption("Horizontal", "Horizontal");
     cycleDirection.addOption("Vertical", "Vertical");
 
+    PathPlanner.addOption("Mobility", AutoBuilder.buildAuto("Simple Mobility"));
+
     SmartDashboard.putData("Starting Side", reefSide);
     SmartDashboard.putData("Reef Level", reefLevel);
     SmartDashboard.putData("Cycle Direction", cycleDirection);
+    SmartDashboard.putData("PathPlanner", PathPlanner);
   }
 
   /**
@@ -83,14 +89,32 @@ public class RobotContainer {
     Integer reefLevelSelected = reefLevel.getSelected();
 
     ////////// Defaults //////////
-    if (cycleDirectionSelected == null)
+    if (cycleDirectionSelected == null) {
+      if (PathPlanner.getSelected() != null) {
+        System.out.println("Pathplanner");
+        return PathPlanner.getSelected();
+      }
+
       cycleDirectionSelected = "Horizontal";
+    }
 
-    if (reefSideSelected == null)
+    if (reefSideSelected == null) {
+      if (PathPlanner.getSelected() != null) {
+        System.out.println("Pathplanner");
+        return PathPlanner.getSelected();
+      }
+
       reefSideSelected = "Closest";
+    }
 
-    if (reefLevelSelected == null)
+    if (reefLevelSelected == null) {
+      if (PathPlanner.getSelected() != null) {
+        System.out.println("Pathplanner");
+        return PathPlanner.getSelected();
+      }
+
       reefLevelSelected = 4;
+    }
 
     //////////////////////////////
 

@@ -18,29 +18,29 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.DigitalInput;
-// TODO: fix algae intake spazzing
+
 public class EndEffector extends SubsystemBase {
 
-  static EndEffector instance = null;
+  private static EndEffector instance = null;
 
-  SparkMax leftManipulatorMotorMN;
-  SparkMax rightManipulatorMotorMN;
+  private SparkMax leftManipulatorMotorMN;
+  private SparkMax rightManipulatorMotorMN;
 
-  SparkMax algaeIntakeMotorN;
-  SparkMax algaeIntakeRotateMotorN;
+  private SparkMax algaeIntakeMotorN;
+  private SparkMax algaeIntakeRotateMotorN;
 
-  DutyCycleEncoder AlgaeArmEncoder;
+  private DutyCycleEncoder AlgaeArmEncoder;
 
-  ProfiledPIDController AlgaeArmPID;
+  private ProfiledPIDController AlgaeArmPID;
   final double P = 2.25;
   final double I = 0;
   final double D = 0;
 
-  double targetAngle = Constants.AlgaeIntakeAngles.max;
+  private double targetAngle = Constants.AlgaeIntakeAngles.max;
 
-  double armAngle = 0;
+  private double armAngle = Constants.AlgaeIntakeAngles.stowed;
 
-  DigitalInput coralSensor = new DigitalInput(Constants.SensorIDs.EECoralSensor);
+  private DigitalInput coralSensor = new DigitalInput(Constants.SensorIDs.EECoralSensor);
 
   public static EndEffector getInstance() {
     if (instance == null) {
@@ -80,12 +80,17 @@ public class EndEffector extends SubsystemBase {
 
   public void setAlgaeIntakeAngle(double angle) {
     targetAngle = Math.min(Math.max(angle, Constants.AlgaeIntakeAngles.min), Constants.AlgaeIntakeAngles.max);
-    
+
   }
 
   public void setManipulatorSpeed(double speed) {
     rightManipulatorMotorMN.set(Math.min(speed, 0.8));
     leftManipulatorMotorMN.set(Math.min(speed, 0.8));
+  }
+
+  public void setManipulatorVoltage(double voltage) {
+    rightManipulatorMotorMN.set(voltage);
+    leftManipulatorMotorMN.set(voltage);
   }
 
   public void setAlgaeIntakeSpeed(double speed) {

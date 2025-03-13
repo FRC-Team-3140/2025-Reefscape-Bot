@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.elevator.SetHeight;
-import frc.robot.commands.swerveDrive.setSwerveStates;
+import frc.robot.commands.swerveDrive.SetSwerveStates;
 import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.SwerveDrive;
@@ -215,7 +215,7 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
             finalPose.getY(),
             finalPose.getRotation().getDegrees() })),
         pathfindingCommand,
-        new setSwerveStates(SwerveDrive.getInstance(), Constants.Bot.defaultSwerveStates),
+        new SetSwerveStates(SwerveDrive.getInstance(), true),
         new elevatorCommand(),
         new SetHeight(level));
   }

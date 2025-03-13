@@ -40,7 +40,7 @@ public class Elevator extends SubsystemBase {
   private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private final NetworkTable ElevatorTable;
   private final NetworkTable ElevatorPIDs;
-  private double target;
+  private double target = Constants.ElevatorHeights.minimum;
 
   private final SparkMaxConfig lConfig;
   private final SparkMaxConfig rConfig;

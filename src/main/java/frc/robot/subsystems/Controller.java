@@ -298,19 +298,21 @@ public class Controller extends SubsystemBase {
     } else {
       endEffector.setAlgaeIntakeSpeed(0);
     }
+
     if (secondaryController.getRightTriggerAxis() > Constants.Controller.triggerThreshold) {
       // Score coral
       endEffector.setAlgaeIntakeSpeed(secondaryController.getRightTriggerAxis());
     } else if (secondaryController.getLeftTriggerAxis() < Constants.Controller.triggerThreshold) {
       endEffector.setAlgaeIntakeSpeed(0);
     }
+
     EndEffector.getInstance()
         .setAlgaeIntakeAngle(EndEffector.getInstance().getAlgaeIntakeAngle() - getLeftY(controllers.SECONDARY) * 0.1);
+
     if (secondaryController.getRightBumperButton()) {
       // Source Intake
       // new SourceCoralIntake().schedule();
-      EndEffector.getInstance().rightManipulatorMotorMN.set(-secondaryController.getLeftY() * 0.8);
-      EndEffector.getInstance().leftManipulatorMotorMN.set(-secondaryController.getLeftY() * 0.8);
+      EndEffector.getInstance().setManipulatorVoltage(-secondaryController.getLeftY() * 0.8);
     }
 
     if (secondaryController.getPOV() == 180) {

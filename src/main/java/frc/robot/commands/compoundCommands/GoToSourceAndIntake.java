@@ -14,7 +14,7 @@ import frc.robot.commands.elevator.SetHeight;
 public class GoToSourceAndIntake extends SequentialCommandGroup {
   /** Creates a new GoToSourceAndIntake. */
   public GoToSourceAndIntake() {
-    super(new SetHeight(Constants.ElevatorHeights.sourceIntake),
+    super(new SetHeight(Constants.ElevatorHeights.minimum),
         new ParallelDeadlineGroup(new SourceCoralIntake(), new GoToClosestSource()));
   }
 }

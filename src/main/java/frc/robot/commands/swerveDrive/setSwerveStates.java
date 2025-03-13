@@ -10,7 +10,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.SwerveDrive;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class setSwerveStates extends Command {
+public class SetSwerveStates extends Command {
   private SwerveDrive swerve = null;
 
   private SwerveModuleState[] state = null;
@@ -25,14 +25,14 @@ public class setSwerveStates extends Command {
    *               If no state is passed, it will use the default state in
    *               Constants.java
    */
-  public setSwerveStates(SwerveDrive swerve) {
+  public SetSwerveStates(SwerveDrive swerve) {
     this.swerve = swerve;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(swerve);
   }
 
-  public setSwerveStates(SwerveDrive swerve, boolean locked) {
+  public SetSwerveStates(SwerveDrive swerve, boolean locked) {
     this.swerve = swerve;
     this.locked = locked;
 
@@ -48,7 +48,7 @@ public class setSwerveStates extends Command {
    * 
    *               Will use the provided state
    */
-  public setSwerveStates(SwerveDrive swerve, SwerveModuleState[] state) {
+  public SetSwerveStates(SwerveDrive swerve, SwerveModuleState[] state) {
     this.swerve = swerve;
     if (state.length == swerve.modules.length) {
       this.state = state;

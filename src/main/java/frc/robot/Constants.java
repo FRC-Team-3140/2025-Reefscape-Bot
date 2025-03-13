@@ -170,7 +170,7 @@ public final class Constants {
     public static final double RotD = 0.2;
 
     public static final PathConstraints pathplannerConstraints = new PathConstraints(
-        Constants.Bot.maxChassisSpeed / 10,
+        Constants.Bot.maxChassisSpeed,
         4.0,
         Units.degreesToRadians(540),
         Units.degreesToRadians(720));
@@ -178,7 +178,7 @@ public final class Constants {
 
   public static class AlgaeIntakeAngles {
     public static final double min = 0.45;
-    public static final double max = 0.95;
+    public static final double max = 0.96;
     public static final double stowed = max;
     public static final double stowedAlgaeTop = 0;
     public static final double stowedAlgaeBottom = 0;
