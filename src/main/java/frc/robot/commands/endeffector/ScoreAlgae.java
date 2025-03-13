@@ -6,32 +6,28 @@ package frc.robot.commands.endeffector;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.commands.elevator.SetHeight;
 import frc.robot.subsystems.EndEffector;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class ScoreAlgae extends Command {
+public class ScoreAlgae extends SequentialCommandGroup {
   private final EndEffector endEffector;
 
   /** Creates a new ScoreAlgae. */
   public ScoreAlgae() {
     this.endEffector = EndEffector.getInstance();
 
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(endEffector);
-  }
-
-  @Override
-  public void initialize() {
-    (new SetHeight(Constants.ElevatorHeights.groudAlgaeHeight).andThen(new ScoreTheCORAL())).schedule();
+    addCommands(new SetHeight(Constants.ElevatorHeights.groudAlgaeHeight), new ScoreTheCORAL());
   }
 
   private class ScoreTheCORAL extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-      endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.groundIntake);
+      endEffector.setAlgaeIntakeAngle(Constants.AlgaeIntakeAngles.processorScoreBottom);
+      Timer.delay(0.5);
       endEffector.setAlgaeIntakeSpeed(0.75);
     }
 

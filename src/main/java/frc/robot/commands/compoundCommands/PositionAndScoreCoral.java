@@ -4,13 +4,12 @@
 
 package frc.robot.commands.compoundCommands;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -30,8 +29,6 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
 
   private Pose2d finalPose = null;
   private double minDistForElevator = 0.5;
-
-  private Hashtable<Integer, Pose2d> reefPoses = new Hashtable<>();
 
   public enum Position {
     L_1,
@@ -67,18 +64,17 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator, odometry);
 
-    reefPoses.put(0, new Pose2d(3.915, 3.85, new Rotation2d(Units.degreesToRadians(0))));
-    reefPoses.put(1, new Pose2d(3.915, 4.18, new Rotation2d(Units.degreesToRadians(0))));
-    reefPoses.put(2, new Pose2d(3.683, 5.062, new Rotation2d(Units.degreesToRadians(-60))));
-    reefPoses.put(3, new Pose2d(3.978, 5.245, new Rotation2d(Units.degreesToRadians(-60))));
-    reefPoses.put(4, new Pose2d(4.994, 5.235, new Rotation2d(Units.degreesToRadians(-120))));
-    reefPoses.put(5, new Pose2d(5.299, 5.082, new Rotation2d(Units.degreesToRadians(-120))));
-    reefPoses.put(6, new Pose2d(5.7787, 4.18, new Rotation2d(Units.degreesToRadians(180))));
-    reefPoses.put(7, new Pose2d(5.7787, 3.85, new Rotation2d(Units.degreesToRadians(180))));
-    reefPoses.put(8, new Pose2d(5.289, 2.988, new Rotation2d(Units.degreesToRadians(120))));
-    reefPoses.put(9, new Pose2d(5, 2.805, new Rotation2d(Units.degreesToRadians(120))));
-    reefPoses.put(10, new Pose2d(3.967, 2.815, new Rotation2d(Units.degreesToRadians(60))));
-    reefPoses.put(11, new Pose2d(3.693, 2.978, new Rotation2d(Units.degreesToRadians(60))));
+    boolean allianceBlue = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
+
+    Constants.ReefPoses reefPositions = new Constants.ReefPoses();
+
+    HashMap<Integer, Pose2d> reefPoses = null;
+
+    if (allianceBlue) {
+      reefPoses = reefPositions.reefPosesBlue;
+    } else {
+      reefPoses = reefPositions.reefPosesRed;
+    }
 
     String[] posParts = coralScorePos.name().split("_");
     String side = posParts[0];

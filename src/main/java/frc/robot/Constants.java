@@ -4,9 +4,13 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
@@ -184,7 +188,7 @@ public final class Constants {
     public static final double stowedAlgaeBottom = 0;
     public static final double groundIntake = 0.7;
     public static final double reefIntake = 0.8;
-    public static final double processorScoreBottom = stowedAlgaeBottom;
+    public static final double processorScoreBottom = 0.8;
     public static final double processorScoreTop = stowedAlgaeTop;
   }
 
@@ -242,5 +246,38 @@ public final class Constants {
     public static final int Port = 0;
     public static final int LEDCount = 76;
     public static final int RainbowSpan = 5;
+  }
+
+  public static class ReefPoses {
+    public HashMap<Integer, Pose2d> reefPosesBlue = new HashMap<>();
+    public HashMap<Integer, Pose2d> reefPosesRed = new HashMap<>();
+
+    public ReefPoses() {
+      reefPosesBlue.put(0, new Pose2d(3.915, 3.85, new Rotation2d(Units.degreesToRadians(0))));
+      reefPosesBlue.put(1, new Pose2d(3.915, 4.18, new Rotation2d(Units.degreesToRadians(0))));
+      reefPosesBlue.put(2, new Pose2d(3.683, 5.062, new Rotation2d(Units.degreesToRadians(-60))));
+      reefPosesBlue.put(3, new Pose2d(3.978, 5.245, new Rotation2d(Units.degreesToRadians(-60))));
+      reefPosesBlue.put(4, new Pose2d(4.994, 5.235, new Rotation2d(Units.degreesToRadians(-120))));
+      reefPosesBlue.put(5, new Pose2d(5.299, 5.082, new Rotation2d(Units.degreesToRadians(-120))));
+      reefPosesBlue.put(6, new Pose2d(5.7787, 4.18, new Rotation2d(Units.degreesToRadians(180))));
+      reefPosesBlue.put(7, new Pose2d(5.7787, 3.85, new Rotation2d(Units.degreesToRadians(180))));
+      reefPosesBlue.put(8, new Pose2d(5.289, 2.988, new Rotation2d(Units.degreesToRadians(120))));
+      reefPosesBlue.put(9, new Pose2d(5, 2.805, new Rotation2d(Units.degreesToRadians(120))));
+      reefPosesBlue.put(10, new Pose2d(3.967, 2.815, new Rotation2d(Units.degreesToRadians(60))));
+      reefPosesBlue.put(11, new Pose2d(3.693, 2.978, new Rotation2d(Units.degreesToRadians(60))));
+
+      reefPosesRed.put(0, new Pose2d(11.763, 3.85, new Rotation2d(Units.degreesToRadians(0))));
+      reefPosesRed.put(1, new Pose2d(11.763, 4.18, new Rotation2d(Units.degreesToRadians(0))));
+      reefPosesRed.put(2, new Pose2d(12.25, 5.062, new Rotation2d(Units.degreesToRadians(-60))));
+      reefPosesRed.put(3, new Pose2d(12.54, 5.245, new Rotation2d(Units.degreesToRadians(-60))));
+      reefPosesRed.put(4, new Pose2d(13.572, 5.235, new Rotation2d(Units.degreesToRadians(-120))));
+      reefPosesRed.put(5, new Pose2d(13.867, 5.082, new Rotation2d(Units.degreesToRadians(-120))));
+      reefPosesRed.put(6, new Pose2d(14.365, 4.18, new Rotation2d(Units.degreesToRadians(180))));
+      reefPosesRed.put(7, new Pose2d(14.365, 3.85, new Rotation2d(Units.degreesToRadians(180))));
+      reefPosesRed.put(8, new Pose2d(13.847, 2.988, new Rotation2d(Units.degreesToRadians(120))));
+      reefPosesRed.put(9, new Pose2d(13.543, 2.805, new Rotation2d(Units.degreesToRadians(120))));
+      reefPosesRed.put(10, new Pose2d(12.556, 2.815, new Rotation2d(Units.degreesToRadians(60))));
+      reefPosesRed.put(11, new Pose2d(12.261, 2.978, new Rotation2d(Units.degreesToRadians(60))));
+    }
   }
 }
