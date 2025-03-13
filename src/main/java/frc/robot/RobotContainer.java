@@ -70,7 +70,9 @@ public class RobotContainer {
     cycleDirection.addOption("Horizontal", "Horizontal");
     cycleDirection.addOption("Vertical", "Vertical");
 
+    PathPlanner.addOption("Normal - No PathPlanner", null);
     PathPlanner.addOption("Mobility", AutoBuilder.buildAuto("Simple Mobility"));
+    PathPlanner.addOption("Far Simple", AutoBuilder.buildAuto("Far Simple"));
 
     SmartDashboard.putData("Starting Side", reefSide);
     SmartDashboard.putData("Reef Level", reefLevel);
