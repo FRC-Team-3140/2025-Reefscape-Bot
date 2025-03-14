@@ -72,9 +72,9 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
     HashMap<Integer, Pose2d> reefPoses = null;
 
     if (allianceBlue) {
-      reefPoses = reefPositions.reefPosesBlue;
+      reefPoses = reefPositions.reefCoralPosesBlue;
     } else {
-      reefPoses = reefPositions.reefPosesRed;
+      reefPoses = reefPositions.reefCoralPosesRed;
     }
 
     String[] posParts = coralScorePos.name().split("_");

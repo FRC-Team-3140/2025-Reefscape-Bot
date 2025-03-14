@@ -13,6 +13,7 @@ public class NetworkTables {
   private static NetworkTableInstance inst = NetworkTableInstance.getDefault();
   
   private static NetworkTable dash = inst.getTable(Constants.NetworktablePaths.Dashboard);
+    public static NetworkTableEntry dashCoralLoc = dash.getEntry("coral");
     public static NetworkTableEntry commands = dash.getEntry("commands_sa");  
     public static NetworkTableEntry commandStatuses = dash.getEntry("commandStatuses_ia");  
 

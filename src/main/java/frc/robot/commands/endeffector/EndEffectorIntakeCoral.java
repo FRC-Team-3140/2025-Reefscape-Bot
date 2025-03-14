@@ -4,6 +4,7 @@
 
 package frc.robot.commands.endeffector;
 
+import frc.robot.commands.LEDs.SetRainbow;
 import frc.robot.libs.LoggedCommand;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.EndEffector;
@@ -35,6 +36,10 @@ public class EndEffectorIntakeCoral extends LoggedCommand {
   @Override
   public void end(boolean interrupted) {
     super.end(interrupted);
+
+    if (interrupted)
+      new SetRainbow().schedule();
+
     Timer.delay(0.25);
     endEffector.setManipulatorSpeed(0);
     System.out.println("EndEffectorIntakeCoral ended");
