@@ -32,7 +32,7 @@ public class SetLEDColor extends LoggedCommand {
     if (interrupted) {
       SignalTower.getInstance().setSolid(0,0,0);
       Integer i = null;
-      i.byteValue();
+      i.byteValue(); // crash the code to see the stacktrace
     }
     
   }
