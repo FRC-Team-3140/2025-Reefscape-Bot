@@ -6,8 +6,10 @@ package frc.robot.commands.Autos;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants;
 import frc.robot.commands.compoundCommands.GoToSourceAndIntake;
 import frc.robot.commands.compoundCommands.PositionAndScoreCoral;
+import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.endeffector.EndEffectorScoreCoral;
 import frc.robot.libs.FieldAprilTags;
 import frc.robot.subsystems.Elevator;
@@ -36,12 +38,14 @@ public class CycleVertical extends SequentialCommandGroup {
     // time limit)
     for (int i = 0; i <= 5; i++) {
       for (int j = 4; j >= 1; j--) {
-        super.addCommands(
+        addCommands(
             new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
             new EndEffectorScoreCoral(speed),
+            new SetHeight(Constants.ElevatorHeights.minimum),
             new GoToSourceAndIntake(),
             new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
             new EndEffectorScoreCoral(speed),
+            new SetHeight(Constants.ElevatorHeights.minimum),
             new GoToSourceAndIntake());
       }
     }
@@ -62,12 +66,14 @@ public class CycleVertical extends SequentialCommandGroup {
     // time limit)
     for (int i = 0; i <= 5; i++) {
       for (int j = 4; j >= 1; j--) {
-        super.addCommands(
+        addCommands(
             new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
             new EndEffectorScoreCoral(speed),
+            new SetHeight(Constants.ElevatorHeights.minimum),
             new GoToSourceAndIntake(),
             new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
             new EndEffectorScoreCoral(speed),
+            new SetHeight(Constants.ElevatorHeights.minimum),
             new GoToSourceAndIntake());
       }
     }

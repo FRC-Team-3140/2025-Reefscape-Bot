@@ -45,6 +45,6 @@ public class SetHeight extends LoggedCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (Timer.getFPGATimestamp()-startTStamp>0.2) && !elev.isMoving();
+    return (Timer.getFPGATimestamp() - startTStamp > 0.2) && !elev.isMoving();
   }
 }

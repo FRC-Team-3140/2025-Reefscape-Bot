@@ -17,19 +17,15 @@ import frc.robot.Constants;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.swerveDrive.SetSwerveStates;
-import frc.robot.libs.LoggedCommand;
 import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.SwerveDrive;
-import frc.robot.subsystems.odometry.Odometry;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PositionAndScoreCoral extends SequentialCommandGroup {
   private Elevator elevator = null;
-  private Odometry odometry = null;
 
   private Pose2d finalPose = null;
-  private double minDistForElevator = 0.5;
 
   public enum Position {
     L_1,
@@ -58,12 +54,11 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
    */
   public PositionAndScoreCoral(Position pos, int reefSide) {
     this.elevator = Elevator.getInstance();
-    this.odometry = Odometry.getInstance();
 
     coralScorePos = pos;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(elevator, odometry);
+    addRequirements(elevator);
 
     boolean allianceBlue = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
 
@@ -208,48 +203,6 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
             finalPose.getRotation().getDegrees() })),
         pathfindingCommand,
         new SetSwerveStates(SwerveDrive.getInstance(), true),
-        new elevatorCommand(),
         new SetHeight(level));
-  }
-
-  private class elevatorCommand extends LoggedCommand {
-    // Called when the command is initially scheduled.
-    @Override
-    public void initialize() {
-      super.initialize();
-
-      if (level == null) {
-        System.err.println("Error: Level is null. Exiting command.");
-        end(true);
-      }
-    }
-
-    // Called every time the scheduler runs while the command is scheduled.
-    @Override
-    public void execute() {
-    }
-
-    // Called once the command ends or is interrupted.
-    @Override
-    public void end(boolean interrupted) {
-      if (interrupted)
-        System.err.println("Interrupted or Issues encountered while running ScoreCoral command.");
-
-      super.end(interrupted);
-    }
-
-    // Returns true when the command should end.
-    @Override
-    public boolean isFinished() {
-      Pose2d curPose = odometry.getPose();
-      double distance = Math
-          .sqrt(Math.pow(finalPose.getY() - curPose.getY(), 2) + Math.pow(finalPose.getX() - curPose.getX(), 2));
-
-      if (distance <= minDistForElevator) {
-        return true;
-      } else {
-        return false;
-      }
-    }
   }
 }

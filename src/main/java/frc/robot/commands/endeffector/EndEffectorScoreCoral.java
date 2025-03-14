@@ -13,6 +13,7 @@ public class EndEffectorScoreCoral extends LoggedCommand {
 
   private EndEffector endEffector = null;
   private double speed;
+  private double ejectTimestamp = 0;
 
   public EndEffectorScoreCoral(double speed) {
     this.endEffector = EndEffector.getInstance();
@@ -30,19 +31,22 @@ public class EndEffectorScoreCoral extends LoggedCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    if (ejectTimestamp == 0 && !endEffector.hasCoral()) {
+      ejectTimestamp = Timer.getFPGATimestamp();
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     super.end(interrupted);
-    Timer.delay(1);
+
     endEffector.setManipulatorSpeed(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !endEffector.hasCoral();
+    return ejectTimestamp != 0 && (Timer.getFPGATimestamp() - ejectTimestamp) > 1;
   }
 }
