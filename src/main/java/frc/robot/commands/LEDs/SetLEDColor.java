@@ -23,12 +23,18 @@ public class SetLEDColor extends LoggedCommand {
   @Override
   public void initialize() {
     super.initialize();
+    SignalTower.getInstance().setSolid(R, G, B);
   }
 
   @Override
   public void end(boolean interrupted) {
     super.end(interrupted);
-    SignalTower.getInstance().setSolid(R, G, B);
+    if (interrupted) {
+      SignalTower.getInstance().setSolid(0,0,0);
+      Integer i = null;
+      i.byteValue();
+    }
+    
   }
 
   @Override
