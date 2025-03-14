@@ -12,6 +12,7 @@ import frc.robot.subsystems.Elevator;
 public class SetHeight extends LoggedCommand {
   private final Elevator elev;
   private final double height;
+  private double startTStamp;
 
   /** Creates a new SetHeight. */
   public SetHeight(double height) {
@@ -26,6 +27,7 @@ public class SetHeight extends LoggedCommand {
   @Override
   public void initialize() {
     super.initialize();
+    this.startTStamp = Timer.getFPGATimestamp();
     elev.setHeight(height);
   }
 
@@ -43,7 +45,6 @@ public class SetHeight extends LoggedCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    Timer.delay(0.1);
-    return !elev.isMoving();
+    return (Timer.getFPGATimestamp()-startTStamp>0.2) && !elev.isMoving();
   }
 }
