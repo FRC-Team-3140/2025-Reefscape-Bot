@@ -9,7 +9,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.libs.Vector2;
 import frc.robot.subsystems.SwerveDrive;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 
 public class PoseOdometry extends Odometry {
@@ -76,6 +78,7 @@ public class PoseOdometry extends Odometry {
         Pose2d pose = calculatePoseFromTags();
         if (estimator == null) {
             estimator = new SwerveDrivePoseEstimator(drive.kinematics, getGyroRotation(), positions, new Pose2d());
+            estimator.setVisionMeasurementStdDevs(VecBuilder.fill(1000, 1000, Units.degreesToRadians(30)));
         }
         if (pose != null) {
             if (cameraPasses < startingCameraPasses) {
