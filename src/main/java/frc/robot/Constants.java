@@ -134,7 +134,7 @@ public final class Constants {
 
   public static class Limits {
     // Elevator
-    public static final double ElevMovement = 0.1;
+    public static final double ElevMovement = 0.2;
     public static final double CurrentHomeThreshold = 4;
     public static final double ElevPosThreshold = 0.5;
 
