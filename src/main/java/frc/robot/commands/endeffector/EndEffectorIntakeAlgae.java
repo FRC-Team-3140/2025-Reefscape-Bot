@@ -7,7 +7,6 @@ package frc.robot.commands.endeffector;
 import frc.robot.Constants;
 import frc.robot.commands.LEDs.SetRainbow;
 import frc.robot.libs.LoggedCommand;
-import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
 
@@ -55,8 +54,6 @@ public class EndEffectorIntakeAlgae extends LoggedCommand {
     }
 
     endEffector.setAlgaeIntakeSpeed(-0.9);
-
-    Timer.delay(0.1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -72,7 +69,6 @@ public class EndEffectorIntakeAlgae extends LoggedCommand {
     if (interrupted)
       new SetRainbow().schedule();
 
-    Timer.delay(0.25);
     endEffector.setAlgaeIntakeSpeed(-0.15);
     System.out.println("EndEffectorIntakeAlgae ended");
   }

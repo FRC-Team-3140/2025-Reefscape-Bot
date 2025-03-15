@@ -11,6 +11,7 @@ import frc.robot.subsystems.EndEffector;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class OuttakeAlgae extends LoggedCommand {
   private final EndEffector endEffector;
+  private double startTimestamp;
 
   /** Creates a new OuttakeAlgae. */
   public OuttakeAlgae() {
@@ -25,6 +26,7 @@ public class OuttakeAlgae extends LoggedCommand {
   public void initialize() {
     super.initialize();
     endEffector.setAlgaeIntakeSpeed(1);
+    startTimestamp = Timer.getFPGATimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -42,7 +44,6 @@ public class OuttakeAlgae extends LoggedCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    Timer.delay(0.25);
-    return true;
+    return Timer.getFPGATimestamp() - startTimestamp > 0.25;
   }
 }
