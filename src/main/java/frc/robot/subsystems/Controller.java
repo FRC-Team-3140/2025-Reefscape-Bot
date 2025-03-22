@@ -185,11 +185,15 @@ public class Controller extends SubsystemBase {
     }
 
     if (primaryController.getBButtonPressed()) {
-      new PositionFromDash(NetworkTables.dashCoralLoc.getString("L_4"), true).schedule();
+      new PositionFromDash(NetworkTables.dashCoralLoc.getString("L_4"), false).schedule();
     }
 
-    if (primaryController.getBButtonPressed())
+    if (primaryController.getRightBumper())
       new GoToSourceAndIntake().schedule();
+
+    if (primaryController.getPOV() == 180) {
+      new ReturnToStowed().schedule();
+    }
   }
 
   private void ManualMode() {

@@ -234,11 +234,15 @@ public class PositionFromDash extends LoggedCommand {
         System.out.println(finalPose.getX() + " " + finalPose.getY() + " " + finalPose.getRotation());
 
         // Put the edge of the bot theoretically touching the apriltag
+        System.out.println("Generating..");
         pathfindingCommand = AutoBuilder.pathfindToPose(
             finalPose,
             Constants.PathplannerConstants.pathplannerConstraints, 0.0);
-
+        System.out.println("Done");
+        System.out.println("Running...");
         pathfindingCommand.schedule();
+        
+
     }
   }
 
@@ -249,6 +253,6 @@ public class PositionFromDash extends LoggedCommand {
   }
 
   public boolean isFinished() {
-    return pathfindingCommand.isFinished();
+    return pathfindingCommand != null ? pathfindingCommand.isFinished() : false;
   }
 }

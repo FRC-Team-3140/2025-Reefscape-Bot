@@ -165,14 +165,14 @@ public final class Constants {
     public static RobotConfig config;
 
     // Translation PID Values
-    public static final double TransP = 5.0;
-    public static final double TransI = 1.0;
-    public static final double TransD = 0.2;
+    public static final double TransP = 12;
+    public static final double TransI = 0;
+    public static final double TransD = 0;
 
     // Rotation PID Values
     public static final double RotP = 5.0;
-    public static final double RotI = 1.0;
-    public static final double RotD = 0.2;
+    public static final double RotI = 0;
+    public static final double RotD = 0;
 
     public static final PathConstraints pathplannerConstraints = new PathConstraints(
         Constants.Bot.maxChassisSpeed,
