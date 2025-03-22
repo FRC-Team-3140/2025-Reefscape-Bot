@@ -4,6 +4,9 @@
 
 package frc.robot.commands.endeffector;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.LEDs.SetRainbow;
 import frc.robot.libs.LoggedCommand;
 import frc.robot.subsystems.EndEffector;
@@ -39,8 +42,12 @@ public class EndEffectorIntakeCoral extends LoggedCommand {
     if (interrupted)
       new SetRainbow().schedule();
 
-    endEffector.setManipulatorSpeed(0);
-    System.out.println("EndEffectorIntakeCoral ended");
+    new SequentialCommandGroup(new WaitCommand(0.25),
+        new InstantCommand(
+            () -> {
+              endEffector.setManipulatorSpeed(0);
+              System.out.println("EndEffectorIntakeCoral ended");
+            })).schedule();
   }
 
   // Returns true when the command should end.

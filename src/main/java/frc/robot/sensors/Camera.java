@@ -240,7 +240,7 @@ public class Camera extends SubsystemBase {
       }
 
       lastPose = curPose;
-      return curPose;
+      return curPose.getX() != 0 ? curPose : null;
     } else {
       return null;
     }

@@ -45,7 +45,7 @@ public class Elevator extends SubsystemBase {
   private final SparkMaxConfig lConfig;
   private final SparkMaxConfig rConfig;
 
-  private final double kP = 0.5;
+  private final double kP = 0.8;
   private final double kI = 0.0;
   private final double kD = 0.0;
 

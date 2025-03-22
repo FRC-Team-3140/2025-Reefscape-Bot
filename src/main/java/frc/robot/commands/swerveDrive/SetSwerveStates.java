@@ -5,6 +5,7 @@
 package frc.robot.commands.swerveDrive;
 
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.SwerveDrive;
@@ -16,6 +17,8 @@ public class SetSwerveStates extends Command {
   private SwerveModuleState[] state = null;
 
   private boolean locked = false;
+
+  private double startTime;
 
   /**
    * Creates a new setSwerveStates command.
@@ -66,6 +69,8 @@ public class SetSwerveStates extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    this.startTime = Timer.getFPGATimestamp();
+    swerve.setSwerveModuleStates(state == null ? Constants.Bot.defaultSwerveStates : state, locked);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -77,11 +82,12 @@ public class SetSwerveStates extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    swerve.setSwerveModuleStates(state == null ? Constants.Bot.defaultSwerveStates : state, locked);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return (Timer.getFPGATimestamp() - startTime > 0.2);
   }
 }
