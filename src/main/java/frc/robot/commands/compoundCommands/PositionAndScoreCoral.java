@@ -10,13 +10,14 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.swerveDrive.SetSwerveStates;
+import frc.robot.libs.FlipPose;
 import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.SwerveDrive;
@@ -40,8 +41,6 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
 
   private Position coralScorePos = null;
 
-  private Command pathfindingCommand = null;
-
   private Double level = null;
 
   /**
@@ -60,7 +59,8 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator);
 
-    boolean allianceBlue = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
+    boolean allianceBlue = DriverStation.getAlliance()
+        .orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue;
 
     Constants.ReefPoses reefPositions = new Constants.ReefPoses();
 
@@ -75,7 +75,6 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
     String[] posParts = coralScorePos.name().split("_");
     String side = posParts[0];
     String position = posParts[1];
-    System.out.println("Side: " + side + ", Position: " + position);
 
     int posint = 0;
 
@@ -187,21 +186,25 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
         break;
     }
 
-    System.out.println(finalPose.getX() + " " + finalPose.getY() + " " + finalPose.getRotation());
-
-    // Put the edge of the bot theoretically touching the apriltag
-    pathfindingCommand = AutoBuilder.pathfindToPose(
-        finalPose,
-        Constants.PathplannerConstants.pathplannerConstraints, 0.0);
-
-    // Schedule the pathfinding command to run along with this command that will
-    // handle the elevator
-    addCommands(new InstantCommand(() -> NetworkTables.cameraPose
-        .setDoubleArray(new double[] {
-            finalPose.getX(),
-            finalPose.getY(),
-            finalPose.getRotation().getDegrees() })),
-        pathfindingCommand,
+    // pathfinding command is setup by an instant command to keep it out of the
+    // constructor to prevent the cycle commands from effectively attempting to
+    // calculate 24+ paths at beginning of auto.
+    addCommands(
+        new InstantCommand(() -> {
+          NetworkTables.cameraPose.setDoubleArray(new double[] {
+              finalPose.getX(),
+              finalPose.getY(),
+              finalPose.getRotation().getDegrees() });
+        }),
+        new PrintCommand(
+            "Side: " + side + ", Position: " + position +
+                "\n\tFinal Pose: " +
+                "\n\t * X: " + finalPose.getX() +
+                "\n\t * Y: " + finalPose.getY() +
+                "\n\t * Rot: " + finalPose.getRotation()),
+        AutoBuilder.pathfindToPose(
+            FlipPose.flipIfRed(finalPose),
+            Constants.PathplannerConstants.pathplannerConstraints, 0.0),
         new SetSwerveStates(SwerveDrive.getInstance(), true),
         new SetHeight(level));
   }

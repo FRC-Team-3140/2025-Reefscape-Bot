@@ -14,7 +14,6 @@ import com.pathplanner.lib.util.FileVersionException;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.commands.swerveDrive.SetSwerveStates;
@@ -34,7 +33,6 @@ public class GoToClosestSource extends SequentialCommandGroup {
     RIGHT
   }
 
-  private Command pathfindingCommand = null;
   private coralStations closestStation = null;
 
   /** Creates a new goToClosestSource. */
@@ -45,9 +43,11 @@ public class GoToClosestSource extends SequentialCommandGroup {
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
       LeftSource = FieldAprilTags.getInstance()
-          .getTagPose(DriverStation.getAlliance().get() == DriverStation.Alliance.Red ? 2 : 13);
+          .getTagPose(
+              DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red ? 2 : 13);
       RightSource = FieldAprilTags.getInstance()
-          .getTagPose(DriverStation.getAlliance().get() == DriverStation.Alliance.Red ? 1 : 12);
+          .getTagPose(
+              DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red ? 1 : 12);
     } else {
       System.err.println("Driverstation alliance wasn't present when command was called.");
       return;
@@ -64,12 +64,12 @@ public class GoToClosestSource extends SequentialCommandGroup {
     closestStation = (minDist == leftDist) ? coralStations.LEFT : coralStations.RIGHT;
 
     try {
-      pathfindingCommand = AutoBuilder
-          .pathfindThenFollowPath(
+      addCommands(
+          AutoBuilder.pathfindThenFollowPath(
               (closestStation == coralStations.LEFT ? PathPlannerPath.fromPathFile("Left Source Approach")
                   : PathPlannerPath.fromPathFile("Right Source Approach")),
-              Constants.PathplannerConstants.pathplannerConstraints);
-      addCommands(pathfindingCommand, new SetSwerveStates(SwerveDrive.getInstance(), true));
+              Constants.PathplannerConstants.pathplannerConstraints),
+          new SetSwerveStates(SwerveDrive.getInstance(), true));
       return;
     } catch (FileVersionException e) {
       System.err.print("Error in goToClosestSourse.java: \n" + e);

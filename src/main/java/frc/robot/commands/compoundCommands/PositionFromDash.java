@@ -33,7 +33,8 @@ public class PositionFromDash extends LoggedCommand {
    * @param reefSide
    */
   public PositionFromDash(String pos, boolean algae) {
-    boolean allianceBlue = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
+    boolean allianceBlue = DriverStation.getAlliance()
+        .orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue;
 
     Constants.ReefPoses reefPositions = new Constants.ReefPoses();
 
@@ -115,7 +116,7 @@ public class PositionFromDash extends LoggedCommand {
 
     int reefSide = FieldAprilTags.getInstance().getClosestReefAprilTag(
         Odometry.getInstance().getPose(),
-        DriverStation.getAlliance().get()).reefSide;
+        DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)).reefSide;
 
     switch (posint) {
       case -1:
@@ -241,8 +242,6 @@ public class PositionFromDash extends LoggedCommand {
         System.out.println("Done");
         System.out.println("Running...");
         pathfindingCommand.schedule();
-        
-
     }
   }
 
