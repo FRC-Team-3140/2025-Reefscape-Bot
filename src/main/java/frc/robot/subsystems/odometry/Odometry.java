@@ -35,7 +35,7 @@ abstract public class Odometry extends SubsystemBase {
   protected Odometry() {
     gyro = new AHRS(NavXComType.kMXP_SPI);
     lastGyroAngle = gyro.getRotation2d().getRadians();
-
+    resetGyro();
     fieldEntry = new Field2d();
     SmartDashboard.putData(fieldEntry);
   }

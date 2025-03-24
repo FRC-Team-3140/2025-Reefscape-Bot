@@ -209,7 +209,7 @@ public final class Constants {
     public static final double reefCoralL3Height = 7.054625;
     public static final double reefCoralL4Height = maxiumum;
 
-    public static final double sourceIntake = 2.4; //orig 1.75
+    public static final double sourceIntake = 2.3; //orig 1.75
     //the above value was used at RCR
 
     public static final double processerHeight = 0;

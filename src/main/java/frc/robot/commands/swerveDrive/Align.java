@@ -15,11 +15,11 @@ import frc.robot.libs.LoggedCommand;
 public class Align extends LoggedCommand {
 
   private final double transP = 5;
-  private final double transI = 0;
+  private final double transI = 1;
   private final double transD = 0;
 
   private final double rotP = 5;
-  private final double rotI = 0;
+  private final double rotI = 1;
   private final double rotD = 0;
 
   private final PIDController xPID;
@@ -45,6 +45,8 @@ public class Align extends LoggedCommand {
     xPID.setSetpoint(targetPose.getX());
     yPID.setSetpoint(targetPose.getY());
     thetaPID.setSetpoint(targetPose.getRotation().getRadians());
+
+    addRequirements(swerveDrive);
   }
 
   @Override
@@ -54,7 +56,14 @@ public class Align extends LoggedCommand {
   @Override
   public void execute() {
     currentPose = odometry.getPose();
-    swerveDrive.drive(xPID.calculate(currentPose.getX()), yPID.calculate(currentPose.getY()), thetaPID.calculate(currentPose.getRotation().getRadians()), true);
+    double driveX = xPID.calculate(currentPose.getX());
+    double driveY = yPID.calculate(currentPose.getY());
+    double driveTheta = thetaPID.calculate(currentPose.getRotation().getRadians());
+    System.out.println("======");
+    System.out.println(currentPose.getX() + ", " + currentPose.getY() + " : " + currentPose.getRotation().getRadians());
+    System.out.println(targetPose.getX() + ", " + targetPose.getY() + " : " + targetPose.getRotation().getRadians());
+    System.out.println(driveX + ", " + driveY + " : " + driveTheta);
+    swerveDrive.drive(driveX, driveY, driveTheta, true);
   }
 
   @Override
