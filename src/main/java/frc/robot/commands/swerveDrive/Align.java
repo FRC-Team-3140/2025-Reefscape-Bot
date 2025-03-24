@@ -13,10 +13,6 @@ import frc.robot.libs.LoggedCommand;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class Align extends LoggedCommand {
-  // TODO: Finish implementation
-  private final double x;
-  private final double y;
-  private final double theta;
 
   private final double transP = 5;
   private final double transI = 0;
@@ -38,21 +34,17 @@ public class Align extends LoggedCommand {
   private Pose2d currentPose = new Pose2d();
   private Pose2d targetPose;
 
-  public Align(double x, double y, double theta) {
-    this.x = x;
-    this.y = y;
-    this.theta = theta;
-    
+  private Odometry odometry = Odometry.getInstance();
+
+  public  Align(Pose2d targetPose) {
+    this.targetPose = targetPose; 
     xPID = new PIDController(transP, transI, transD);
     yPID = new PIDController(transP, transI, transD);
     thetaPID = new PIDController(rotP, rotI, rotD);
 
-    xPID.setSetpoint(x);
-    yPID.setSetpoint(y);
-    thetaPID.setSetpoint(theta);
-
-    targetPose = new Pose2d(x, y, new Rotation2d(theta));
-  
+    xPID.setSetpoint(targetPose.getX());
+    yPID.setSetpoint(targetPose.getY());
+    thetaPID.setSetpoint(targetPose.getRotation().getRadians());
   }
 
   @Override
@@ -61,8 +53,8 @@ public class Align extends LoggedCommand {
   }
   @Override
   public void execute() {
-    currentPose = Odometry.getInstance().getPose();
-    swerveDrive.drive(xPID.calculate(currentPose.getX()), yPID.calculate(currentPose.getY()), thetaPID.calculate(theta), true);
+    currentPose = odometry.getPose();
+    swerveDrive.drive(xPID.calculate(currentPose.getX()), yPID.calculate(currentPose.getY()), thetaPID.calculate(currentPose.getRotation().getRadians()), true);
   }
 
   @Override
@@ -72,7 +64,7 @@ public class Align extends LoggedCommand {
 
   @Override
   public boolean isFinished() {
-    return currentPose.getTranslation().getDistance(targetPose.getTranslation()) < transTolerance && Math.abs(theta - currentPose.getRotation().getRadians()) < rotTolerance;
+    return currentPose.getTranslation().getDistance(targetPose.getTranslation()) < transTolerance && Math.abs(currentPose.getRotation().getRadians() - currentPose.getRotation().getRadians()) < rotTolerance;
   }
 }
 

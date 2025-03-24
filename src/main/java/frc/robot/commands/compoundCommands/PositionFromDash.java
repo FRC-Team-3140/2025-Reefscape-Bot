@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.elevator.SetHeight;
+import frc.robot.commands.swerveDrive.Align;
 import frc.robot.libs.FieldAprilTags;
 import frc.robot.libs.LoggedCommand;
 import frc.robot.subsystems.odometry.Odometry;
@@ -236,9 +237,10 @@ public class PositionFromDash extends LoggedCommand {
 
         // Put the edge of the bot theoretically touching the apriltag
         System.out.println("Generating..");
-        pathfindingCommand = AutoBuilder.pathfindToPose(
-            finalPose,
-            Constants.PathplannerConstants.pathplannerConstraints, 0.0);
+        //pathfindingCommand = AutoBuilder.pathfindToPose(
+        //    finalPose,
+        //    Constants.PathplannerConstants.pathplannerConstraints, 0.0);
+        pathfindingCommand = new Align(finalPose);
         System.out.println("Done");
         System.out.println("Running...");
         pathfindingCommand.schedule();
