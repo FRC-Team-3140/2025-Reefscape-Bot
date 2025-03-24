@@ -15,11 +15,11 @@ import frc.robot.libs.LoggedCommand;
 public class Align extends LoggedCommand {
 
   private final double transP = 5;
-  private final double transI = 1;
+  private final double transI = 0;
   private final double transD = 0;
 
   private final double rotP = 5;
-  private final double rotI = 1;
+  private final double rotI = 0;
   private final double rotD = 0;
 
   private final PIDController xPID;
@@ -73,7 +73,8 @@ public class Align extends LoggedCommand {
 
   @Override
   public boolean isFinished() {
-    return currentPose.getTranslation().getDistance(targetPose.getTranslation()) < transTolerance && Math.abs(currentPose.getRotation().getRadians() - currentPose.getRotation().getRadians()) < rotTolerance;
+    return currentPose.getTranslation().getDistance(targetPose.getTranslation()) < transTolerance && 
+      Math.abs(currentPose.getRotation().getRadians() - currentPose.getRotation().getRadians()) < rotTolerance;
   }
 }
 
