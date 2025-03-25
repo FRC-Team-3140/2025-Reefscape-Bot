@@ -211,6 +211,7 @@ public class SwerveDrive extends SubsystemBase {
       for (int i = 0; i < 4; i++) {
         if (locked) {
           states[i].angle = Rotation2d.fromDegrees(Constants.Bot.lockedAngles[i]);
+          states[i].speedMetersPerSecond = 0;
           swerveModuleStates[i] = states[i];
         }
 
@@ -220,10 +221,4 @@ public class SwerveDrive extends SubsystemBase {
       System.err.println("To many or too few swerve module states. NOT SETTING!");
     }
   }
-
-  // public Pose2d getExpectedPose() {
-  // return getPose().plus(new Transform2d(
-  // new Translation2d(botSpeeds.vxMetersPerSecond * .05,
-  // botSpeeds.vyMetersPerSecond * .05), new Rotation2d()));
-  // }
 }
