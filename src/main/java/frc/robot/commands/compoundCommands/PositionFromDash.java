@@ -59,6 +59,7 @@ public class PositionFromDash extends LoggedCommand {
         break;
       case "R":
         posint = -1;
+        System.out.println("RIGHT 1");
         break;
       default:
         System.err.println("Somehow magically passed in invalid position...");
@@ -121,6 +122,9 @@ public class PositionFromDash extends LoggedCommand {
     switch (posint) {
       case -1:
         // Right = even
+        System.out.println("RIGHT 2");
+        System.out.println(reefSide + " : " + reefSide);
+        
         switch (reefSide) {
           case 0:
             if (algae) {
