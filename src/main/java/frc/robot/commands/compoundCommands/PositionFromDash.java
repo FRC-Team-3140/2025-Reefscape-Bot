@@ -34,8 +34,7 @@ public class PositionFromDash extends LoggedCommand {
    * @param reefSide
    */
   public PositionFromDash(String pos, boolean algae) {
-    boolean allianceBlue = DriverStation.getAlliance()
-        .orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue;
+    boolean allianceBlue = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
 
     Constants.ReefPoses reefPositions = new Constants.ReefPoses();
 
@@ -117,7 +116,7 @@ public class PositionFromDash extends LoggedCommand {
 
     int reefSide = FieldAprilTags.getInstance().getClosestReefAprilTag(
         Odometry.getInstance().getPose(),
-        DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)).reefSide;
+        DriverStation.getAlliance().get()).reefSide;
 
     switch (posint) {
       case -1:
@@ -237,13 +236,14 @@ public class PositionFromDash extends LoggedCommand {
 
         // Put the edge of the bot theoretically touching the apriltag
         System.out.println("Generating..");
-        //pathfindingCommand = AutoBuilder.pathfindToPose(
-        //    finalPose,
-        //    Constants.PathplannerConstants.pathplannerConstraints, 0.0);
-        pathfindingCommand = new Align(finalPose);
+        pathfindingCommand = AutoBuilder.pathfindToPose(
+            finalPose,
+            Constants.PathplannerConstants.pathplannerConstraints, 0.0).andThen(new Align(finalPose));
         System.out.println("Done");
         System.out.println("Running...");
         pathfindingCommand.schedule();
+        
+
     }
   }
 

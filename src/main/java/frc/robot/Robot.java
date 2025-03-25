@@ -4,9 +4,11 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.RobotConfig;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,6 +17,7 @@ import frc.robot.commands.swerveDrive.SwerveDriveManualControl;
 import frc.robot.commands.swerveDrive.SetSwerveStates;
 import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.TestRunner;
+import frc.robot.subsystems.odometry.Odometry;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -42,7 +45,12 @@ public class Robot extends TimedRobot {
     m_robotContainer = RobotContainer.getInstance();
 
     // Get Pathplanner ready for autos
-    PathfindingCommand.warmupCommand().schedule();
+    Pose2d pose = Odometry.getInstance().getPose();
+    PathfindingCommand.warmupCommand()
+        .andThen(
+            AutoBuilder.pathfindToPose(new Pose2d(pose.getX() + 1, pose.getY(), pose.getRotation()),
+                Constants.PathplannerConstants.pathplannerConstraints))
+        .schedule();
   }
 
   /**

@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -22,6 +23,12 @@ import frc.robot.commands.endeffector.EndEffectorScoreCoral;
 import frc.robot.commands.endeffector.OuttakeAlgae;
 import frc.robot.commands.endeffector.ScoreAlgae;
 import frc.robot.libs.NetworkTables;
+import frc.robot.subsystems.odometry.Odometry;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class Controller extends SubsystemBase {
@@ -194,6 +201,14 @@ public class Controller extends SubsystemBase {
     if (primaryController.getPOV() == 180) {
       new ReturnToStowed().schedule();
     }
+
+    // TODO: TEMPORARY TEST CODE
+    if (secondaryController.getAButtonPressed()) {
+      Pose2d pose = Odometry.getInstance().getPose();
+      AutoBuilder.pathfindToPose(
+          new Pose2d(pose.getX() + 1 , pose.getY(), new Rotation2d(pose.getRotation().getRadians() + (Math.PI / 2))),
+          Constants.PathplannerConstants.pathplannerConstraints, 0).alongWith(new PrintCommand("Running.")).schedule();
+    }
   }
 
   private void ManualMode() {
@@ -352,8 +367,7 @@ public class Controller extends SubsystemBase {
     // for(int i = 0; i < 4; i++) {
     // SwerveDrive.getInstance().modules[i].turnMotor.set(getRightX(controllers.PRIMARY));
     // }
-    if (secondaryController.getAButtonPressed())
-      new SourceCoralIntake().schedule();
+    // new Constants.ReefPoses().reefCoralPosesBlue.get(0),
   }
 
   public void periodic() {

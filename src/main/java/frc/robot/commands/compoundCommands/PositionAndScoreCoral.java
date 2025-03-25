@@ -4,9 +4,14 @@
 
 package frc.robot.commands.compoundCommands;
 
+import java.io.IOException;
 import java.util.HashMap;
 
+import org.json.simple.parser.ParseException;
+
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FileVersionException;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -189,23 +194,29 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
     // pathfinding command is setup by an instant command to keep it out of the
     // constructor to prevent the cycle commands from effectively attempting to
     // calculate 24+ paths at beginning of auto.
-    addCommands(
-        new InstantCommand(() -> {
-          NetworkTables.cameraPose.setDoubleArray(new double[] {
-              finalPose.getX(),
-              finalPose.getY(),
-              finalPose.getRotation().getDegrees() });
-        }),
-        new PrintCommand(
-            "Side: " + side + ", Position: " + position +
-                "\n\tFinal Pose: " +
-                "\n\t * X: " + finalPose.getX() +
-                "\n\t * Y: " + finalPose.getY() +
-                "\n\t * Rot: " + finalPose.getRotation()),
-        AutoBuilder.pathfindToPose(
-            FlipPose.flipIfRed(finalPose),
-            Constants.PathplannerConstants.pathplannerConstraints, 0.0),
-        new SetSwerveStates(SwerveDrive.getInstance(), true),
-        new SetHeight(level));
+    try {
+      addCommands(
+          new InstantCommand(() -> {
+            NetworkTables.cameraPose.setDoubleArray(new double[] {
+                finalPose.getX(),
+                finalPose.getY(),
+                finalPose.getRotation().getDegrees() });
+          }),
+          new PrintCommand(
+              "Side: " + side + ", Position: " + position +
+                  "\n\tFinal Pose: " +
+                  "\n\t * X: " + finalPose.getX() +
+                  "\n\t * Y: " + finalPose.getY() +
+                  "\n\t * Rot: " + finalPose.getRotation()),
+          // AutoBuilder.pathfindToPose(
+          //     FlipPose.flipIfRed(finalPose),
+          //     Constants.PathplannerConstants.pathplannerConstraints, 0.0),
+          AutoBuilder.pathfindThenFollowPath(PathPlannerPath.fromPathFile("Front Left Approach"), Constants.PathplannerConstants.pathplannerConstraints),
+          new SetSwerveStates(SwerveDrive.getInstance(), true),
+          new SetHeight(level));
+    } catch (FileVersionException | IOException | ParseException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 }

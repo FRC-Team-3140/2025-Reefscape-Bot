@@ -93,7 +93,7 @@ public final class Constants {
 
     // In meters per second, determined from the free speed of the bot via
     // SwerveDriveSpecialties
-    public static final double maxChassisSpeed = 5.8969405214990;
+    public static final double maxChassisSpeed = 2;// 5.8969405214990;
     public static final double maxModuleSpeed = maxChassisSpeed / wheelDiameter / Math.PI;
     public static final double maxTurnSpeed = Double.MAX_VALUE; // These are basically infinite for our purposes
     public static final double maxAcceleration = 4000;
@@ -168,7 +168,7 @@ public final class Constants {
     public static final double FieldLength = 17.548;
 
     // Translation PID Values
-    public static final double TransP = 12;
+    public static final double TransP = 5;
     public static final double TransI = 0;
     public static final double TransD = 0;
 
@@ -209,8 +209,8 @@ public final class Constants {
     public static final double reefCoralL3Height = 7.054625;
     public static final double reefCoralL4Height = maxiumum;
 
-    public static final double sourceIntake = 2.3; //orig 1.75
-    //the above value was used at RCR
+    public static final double sourceIntake = 2.3; // orig 1.75
+    // the above value was used at RCR
 
     public static final double processerHeight = 0;
     public static final double safeStowed = 0;

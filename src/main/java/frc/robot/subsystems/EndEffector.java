@@ -32,7 +32,7 @@ public class EndEffector extends SubsystemBase {
   private DutyCycleEncoder AlgaeArmEncoder;
 
   private ProfiledPIDController AlgaeArmPID;
-  final double P = 2.25;
+  final double P = 1.5;
   final double I = 0;
   final double D = 0;
 

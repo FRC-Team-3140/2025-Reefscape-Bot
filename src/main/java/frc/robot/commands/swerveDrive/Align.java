@@ -6,7 +6,6 @@ package frc.robot.commands.swerveDrive;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.odometry.Odometry;
 import frc.robot.libs.LoggedCommand;
@@ -14,12 +13,12 @@ import frc.robot.libs.LoggedCommand;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class Align extends LoggedCommand {
 
-  private final double transP = 5;
-  private final double transI = 0;
+  private final double transP = 8;
+  private final double transI = 1;
   private final double transD = 0;
 
-  private final double rotP = 5;
-  private final double rotI = 0;
+  private final double rotP = 6;
+  private final double rotI = 1;
   private final double rotD = 0;
 
   private final PIDController xPID;
@@ -28,7 +27,7 @@ public class Align extends LoggedCommand {
 
   private final SwerveDrive swerveDrive = SwerveDrive.getInstance();
 
-  private double transTolerance = 0.04; // meters
+  private double transTolerance = 0.5; // meters
   private double rotTolerance = Math.toRadians(2); // radians
 
   private Pose2d currentPose = new Pose2d();
@@ -57,7 +56,7 @@ public class Align extends LoggedCommand {
   public void execute() {
     currentPose = odometry.getPose();
     double driveX = xPID.calculate(currentPose.getX());
-    double driveY = yPID.calculate(currentPose.getY());
+    double driveY = -yPID.calculate(currentPose.getY());
     double driveTheta = thetaPID.calculate(currentPose.getRotation().getRadians());
     System.out.println("======");
     System.out.println(currentPose.getX() + ", " + currentPose.getY() + " : " + currentPose.getRotation().getRadians());
@@ -69,6 +68,7 @@ public class Align extends LoggedCommand {
   @Override
   public void end(boolean interrupted) {
     super.end(interrupted);
+    swerveDrive.drive(0, 0, 0, false);
   }
 
   @Override
