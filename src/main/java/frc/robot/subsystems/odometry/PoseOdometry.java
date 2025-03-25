@@ -78,7 +78,7 @@ public class PoseOdometry extends Odometry {
         Pose2d pose = calculatePoseFromTags();
         if (estimator == null) {
             estimator = new SwerveDrivePoseEstimator(drive.kinematics, getGyroRotation(), positions, new Pose2d());
-            estimator.setVisionMeasurementStdDevs(VecBuilder.fill(3, 3, Units.degreesToRadians(30)));
+            estimator.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, Units.degreesToRadians(30)));
         }
         if (pose != null) {
             if (cameraPasses < startingCameraPasses) {
