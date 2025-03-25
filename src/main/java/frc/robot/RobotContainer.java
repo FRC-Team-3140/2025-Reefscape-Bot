@@ -5,12 +5,18 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.Autos.CycleHorizontal;
 import frc.robot.commands.Autos.CycleVertical;
+import frc.robot.commands.compoundCommands.SourceCoralIntake;
+import frc.robot.commands.elevator.ReturnToStowed;
+import frc.robot.commands.elevator.SetHeight;
+import frc.robot.commands.endeffector.EndEffectorScoreCoral;
 import frc.robot.sensors.Camera;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.odometry.Odometry;
@@ -54,6 +60,13 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   private RobotContainer() {
+    // Add Named Commands for Pathplanner override autos
+    NamedCommands.registerCommand("Return To Stowed", new ReturnToStowed());
+    NamedCommands.registerCommand("Score L4", new SequentialCommandGroup(
+        new SetHeight(Constants.ElevatorHeights.reefCoralL4Height), new EndEffectorScoreCoral(0.8)));
+    NamedCommands.registerCommand("Intake", new SourceCoralIntake());
+
+    // Configure the auto options
     reefSide.addOption("Closest", "Closest");
     reefSide.addOption("Back", "Back");
     reefSide.addOption("Back Left", "Back Left");
@@ -73,6 +86,9 @@ public class RobotContainer {
     PathPlanner.setDefaultOption("Normal - No PathPlanner", null);
     PathPlanner.addOption("Mobility", AutoBuilder.buildAuto("Simple Mobility"));
     PathPlanner.addOption("Far Simple", AutoBuilder.buildAuto("Far Simple"));
+    PathPlanner.addOption("1 Coral", AutoBuilder.buildAuto("1 Coral Override"));
+    PathPlanner.addOption("2 Coral L", AutoBuilder.buildAuto("2L Coral Override"));
+    PathPlanner.addOption("2 Coral R", AutoBuilder.buildAuto("2R Coral Override"));
 
     SmartDashboard.putData("Starting Side", reefSide);
     SmartDashboard.putData("Reef Level", reefLevel);
