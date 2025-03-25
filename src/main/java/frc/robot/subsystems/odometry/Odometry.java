@@ -105,6 +105,8 @@ abstract public class Odometry extends SubsystemBase {
   public AHRS getGyro() {
     return gyro;
   }
-
+  public boolean isMoving() {
+    return getGyro().isMoving();
+  }
   abstract public void updatePosition(SwerveModulePosition[] positions);
 }

@@ -6,6 +6,7 @@ package frc.robot.commands.swerveDrive;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.odometry.Odometry;
 import frc.robot.libs.LoggedCommand;
@@ -35,6 +36,9 @@ public class Align extends LoggedCommand {
 
   private Odometry odometry = Odometry.getInstance();
 
+  private double startTime;
+  private double maxDuration = 7; 
+
   public  Align(Pose2d targetPose) {
     this.targetPose = targetPose; 
     xPID = new PIDController(transP, transI, transD);
@@ -50,6 +54,7 @@ public class Align extends LoggedCommand {
 
   @Override
   public void initialize() {
+    startTime = Timer.getFPGATimestamp();
     super.initialize();
   }
   @Override
@@ -58,10 +63,6 @@ public class Align extends LoggedCommand {
     double driveX = xPID.calculate(currentPose.getX());
     double driveY = yPID.calculate(currentPose.getY());
     double driveTheta = thetaPID.calculate(currentPose.getRotation().getRadians());
-    System.out.println("======");
-    System.out.println(currentPose.getX() + ", " + currentPose.getY() + " : " + currentPose.getRotation().getRadians());
-    System.out.println(targetPose.getX() + ", " + targetPose.getY() + " : " + targetPose.getRotation().getRadians());
-    System.out.println(driveX + ", " + driveY + " : " + driveTheta);
     swerveDrive.drive(driveX, driveY, driveTheta, true);
   }
 
@@ -73,8 +74,12 @@ public class Align extends LoggedCommand {
 
   @Override
   public boolean isFinished() {
-    return currentPose.getTranslation().getDistance(targetPose.getTranslation()) < transTolerance && 
-      Math.abs(currentPose.getRotation().getRadians() - currentPose.getRotation().getRadians()) < rotTolerance;
+    if(startTime + 1 > Timer.getFPGATimestamp()) return false;
+    if(startTime + 7 < Timer.getFPGATimestamp()) return true;
+    if ((currentPose.getTranslation().getDistance(targetPose.getTranslation()) < transTolerance && 
+      Math.abs(currentPose.getRotation().getRadians() - currentPose.getRotation().getRadians()) < rotTolerance) || 
+      !odometry.isMoving()) return true;
+    return false;
   }
 }
 
