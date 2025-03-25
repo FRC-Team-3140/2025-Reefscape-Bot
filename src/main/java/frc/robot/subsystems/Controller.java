@@ -201,14 +201,19 @@ public class Controller extends SubsystemBase {
     if (primaryController.getPOV() == 180) {
       new ReturnToStowed().schedule();
     }
+    if (primaryController.getLeftBumperButtonPressed())
+      new EndEffectorScoreCoral(0.8).schedule();
 
-    // TODO: TEMPORARY TEST CODE
-    if (secondaryController.getAButtonPressed()) {
-      Pose2d pose = Odometry.getInstance().getPose();
-      AutoBuilder.pathfindToPose(
-          new Pose2d(pose.getX() + 1 , pose.getY(), new Rotation2d(pose.getRotation().getRadians() + (Math.PI / 2))),
-          Constants.PathplannerConstants.pathplannerConstraints, 0).alongWith(new PrintCommand("Running.")).schedule();
-    }
+
+    
+    secondarySetpointCommands();
+    // // TODO: TEMPORARY TEST CODE
+    // if (secondaryController.getAButtonPressed()) {
+    //   Pose2d pose = Odometry.getInstance().getPose();
+    //   AutoBuilder.pathfindToPose(
+    //       new Pose2d(pose.getX() + 1 , pose.getY(), new Rotation2d(pose.getRotation().getRadians() + (Math.PI / 2))),
+    //       Constants.PathplannerConstants.pathplannerConstraints, 0).alongWith(new PrintCommand("Running.")).schedule();
+    // }
   }
 
   private void ManualMode() {
@@ -217,76 +222,18 @@ public class Controller extends SubsystemBase {
       return;
     }
 
-    if (primaryController.getYButtonPressed()) {
-      SwerveDrive.odometry.resetGyro();
-    }
-
-    if (primaryController.getStartButtonPressed()) {
-      RobotContainer.odometry.recalibrateCameraPose();
-    }
-
+    
     if (primaryController.getLeftBumperButtonPressed()) {
       new ScoreAlgae().schedule();
     }
 
-    if (secondaryController.getRightBumperButtonPressed())
-      new SourceCoralIntake().schedule();
-
-    if (secondaryController.getLeftBumperButtonPressed())
-      new EndEffectorScoreCoral(0.8).schedule();
-
-    if (secondaryController.getBButtonPressed()) {
-      // Elevator trough
-      elevator.setHeight(ElevatorHeights.reefCoralL1Height);
-    }
-
-    if (secondaryController.getAButtonPressed()) {
-      // Elevator level reef 1
-      elevator.setHeight(ElevatorHeights.reefCoralL2Height);
-    }
-
-    if (secondaryController.getXButtonPressed()) {
-      // Elevator level reef 2
-      elevator.setHeight(ElevatorHeights.reefCoralL3Height);
-    }
-
-    if (secondaryController.getYButtonPressed()) {
-      // Elevator level reef 3
-      elevator.setHeight(ElevatorHeights.reefCoralL4Height);
-    }
-
-    if (secondaryController.getLeftTriggerAxis() > Constants.Controller.triggerThreshold) {
-      // Get Algae Ground
-      new EndEffectorIntakeAlgae(EndEffectorIntakeAlgae.Level.Ground).schedule();
-    }
-
-    if (secondaryController.getStartButtonPressed()) {
-      // Get Algae L2
-      new EndEffectorIntakeAlgae(EndEffectorIntakeAlgae.Level.AlgaeL2).schedule();
-    }
-
-    if (secondaryController.getBackButtonPressed()) {
-      // Get Algae L3
-      new EndEffectorIntakeAlgae(EndEffectorIntakeAlgae.Level.AlgaeL1).schedule();
-    }
-
-    if (secondaryController.getPOV() == 0) {
-      new OuttakeAlgae().schedule();
-    }
-
-    if (secondaryController.getPOV() == 180) {
-      new ReturnToStowed().schedule();
-    }
+    secondarySetpointCommands();
   }
 
   private void OHNOManualMode() {
     if (secondaryController.getLeftStickButton() && secondaryController.getRightStickButton()) {
       updateControlMode();
       return;
-    }
-
-    if (primaryController.getYButtonPressed()) {
-      SwerveDrive.odometry.resetGyro();
     }
 
     double speed = -getRightY(controllers.SECONDARY);
@@ -343,7 +290,56 @@ public class Controller extends SubsystemBase {
       new ReturnToStowed().schedule();
     }
   }
+  private void secondarySetpointCommands() {
+    if (secondaryController.getRightBumperButtonPressed())
+      new SourceCoralIntake().schedule();
 
+    if (secondaryController.getLeftBumperButtonPressed())
+      new EndEffectorScoreCoral(0.8).schedule();
+
+    if (secondaryController.getBButtonPressed()) {
+      // Elevator trough
+      elevator.setHeight(ElevatorHeights.reefCoralL1Height);
+    }
+
+    if (secondaryController.getAButtonPressed()) {
+      // Elevator level reef 1
+      elevator.setHeight(ElevatorHeights.reefCoralL2Height);
+    }
+
+    if (secondaryController.getXButtonPressed()) {
+      // Elevator level reef 2
+      elevator.setHeight(ElevatorHeights.reefCoralL3Height);
+    }
+
+    if (secondaryController.getYButtonPressed()) {
+      // Elevator level reef 3
+      elevator.setHeight(ElevatorHeights.reefCoralL4Height);
+    }
+
+    if (secondaryController.getLeftTriggerAxis() > Constants.Controller.triggerThreshold) {
+      // Get Algae Ground
+      new EndEffectorIntakeAlgae(EndEffectorIntakeAlgae.Level.Ground).schedule();
+    }
+
+    if (secondaryController.getStartButtonPressed()) {
+      // Get Algae L2
+      new EndEffectorIntakeAlgae(EndEffectorIntakeAlgae.Level.AlgaeL2).schedule();
+    }
+
+    if (secondaryController.getBackButtonPressed()) {
+      // Get Algae L3
+      new EndEffectorIntakeAlgae(EndEffectorIntakeAlgae.Level.AlgaeL1).schedule();
+    }
+
+    if (secondaryController.getPOV() == 0) {
+      new OuttakeAlgae().schedule();
+    }
+
+    if (secondaryController.getPOV() == 180) {
+      new ReturnToStowed().schedule();
+    }
+  }
   private void testingMode() {
     // endEffector.algaeIntakeRotateMotorN.set(-getRightY(controllers.SECONDARY) *
     // 0.25);
@@ -375,6 +371,14 @@ public class Controller extends SubsystemBase {
     if (testing) {
       testingMode();
       return;
+    }
+    
+    if (primaryController.getYButtonPressed()) {
+      SwerveDrive.odometry.resetGyro();
+    }
+
+    if (primaryController.getStartButtonPressed()) {
+      RobotContainer.odometry.recalibrateCameraPose();
     }
     switch (curControlMode) {
       case AUTO:

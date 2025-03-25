@@ -27,7 +27,7 @@ public class Align extends LoggedCommand {
 
   private final SwerveDrive swerveDrive = SwerveDrive.getInstance();
 
-  private double transTolerance = 0.5; // meters
+  private double transTolerance = 0.05; // meters
   private double rotTolerance = Math.toRadians(2); // radians
 
   private Pose2d currentPose = new Pose2d();
@@ -56,7 +56,7 @@ public class Align extends LoggedCommand {
   public void execute() {
     currentPose = odometry.getPose();
     double driveX = xPID.calculate(currentPose.getX());
-    double driveY = -yPID.calculate(currentPose.getY());
+    double driveY = yPID.calculate(currentPose.getY());
     double driveTheta = thetaPID.calculate(currentPose.getRotation().getRadians());
     System.out.println("======");
     System.out.println(currentPose.getX() + ", " + currentPose.getY() + " : " + currentPose.getRotation().getRadians());
