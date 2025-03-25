@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -23,12 +22,6 @@ import frc.robot.commands.endeffector.EndEffectorScoreCoral;
 import frc.robot.commands.endeffector.OuttakeAlgae;
 import frc.robot.commands.endeffector.ScoreAlgae;
 import frc.robot.libs.NetworkTables;
-import frc.robot.subsystems.odometry.Odometry;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class Controller extends SubsystemBase {
@@ -195,7 +188,7 @@ public class Controller extends SubsystemBase {
       new PositionFromDash(NetworkTables.dashCoralLoc.getString("L_4"), false).schedule();
     }
 
-    if (primaryController.getRightBumper())
+    if (primaryController.getRightBumperButton())
       new GoToSourceAndIntake().schedule();
 
     if (primaryController.getPOV() == 180) {
@@ -204,16 +197,7 @@ public class Controller extends SubsystemBase {
     if (primaryController.getLeftBumperButtonPressed())
       new EndEffectorScoreCoral(0.8).schedule();
 
-
-    
     secondarySetpointCommands();
-    // // TODO: TEMPORARY TEST CODE
-    // if (secondaryController.getAButtonPressed()) {
-    //   Pose2d pose = Odometry.getInstance().getPose();
-    //   AutoBuilder.pathfindToPose(
-    //       new Pose2d(pose.getX() + 1 , pose.getY(), new Rotation2d(pose.getRotation().getRadians() + (Math.PI / 2))),
-    //       Constants.PathplannerConstants.pathplannerConstraints, 0).alongWith(new PrintCommand("Running.")).schedule();
-    // }
   }
 
   private void ManualMode() {
@@ -222,7 +206,6 @@ public class Controller extends SubsystemBase {
       return;
     }
 
-    
     if (primaryController.getLeftBumperButtonPressed()) {
       new ScoreAlgae().schedule();
     }
@@ -290,6 +273,7 @@ public class Controller extends SubsystemBase {
       new ReturnToStowed().schedule();
     }
   }
+
   private void secondarySetpointCommands() {
     if (secondaryController.getRightBumperButtonPressed())
       new SourceCoralIntake().schedule();
@@ -340,6 +324,7 @@ public class Controller extends SubsystemBase {
       new ReturnToStowed().schedule();
     }
   }
+
   private void testingMode() {
     // endEffector.algaeIntakeRotateMotorN.set(-getRightY(controllers.SECONDARY) *
     // 0.25);
@@ -372,7 +357,7 @@ public class Controller extends SubsystemBase {
       testingMode();
       return;
     }
-    
+
     if (primaryController.getYButtonPressed()) {
       SwerveDrive.odometry.resetGyro();
     }

@@ -215,7 +215,6 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
           new SetSwerveStates(SwerveDrive.getInstance(), true),
           new SetHeight(level));
     } catch (FileVersionException | IOException | ParseException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
