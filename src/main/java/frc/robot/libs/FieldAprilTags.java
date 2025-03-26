@@ -25,7 +25,7 @@ public class FieldAprilTags {
     private final List<AprilTag> aprilTags;
     private List<AprilTag> reefTags = new ArrayList<>();
     private final int[] reefIDs = { 6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22 };
-    private final AprilTagFieldLayout field;
+    public final AprilTagFieldLayout field;
 
     private final Hashtable<Integer, AprilTag> aprilTagsHash = new Hashtable<>();
 

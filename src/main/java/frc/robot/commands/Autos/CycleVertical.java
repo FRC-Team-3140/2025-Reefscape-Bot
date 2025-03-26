@@ -7,7 +7,7 @@ package frc.robot.commands.Autos;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.compoundCommands.GoToSourceAndIntake;
-import frc.robot.commands.compoundCommands.PositionAndScoreCoral;
+// import frc.robot.commands.compoundCommands.PositionAndScoreCoral;
 import frc.robot.commands.elevator.ReturnToStowed;
 import frc.robot.commands.endeffector.EndEffectorScoreCoral;
 import frc.robot.commands.swerveDrive.Align;
@@ -39,12 +39,12 @@ public class CycleVertical extends SequentialCommandGroup {
     for (int i = 0; i <= 5; i++) {
       for (int j = 4; j >= 1; j--) {
         addCommands(
-            new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
+            // new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
             // new Align(Odometry.getInstance().getPose()),
             new EndEffectorScoreCoral(speed),
             new ReturnToStowed(),
             new GoToSourceAndIntake(),
-            new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
+            // new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
             // new Align(Odometry.getInstance().getPose()),
             new EndEffectorScoreCoral(speed),
             new ReturnToStowed(),
@@ -69,12 +69,12 @@ public class CycleVertical extends SequentialCommandGroup {
     for (int i = 0; i <= 5; i++) {
       for (int j = 4; j >= 1; j--) {
         addCommands(
-            new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
+            // new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
             // new Align(Odometry.getInstance().getPose()),
             new EndEffectorScoreCoral(speed),
             new ReturnToStowed(),
             new GoToSourceAndIntake(),
-            new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
+            // new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
             // new Align(Odometry.getInstance().getPose()),
             new EndEffectorScoreCoral(speed),
             new ReturnToStowed(),

@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.odometry;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -35,8 +34,8 @@ abstract public class Odometry extends SubsystemBase {
 
   protected Odometry() {
     gyro = new AHRS(NavXComType.kMXP_SPI);
-    gyro.reset();
-    lastGyroAngle = gyro.getRotation2d().getRadians();
+    resetGyro();
+    lastGyroAngle = gyro.getRotation2d().getRadians() + Math.PI;
     fieldEntry = new Field2d();
     SmartDashboard.putData(fieldEntry);
   }
@@ -62,13 +61,13 @@ abstract public class Odometry extends SubsystemBase {
   abstract public void recalibrateCameraPose();
 
   public Rotation2d getGyroRotation() {
-    return gyro.getRotation2d();
+    return new Rotation2d(gyro.getRotation2d().getRadians() + Math.PI);
   }
 
   public void resetGyro() {
     double delta = caluclateRotationDelta();
     gyro.reset();
-    lastGyroAngle = gyro.getRotation2d().getRadians() - delta;
+    lastGyroAngle = gyro.getRotation2d().getRadians() + Math.PI - delta;
   }
 
   @Override
@@ -76,7 +75,7 @@ abstract public class Odometry extends SubsystemBase {
   }
 
   protected double caluclateRotationDelta() {
-    double delta = gyro.getRotation2d().getRadians() - lastGyroAngle;
+    double delta = gyro.getRotation2d().getRadians() + Math.PI - lastGyroAngle;
     lastGyroAngle += delta;
     return delta;
   }
@@ -94,10 +93,9 @@ abstract public class Odometry extends SubsystemBase {
   }
 
   public void resetPose(Pose2d pose) {
-    double angle = gyro.getRotation2d().getRadians();
+    double angle = gyro.getRotation2d().getRadians() + Math.PI;
     gyro.reset();
     lastGyroAngle -= angle;
-    AutoBuilder.resetOdom(getPose());
   }
 
   public Pose2d getPose() {

@@ -7,30 +7,49 @@ package frc.robot.sensors;
 import java.util.List;
 import java.util.Optional;
 
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.MultiTargetPNPResult;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.libs.FieldAprilTags;
+import frc.robot.subsystems.odometry.Odometry;
 
 public class Camera extends SubsystemBase {
   private static Camera instance = null;
 
-  private final double delayTime = 0.5;
+  private final double delayTime = 5;
 
   private boolean connected = false;
 
   private double lastIteration = 0;
 
-  private Pose2d lastPose = new Pose2d();
+  // TODO: Implement logic for same as last pose. 
+  // private Pose2d lastPose = new Pose2d();
 
   private PhotonCamera front = new PhotonCamera("front");
   private PhotonCamera back = new PhotonCamera("back");
+
+  private Transform3d frontToBot = new Transform3d(0, Constants.CameraConstants.frontOffsetToCenter, 0,
+      new Rotation3d(0, (5 * Math.PI / 36), 0));
+  private Transform3d backToBot = new Transform3d(0, Constants.CameraConstants.backOffsetToCenter,
+      Constants.CameraConstants.backOffsetToCenterVert, new Rotation3d(0, 0, Math.PI));
+
+  private AprilTagFieldLayout layout = FieldAprilTags.getInstance().field;
+  private PhotonPoseEstimator frontEstimator = new PhotonPoseEstimator(layout, PoseStrategy.AVERAGE_BEST_TARGETS,
+      frontToBot);
+  private PhotonPoseEstimator backEstimator = new PhotonPoseEstimator(layout, PoseStrategy.AVERAGE_BEST_TARGETS,
+      backToBot);
 
   /**
    * Represents a distance measurement obtained from a camera sensor.
@@ -88,6 +107,8 @@ public class Camera extends SubsystemBase {
     if (((Timer.getFPGATimestamp() - lastIteration)) > delayTime) {
       isConnected();
 
+      // System.out.println("Connected: " + connected + " Front: " +
+      // front.isConnected() + " Back: " + back.isConnected());
 
       lastIteration = Timer.getFPGATimestamp();
     }
@@ -121,63 +142,109 @@ public class Camera extends SubsystemBase {
 
   public Pose2d getPoseFromCamera() {
     if (connected) {
-      Optional<MultiTargetPNPResult> frontResult = front.getLatestResult().multitagResult;
-      Optional<MultiTargetPNPResult> backResult = back.getLatestResult().multitagResult;
-      Pose2d robotPose = new Pose2d();
+      // Optional<MultiTargetPNPResult> frontResult =
+      // front.getLatestResult().multitagResult;
+      // Optional<MultiTargetPNPResult> backResult =
+      // back.getLatestResult().multitagResult;
+      Pose2d curPose = Odometry.getInstance().getPose();
 
-      if (frontResult.isPresent() && backResult.isPresent()) {
-       
-        if (frontResult.get().estimatedPose.ambiguity > Constants.CameraConstants.minAmbiguity
-            || backResult.get().estimatedPose.ambiguity > Constants.CameraConstants.minAmbiguity) {
+      PhotonPipelineResult frontResult = front.getLatestResult();
+      PhotonPipelineResult backResult = back.getLatestResult();
+
+      if (frontResult.hasTargets() && backResult.hasTargets()) {
+        frontEstimator.setReferencePose(curPose);
+        backEstimator.setReferencePose(curPose);
+
+        Optional<EstimatedRobotPose> frontPoseOpt = frontEstimator.update(frontResult);
+        Optional<EstimatedRobotPose> backPoseOpt = backEstimator.update(backResult);
+
+        if (frontPoseOpt.isPresent() && backPoseOpt.isPresent()) {
+          Pose2d frontPoseEstimation = frontPoseOpt.get().estimatedPose.toPose2d();
+          Pose2d backPoseEstimation = backPoseOpt.get().estimatedPose.toPose2d();
+
+          double avgX = (frontPoseEstimation.getX() + backPoseEstimation.getX()) / 2;
+          double avgY = (frontPoseEstimation.getY() + backPoseEstimation.getY()) / 2;
+          double avgRot = (frontPoseEstimation.getRotation().getRadians()
+              + backPoseEstimation.getRotation().getRadians()) / 2;
+
+          return new Pose2d(avgX, avgY, new Rotation2d(avgRot));
+        } else {
           return null;
         }
-        Transform3d poseToFront = frontResult.get().estimatedPose.best;
-        Transform3d poseToBack = backResult.get().estimatedPose.best;
+      } else if (frontResult.hasTargets()) {
+        frontEstimator.setReferencePose(curPose);
 
-        // Combine the poses from the front and back cameras to calculate the robot's
-        // pose
-        robotPose = new Pose2d(
-            (poseToFront.getTranslation().getX() + poseToBack.getTranslation().getX()) / 2,
-            (poseToFront.getTranslation().getY() + poseToBack.getTranslation().getY()) / 2,
-            new Rotation2d((poseToFront.getRotation().getZ() + poseToBack.getRotation().getZ()) / 2));
+        Optional<EstimatedRobotPose> frontPoseOpt = frontEstimator.update(frontResult);
 
-        
-      } else if (frontResult.isPresent()){
+        return frontPoseOpt.isPresent()
+            ? frontPoseOpt.get().estimatedPose.toPose2d()
+            : null;
+      } else if (backResult.hasTargets()) {
+        backEstimator.setReferencePose(curPose);
 
-        if (frontResult.get().estimatedPose.ambiguity > Constants.CameraConstants.minAmbiguity) {
-          return null;
-        }
-        Transform3d poseToFront = frontResult.get().estimatedPose.best;
+        Optional<EstimatedRobotPose> backPoseOpt = backEstimator.update(backResult);
 
-        robotPose = new Pose2d(
-            poseToFront.getTranslation().getX(),
-            poseToFront.getTranslation().getY(),
-            new Rotation2d(poseToFront.getRotation().getZ()));
-        
-        
-
-      } else if (backResult.isPresent()){
-
-        if (backResult.get().estimatedPose.ambiguity > Constants.CameraConstants.minAmbiguity) {
-          return null;
-        }
-        Transform3d poseToBack = backResult.get().estimatedPose.best;
-
-        robotPose = new Pose2d(
-            poseToBack.getTranslation().getX(),
-            poseToBack.getTranslation().getY(),
-            new Rotation2d(poseToBack.getRotation().getZ()));
-
+        return backPoseOpt.isPresent()
+            ? backPoseOpt.get().estimatedPose.toPose2d()
+            : null;
       } else {
         return null;
       }
-      if(robotPose.getX() != lastPose.getX()) { 
-        lastPose = robotPose;
-        return  robotPose ;
-      } else {
-        lastPose = robotPose;
-        return  robotPose ;
-      }
+
+      // if (frontResult.isPresent() && backResult.isPresent()) {
+      // if (frontResult.get().estimatedPose.ambiguity >
+      // Constants.CameraConstants.minAmbiguity
+      // || backResult.get().estimatedPose.ambiguity >
+      // Constants.CameraConstants.minAmbiguity) {
+      // return null;
+      // }
+
+      // Transform3d poseToFront = frontResult.get().estimatedPose.best;
+      // Transform3d poseToBack = backResult.get().estimatedPose.best;
+
+      // // Combine the poses from the front and back cameras to calculate the robot's
+      // // pose
+      // robotPose = new Pose2d(
+      // (poseToFront.getTranslation().getX() + poseToBack.getTranslation().getX()) /
+      // 2,
+      // (poseToFront.getTranslation().getY() + poseToBack.getTranslation().getY()) /
+      // 2,
+      // new Rotation2d((poseToFront.getRotation().getZ() +
+      // poseToBack.getRotation().getZ()) / 2));
+      // } else if (frontResult.isPresent()) {
+      // if (frontResult.get().estimatedPose.ambiguity >
+      // Constants.CameraConstants.minAmbiguity) {
+      // return null;
+      // }
+      // Transform3d poseToFront = frontResult.get().estimatedPose.best;
+      // robotPose = new Pose2d(
+      // poseToFront.getTranslation().getX(),
+      // poseToFront.getTranslation().getY(),
+      // new Rotation2d(poseToFront.getRotation().getZ()));
+
+      // } else if (backResult.isPresent()) {
+
+      // if (backResult.get().estimatedPose.ambiguity >
+      // Constants.CameraConstants.minAmbiguity) {
+      // return null;
+      // }
+      // Transform3d poseToBack = backResult.get().estimatedPose.best;
+
+      // robotPose = new Pose2d(
+      // poseToBack.getTranslation().getX(),
+      // poseToBack.getTranslation().getY(),
+      // new Rotation2d(poseToBack.getRotation().getZ()));
+
+      // } else {
+      // return null;
+      // }
+      // if (robotPose.getX() != lastPose.getX()) {
+      // lastPose = robotPose;
+      // return robotPose;
+      // } else {
+      // lastPose = robotPose;
+      // return robotPose;
+      // }
     } else {
       return null;
     }

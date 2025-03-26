@@ -37,7 +37,8 @@ public class Align extends LoggedCommand {
   private Odometry odometry = Odometry.getInstance();
 
   private double startTime;
-  private double maxDuration = 7; 
+  // TODO: Unused V
+  // private double maxDuration = 7; 
 
   public  Align(Pose2d targetPose) {
     this.targetPose = targetPose; 

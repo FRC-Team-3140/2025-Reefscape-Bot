@@ -38,7 +38,7 @@ public class SwerveModule extends SubsystemBase {
 
     public double botMass = 24.4;
 
-    public double turnP = .0075;
+    public double turnP = .01;
 
     public double driveSetpointTolerance = .5;
     public double turnSetpointTolerance = 5;
