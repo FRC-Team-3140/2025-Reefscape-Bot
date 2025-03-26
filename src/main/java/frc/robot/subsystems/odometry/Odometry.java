@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.odometry;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -34,8 +35,8 @@ abstract public class Odometry extends SubsystemBase {
 
   protected Odometry() {
     gyro = new AHRS(NavXComType.kMXP_SPI);
+    gyro.reset();
     lastGyroAngle = gyro.getRotation2d().getRadians();
-    // resetGyro();
     fieldEntry = new Field2d();
     SmartDashboard.putData(fieldEntry);
   }
@@ -96,6 +97,7 @@ abstract public class Odometry extends SubsystemBase {
     double angle = gyro.getRotation2d().getRadians();
     gyro.reset();
     lastGyroAngle -= angle;
+    AutoBuilder.resetOdom(getPose());
   }
 
   public Pose2d getPose() {
@@ -105,8 +107,10 @@ abstract public class Odometry extends SubsystemBase {
   public AHRS getGyro() {
     return gyro;
   }
+
   public boolean isMoving() {
     return getGyro().isMoving();
   }
+
   abstract public void updatePosition(SwerveModulePosition[] positions);
 }
