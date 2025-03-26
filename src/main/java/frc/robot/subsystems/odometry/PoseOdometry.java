@@ -81,6 +81,7 @@ public class PoseOdometry extends Odometry {
             estimator.setVisionMeasurementStdDevs(VecBuilder.fill(5, 5, Units.degreesToRadians(30)));
         }
         if (pose != null) {
+            System.out.println("Updating cam");
             if (cameraPasses < startingCameraPasses) {
                 startingPose = startingPose.interpolate(pose, 0.5);
                 cameraPasses++;
@@ -93,6 +94,7 @@ public class PoseOdometry extends Odometry {
                     estimator.resetPose(pose);
                 } else {
                     if (estimator.getEstimatedPosition().getTranslation().getDistance(pose.getTranslation()) < 2) {
+                        System.out.println("VALID");
                         estimator.addVisionMeasurement(new Pose2d(pose.getX(), pose.getY(), getGyroRotation()),
                                 Timer.getFPGATimestamp());
                     }

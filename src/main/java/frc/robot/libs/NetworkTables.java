@@ -29,7 +29,8 @@ public class NetworkTables {
   private static NetworkTable devBoard = dash.getSubTable(Constants.NetworktablePaths.Test);
     public static NetworkTableEntry numOLoggedCmds_i = devBoard.getEntry("numOLoggedCmds_i");
     
-    public static NetworkTableEntry cameraPose = devBoard.getEntry("cameraPose_ad");
+    // Former Camera average position on dev board.
+    public static NetworkTableEntry pathplannerGoalPose = devBoard.getEntry("cameraPose_ad");
     public static NetworkTableEntry backCameraPose = devBoard.getEntry("backCameraPose_ad");
     public static NetworkTableEntry frontCameraPose = devBoard.getEntry("frontCameraPose_ad");
 
@@ -47,50 +48,50 @@ public class NetworkTables {
     public static NetworkTableEntry reefButton_b = devBoard.getEntry("Algae Reef_b");
     public static NetworkTableEntry algaeGroundButton_b = devBoard.getEntry("Algae Ground_b");
 
-  private static NetworkTable sensors = inst.getTable(Constants.NetworktablePaths.Sensors);
-    public static NetworkTableEntry globalCameraTimestamp = sensors.getEntry("timestamp");
+  // private static NetworkTable sensors = inst.getTable(Constants.NetworktablePaths.Sensors);
+  //   public static NetworkTableEntry globalCameraTimestamp = sensors.getEntry("timestamp");
 
-    private static NetworkTable aprilTags = sensors.getSubTable("apriltags");
+  //   private static NetworkTable aprilTags = sensors.getSubTable("apriltags");
 
-    private static NetworkTable camera0 = aprilTags.getSubTable("camera0");
-      public static NetworkTableEntry camera0_Timestamp = camera0.getEntry("timestamp");
+  //   private static NetworkTable camera0 = aprilTags.getSubTable("camera0");
+  //     public static NetworkTableEntry camera0_Timestamp = camera0.getEntry("timestamp");
 
-      // X, Y, Z
-      public static NetworkTableEntry camera0_Position = camera0.getEntry("camera_position");
-      public static NetworkTableEntry camera0_Direction = camera0.getEntry("camera_direction");
+  //     // X, Y, Z
+  //     public static NetworkTableEntry camera0_Position = camera0.getEntry("camera_position");
+  //     public static NetworkTableEntry camera0_Direction = camera0.getEntry("camera_direction");
       
-      public static NetworkTableEntry camera0_Distances = camera0.getEntry("distances");
-      public static NetworkTableEntry camera0_Bearings = camera0.getEntry("bearings");
+  //     public static NetworkTableEntry camera0_Distances = camera0.getEntry("distances");
+  //     public static NetworkTableEntry camera0_Bearings = camera0.getEntry("bearings");
 
-      // Double 
-      public static NetworkTableEntry camera0_Angle = camera0.getEntry("camera_angle");
+  //     // Double 
+  //     public static NetworkTableEntry camera0_Angle = camera0.getEntry("camera_angle");
       
-      public static NetworkTableEntry camera0_IDs = camera0.getEntry("ids");
+  //     public static NetworkTableEntry camera0_IDs = camera0.getEntry("ids");
 
-      public static NetworkTableEntry camera0_requestedID = camera0.getEntry("target_id");
-      public static NetworkTableEntry camera0_requestedTimestamp = camera0.getEntry("target_timestamp");
-      public static NetworkTableEntry camera0_requestedBearing = camera0.getEntry("target_bearing");
-      public static NetworkTableEntry camera0_requestedDistance = camera0.getEntry("target_distance");
+  //     public static NetworkTableEntry camera0_requestedID = camera0.getEntry("target_id");
+  //     public static NetworkTableEntry camera0_requestedTimestamp = camera0.getEntry("target_timestamp");
+  //     public static NetworkTableEntry camera0_requestedBearing = camera0.getEntry("target_bearing");
+  //     public static NetworkTableEntry camera0_requestedDistance = camera0.getEntry("target_distance");
 
-    private static NetworkTable camera2 = aprilTags.getSubTable("camera2");
-      public static NetworkTableEntry camera2_Timestamp = camera2.getEntry("timestamp");
+  //   private static NetworkTable camera2 = aprilTags.getSubTable("camera2");
+  //     public static NetworkTableEntry camera2_Timestamp = camera2.getEntry("timestamp");
 
-      // X, Y, Z
-      public static NetworkTableEntry camera2_Position = camera2.getEntry("camera_position");
-      public static NetworkTableEntry camera2_Direction = camera2.getEntry("camera_direction");
+  //     // X, Y, Z
+  //     public static NetworkTableEntry camera2_Position = camera2.getEntry("camera_position");
+  //     public static NetworkTableEntry camera2_Direction = camera2.getEntry("camera_direction");
       
-      public static NetworkTableEntry camera2_Distances = camera2.getEntry("distances");
-      public static NetworkTableEntry camera2_Bearings = camera2.getEntry("bearings");
+  //     public static NetworkTableEntry camera2_Distances = camera2.getEntry("distances");
+  //     public static NetworkTableEntry camera2_Bearings = camera2.getEntry("bearings");
 
-      // Double 
-      public static NetworkTableEntry camera2_Angle = camera2.getEntry("camera_angle");
+  //     // Double 
+  //     public static NetworkTableEntry camera2_Angle = camera2.getEntry("camera_angle");
       
-      public static NetworkTableEntry camera2_IDs = camera2.getEntry("ids");
+  //     public static NetworkTableEntry camera2_IDs = camera2.getEntry("ids");
 
-      public static NetworkTableEntry camera2_requestedID = camera2.getEntry("target_id");
-      public static NetworkTableEntry camera2_requestedTimestamp = camera2.getEntry("target_timestamp");
-      public static NetworkTableEntry camera2_requestedBearing = camera2.getEntry("target_bearing");
-      public static NetworkTableEntry camera2_requestedDistance = camera2.getEntry("target_distance");
+  //     public static NetworkTableEntry camera2_requestedID = camera2.getEntry("target_id");
+  //     public static NetworkTableEntry camera2_requestedTimestamp = camera2.getEntry("target_timestamp");
+  //     public static NetworkTableEntry camera2_requestedBearing = camera2.getEntry("target_bearing");
+  //     public static NetworkTableEntry camera2_requestedDistance = camera2.getEntry("target_distance");
   
   private static NetworkTable misc = dash.getSubTable(Constants.NetworktablePaths.Misc);
     public static NetworkTableEntry driveModeManual_b = misc.getEntry("driveModeManual_b");

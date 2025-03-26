@@ -4,13 +4,19 @@
 
 package frc.robot.sensors;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.MultiTargetPNPResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.libs.NetworkTables;
-import frc.robot.libs.Vector2;
 
 public class Camera extends SubsystemBase {
   private static Camera instance = null;
@@ -19,15 +25,12 @@ public class Camera extends SubsystemBase {
 
   private boolean connected = false;
 
-  private double globalTime = -1;
-  private double lastTime = -1;
-  private double frameTime = -1;
-
-  private double lastAttemptReconnectIterration = 0;
+  private double lastIteration = 0;
 
   private Pose2d lastPose = new Pose2d();
-  private Vector2 lastVecFront = new Vector2();
-  private Vector2 lastVecBack = new Vector2();
+
+  private PhotonCamera front = new PhotonCamera("front");
+  private PhotonCamera back = new PhotonCamera("back");
 
   /**
    * Represents a distance measurement obtained from a camera sensor.
@@ -82,76 +85,35 @@ public class Camera extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (((Timer.getFPGATimestamp() - lastAttemptReconnectIterration)) > delayTime) {
-      lastTime = globalTime;
-      globalTime = NetworkTables.globalCameraTimestamp.getDouble(-1);
-      frameTime = NetworkTables.camera0_Timestamp.getDouble(-1);
+    if (((Timer.getFPGATimestamp() - lastIteration)) > delayTime) {
+      isConnected();
 
-      if (globalTime == -1 || globalTime - frameTime > Constants.CameraConstants.maxTimeBeteweenFrames
-          || globalTime == lastTime) {
-        connected = false;
-      } else {
-        connected = true;
-      }
 
-      lastAttemptReconnectIterration = Timer.getFPGATimestamp();
+      lastIteration = Timer.getFPGATimestamp();
     }
-
-    // Pose2d camPose = getPoseFromCamera();
-    // if (camPose != null)
-    // NetworkTables.cameraPose
-    // .setDoubleArray(new double[] {
-    // camPose.getX(),
-    // camPose.getY(),
-    // camPose.getRotation().getDegrees()
-    // });
   }
 
   public boolean isConnected() {
+    connected = (front.isConnected() && back.isConnected());
     return connected;
   }
 
   public Integer getClosestApriltag() {
     if (connected) {
-      double[] distances = NetworkTables.camera0_Distances.getDoubleArray(new double[0]);
-      int[] ids = getDetectedTags();
+      PhotonTrackedTarget frontTarget = front.getLatestResult().getBestTarget();
+      PhotonTrackedTarget backTarget = back.getLatestResult().getBestTarget();
 
-      if (distances.length <= 0 || ids.length <= 0)
+      if (frontTarget == null && backTarget == null) {
         return null;
-
-      double minDistance = distances[0];
-
-      int minIndex = 0;
-
-      for (int i = 0; i < distances.length; i++) {
-        if (distances[i] < minDistance) {
-          minDistance = distances[i];
-          minIndex = i;
-        }
+      } else if (frontTarget == null) {
+        return backTarget.getFiducialId();
+      } else if (backTarget == null) {
+        return frontTarget.getFiducialId();
+      } else {
+        double frontDistance = frontTarget.getBestCameraToTarget().getTranslation().getNorm();
+        double backDistance = backTarget.getBestCameraToTarget().getTranslation().getNorm();
+        return frontDistance < backDistance ? frontTarget.getFiducialId() : backTarget.getFiducialId();
       }
-
-      return ids[minIndex];
-    } else {
-      return null;
-    }
-  }
-
-  public AprilTagMeasurement getMeasurement(int id) {
-    if (connected) {
-      NetworkTables.camera0_requestedID.setDouble(id);
-
-      Timer.delay(0.1);
-
-      double globalCameraTimestamp = NetworkTables.camera0_Timestamp.getDouble(0);
-      double timestamp = NetworkTables.camera0_requestedTimestamp.getDouble(-1);
-
-      if (timestamp == -1 || globalCameraTimestamp - timestamp > Constants.CameraConstants.maxTimeBeteweenFrames)
-        return null;
-
-      return new AprilTagMeasurement(
-          NetworkTables.camera0_requestedDistance.getDouble(0),
-          NetworkTables.camera0_requestedBearing.getDouble(0),
-          id);
     } else {
       return null;
     }
@@ -159,88 +121,63 @@ public class Camera extends SubsystemBase {
 
   public Pose2d getPoseFromCamera() {
     if (connected) {
-      boolean camera0Exists = false;
-      boolean camera2Exists = false;
-      // Camera 0 Calculation
-      double[] pose0 = NetworkTables.camera0_Position.getDoubleArray(new double[0]);
-      double[] dir0 = NetworkTables.camera0_Direction.getDoubleArray(new double[0]);
-      Vector2 poseVec0 = null, dirVec0 = null, mUnitVec0 = null, centerOfBot0 = null;
+      Optional<MultiTargetPNPResult> frontResult = front.getLatestResult().multitagResult;
+      Optional<MultiTargetPNPResult> backResult = back.getLatestResult().multitagResult;
+      Pose2d robotPose = new Pose2d();
 
-      if (pose0.length != 0 && dir0.length != 0) {
-        poseVec0 = new Vector2(pose0[0], pose0[1]);
-        dirVec0 = new Vector2(dir0[0], dir0[1]);
+      if (frontResult.isPresent() && backResult.isPresent()) {
+       
+        if (frontResult.get().estimatedPose.ambiguity > Constants.CameraConstants.minAmbiguity
+            || backResult.get().estimatedPose.ambiguity > Constants.CameraConstants.minAmbiguity) {
+          return null;
+        }
+        Transform3d poseToFront = frontResult.get().estimatedPose.best;
+        Transform3d poseToBack = backResult.get().estimatedPose.best;
 
-        mUnitVec0 = dirVec0.sub(poseVec0);
-        centerOfBot0 = mUnitVec0.neg().mult(Constants.CameraConstants.aprilOffsetToCenter0).add(poseVec0);
+        // Combine the poses from the front and back cameras to calculate the robot's
+        // pose
+        robotPose = new Pose2d(
+            (poseToFront.getTranslation().getX() + poseToBack.getTranslation().getX()) / 2,
+            (poseToFront.getTranslation().getY() + poseToBack.getTranslation().getY()) / 2,
+            new Rotation2d((poseToFront.getRotation().getZ() + poseToBack.getRotation().getZ()) / 2));
 
-        camera0Exists = true;
-      }
+        
+      } else if (frontResult.isPresent()){
 
-      // Camera 2 Calculation
-      double[] pose2 = NetworkTables.camera2_Position.getDoubleArray(new double[0]);
-      double[] dir2 = NetworkTables.camera2_Direction.getDoubleArray(new double[0]);
-      Vector2 poseVec2 = null, dirVec2 = null, mUnitVec2 = null, centerOfBot2 = null;
-      if (pose2.length != 0 && dir0.length != 0) {
-        poseVec2 = new Vector2(pose2[0], pose2[1]);
-        dirVec2 = new Vector2(dir2[0], dir2[1]);
+        if (frontResult.get().estimatedPose.ambiguity > Constants.CameraConstants.minAmbiguity) {
+          return null;
+        }
+        Transform3d poseToFront = frontResult.get().estimatedPose.best;
 
-        mUnitVec2 = dirVec2.sub(poseVec2);
-        centerOfBot2 = mUnitVec2.neg().mult(Constants.CameraConstants.aprilOffsetToCenter2).add(poseVec2);
+        robotPose = new Pose2d(
+            poseToFront.getTranslation().getX(),
+            poseToFront.getTranslation().getY(),
+            new Rotation2d(poseToFront.getRotation().getZ()));
+        
+        
 
-        camera2Exists = true;
-      }
+      } else if (backResult.isPresent()){
 
-      if (camera0Exists && poseVec0.X == lastVecFront.X)
-        camera0Exists = false;
+        if (backResult.get().estimatedPose.ambiguity > Constants.CameraConstants.minAmbiguity) {
+          return null;
+        }
+        Transform3d poseToBack = backResult.get().estimatedPose.best;
 
-      if (camera0Exists)
-        lastVecFront = poseVec0;
+        robotPose = new Pose2d(
+            poseToBack.getTranslation().getX(),
+            poseToBack.getTranslation().getY(),
+            new Rotation2d(poseToBack.getRotation().getZ()));
 
-      if (camera2Exists && poseVec2.X == lastVecBack.X)
-        camera2Exists = false;
-
-      if (camera2Exists)
-        lastVecBack = poseVec2;
-
-      Pose2d curPose = null;
-
-      if (camera0Exists && camera2Exists) {
-        curPose = new Pose2d((centerOfBot0.X + centerOfBot2.X) / 2, (centerOfBot0.Y + centerOfBot2.Y) / 2,
-            new Rotation2d(
-                (Math.atan2(mUnitVec0.Y, mUnitVec0.X) + Math.atan2(mUnitVec2.neg().Y, mUnitVec2.neg().X)) / 2));
-      } else if (camera0Exists) {
-        curPose = new Pose2d(centerOfBot0.X, centerOfBot0.Y,
-            new Rotation2d(Math.atan2(mUnitVec0.Y, mUnitVec0.X)));
-      } else if (camera2Exists) {
-        curPose = new Pose2d(centerOfBot2.X, centerOfBot2.Y,
-            new Rotation2d(Math.atan2(mUnitVec2.neg().Y, mUnitVec2.neg().X)));
       } else {
         return null;
       }
-
-      if (curPose.getX() == lastPose.getX())
-        return null;
-
-      if (camera0Exists) {
-        NetworkTables.frontCameraPose
-            .setDoubleArray(new double[] {
-                centerOfBot0.X,
-                centerOfBot0.Y,
-                new Rotation2d(Math.atan2(mUnitVec0.Y, mUnitVec0.X)).getDegrees()
-            });
+      if(robotPose.getX() != lastPose.getX()) { 
+        lastPose = robotPose;
+        return  robotPose ;
+      } else {
+        lastPose = robotPose;
+        return  robotPose ;
       }
-
-      if (camera2Exists) {
-        NetworkTables.backCameraPose
-            .setDoubleArray(new double[] {
-                centerOfBot2.X,
-                centerOfBot2.Y,
-                new Rotation2d(Math.atan2(mUnitVec2.neg().Y, mUnitVec2.neg().X)).getDegrees()
-            });
-      }
-
-      lastPose = curPose;
-      return curPose.getX() != 0 ? curPose : null;
     } else {
       return null;
     }
@@ -248,15 +185,20 @@ public class Camera extends SubsystemBase {
 
   public int[] getDetectedTags() {
     if (connected) {
-      double[] detectedTags = NetworkTables.camera0_IDs.getDoubleArray(new double[0]);
+      List<PhotonTrackedTarget> detectedTags = front.getLatestResult().targets;
+      List<PhotonTrackedTarget> detectedTagsBack = back.getLatestResult().targets;
 
-      if (detectedTags.length == 0)
+      if (detectedTags.size() == 0)
         return null;
 
-      int[] detectedTagsInt = new int[detectedTags.length];
+      int[] detectedTagsInt = new int[detectedTags.size() + detectedTagsBack.size()];
 
-      for (int i = 0; i < detectedTags.length; i++) {
-        detectedTagsInt[i] = (int) detectedTags[i];
+      for (int i = 0; i < detectedTags.size(); i++) {
+        detectedTagsInt[i] = (int) detectedTags.get(i).getFiducialId();
+      }
+
+      for (int i = 0; i < detectedTagsBack.size(); i++) {
+        detectedTagsInt[i + detectedTags.size()] = (int) detectedTagsBack.get(i).getFiducialId();
       }
 
       return detectedTagsInt;
