@@ -4,13 +4,9 @@
 
 package frc.robot.commands.compoundCommands;
 
-import java.io.IOException;
 import java.util.HashMap;
 
-import org.json.simple.parser.ParseException;
-
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -197,7 +193,7 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
     try {
       addCommands(
           new InstantCommand(() -> {
-            NetworkTables.cameraPose.setDoubleArray(new double[] {
+            NetworkTables.pathplannerGoalPose.setDoubleArray(new double[] {
                 finalPose.getX(),
                 finalPose.getY(),
                 finalPose.getRotation().getDegrees() });
@@ -208,13 +204,13 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
                   "\n\t * X: " + finalPose.getX() +
                   "\n\t * Y: " + finalPose.getY() +
                   "\n\t * Rot: " + finalPose.getRotation()),
-          // AutoBuilder.pathfindToPose(
-          //     FlipPose.flipIfRed(finalPose),
-          //     Constants.PathplannerConstants.pathplannerConstraints, 0.0),
-          AutoBuilder.pathfindThenFollowPath(PathPlannerPath.fromPathFile("Front Left Approach"), Constants.PathplannerConstants.pathplannerConstraints),
+          AutoBuilder.pathfindToPose(
+              FlipPose.flipIfRed(finalPose),
+              Constants.PathplannerConstants.pathplannerConstraints, 0.0),
+          // AutoBuilder.pathfindThenFollowPath(PathPlannerPath.fromPathFile("Front Left Approach"), Constants.PathplannerConstants.pathplannerConstraints),
           new SetSwerveStates(SwerveDrive.getInstance(), true),
           new SetHeight(level));
-    } catch (FileVersionException | IOException | ParseException e) {
+    } catch (FileVersionException e) {
       e.printStackTrace();
     }
   }

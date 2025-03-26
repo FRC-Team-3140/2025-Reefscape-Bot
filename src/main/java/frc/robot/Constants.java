@@ -155,10 +155,11 @@ public final class Constants {
   }
 
   public static class CameraConstants {
-    public static final double maxTimeBeteweenFrames = 0.1;
-    public static final double aprilOffsetToCenter0 = Units.inchesToMeters(13);
-    public static final double aprilOffsetToCenter2 = Units.inchesToMeters(13);
-    public static final double maxValidDistance = 3;
+    // public static final double maxTimeBeteweenFrames = 0.1;
+    // public static final double aprilOffsetToCenter0 = Units.inchesToMeters(13);
+    // public static final double aprilOffsetToCenter2 = Units.inchesToMeters(13);
+    // public static final double maxValidDistance = 3;
+    public static final double minAmbiguity = 0.2;
   }
 
   public static class PathplannerConstants {
