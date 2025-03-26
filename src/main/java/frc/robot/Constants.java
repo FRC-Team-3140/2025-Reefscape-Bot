@@ -11,6 +11,7 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.libs.FieldAprilTags;
@@ -254,11 +255,32 @@ public final class Constants {
   }
 
   public static class ReefPoses {
+    public double sideOffset = 0.1651;
+    public double backOffset = 0.4699;
     public HashMap<Integer, Pose2d> reefCoralPosesBlue = new HashMap<>();
     public HashMap<Integer, Pose2d> reefAlgaePosesBlue = new HashMap<>();
     public HashMap<Integer, Pose2d> reefCoralPosesRed = new HashMap<>();
     public HashMap<Integer, Pose2d> reefAlgaePosesRed = new HashMap<>();
-
+    public Pose2d getPose(int side, int pos) { // pos: -1 center, 0 left, 1 right
+      int id = switch (side) {
+        case 0, 7 -> 18;
+        case 1, 6 -> 19;
+        case 2, 11 -> 20;
+        case 3, 10 -> 21;
+        case 4, 9 -> 22;
+        case 5, 8 -> 17;
+        default -> -1;
+      };
+      if(id == -1) return null;
+      Pose2d tagPose = FieldAprilTags.getInstance().getTagPose(id);
+      double theta = tagPose.getRotation().getRadians();
+      Translation2d offsetTranslation = tagPose.getTranslation();
+      if(pos != -1) {
+        offsetTranslation = offsetTranslation.plus(new Translation2d(sideOffset * Math.cos(theta + Math.PI * pos), sideOffset * Math.sin(theta + Math.PI * pos)));
+      } 
+      return new Pose2d();
+      
+    }
     public ReefPoses() {
       /////////////////////////// Blue Alliance ///////////////////////////
       /// Coral
