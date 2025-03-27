@@ -281,7 +281,7 @@ public final class Constants {
             sideOffset * Math.sin(theta + Math.PI * pos)));
       offsetTranslation = offsetTranslation.plus(
           new Translation2d(backOffset * Math.cos(theta + Math.PI / 2), backOffset * Math.sin(theta + Math.PI / 2)));
-      return new Pose2d(offsetTranslation.getX(), offsetTranslation.getY(), new Rotation2d(theta));
+      return new Pose2d(offsetTranslation.getX(), offsetTranslation.getY(), new Rotation2d(theta + Math.PI));
     }
 
     public ReefPoses() {
