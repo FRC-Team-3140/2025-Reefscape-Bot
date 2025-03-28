@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.libs.FieldAprilTags;
+import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.odometry.Odometry;
 
 public class Camera extends SubsystemBase {
@@ -139,7 +140,21 @@ public class Camera extends SubsystemBase {
       return null;
     }
   }
-
+  private void setDebugPoses(boolean front, boolean back, Pose2d pose) {
+    if(front) {
+      NetworkTables.frontCameraPose.setDoubleArray(new double[] {
+        pose.getX(),
+        pose.getY(),
+        pose.getRotation().getDegrees() });
+    }
+    if(back) {
+      NetworkTables.backCameraPose.setDoubleArray(new double[] {
+        pose.getX(),
+        pose.getY(),
+        pose.getRotation().getDegrees() });
+    }
+    
+  }
   public Pose2d getPoseFromCamera() {
     if (connected) {
       Pose2d curPose = Odometry.getInstance().getPose();
@@ -157,7 +172,8 @@ public class Camera extends SubsystemBase {
         if (frontPoseOpt.isPresent() && backPoseOpt.isPresent()) {
           Pose2d frontPoseEstimation = frontPoseOpt.get().estimatedPose.toPose2d();
           Pose2d backPoseEstimation = backPoseOpt.get().estimatedPose.toPose2d();
-
+          setDebugPoses(true, false, frontPoseEstimation);
+          setDebugPoses(false, true, backPoseEstimation);
           double avgX = (frontPoseEstimation.getX() + backPoseEstimation.getX()) / 2;
           double avgY = (frontPoseEstimation.getY() + backPoseEstimation.getY()) / 2;
           double avgRot = (frontPoseEstimation.getRotation().getRadians()
@@ -181,6 +197,7 @@ public class Camera extends SubsystemBase {
 
         if (frontPoseOpt.isPresent()) {
           estimatedPose = frontPoseOpt.get().estimatedPose.toPose2d();
+          setDebugPoses(true, false, estimatedPose);
           if (estimatedPose.getX() != lastPose.getX()) {
             lastPose = estimatedPose;
             return estimatedPose;
@@ -195,6 +212,8 @@ public class Camera extends SubsystemBase {
 
         if (backPoseOpt.isPresent()) {
           estimatedPose = backPoseOpt.get().estimatedPose.toPose2d();
+          setDebugPoses(true, false, estimatedPose);
+
           if (estimatedPose.getX() != lastPose.getX()) {
             lastPose = estimatedPose;
             return estimatedPose;
