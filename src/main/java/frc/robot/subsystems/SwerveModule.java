@@ -101,7 +101,7 @@ public class SwerveModule extends SubsystemBase {
                 .setDouble(turnEncoder.getAbsolutePosition());
     }
 
-    SlewRateLimiter accelerationLimiter = new SlewRateLimiter(30.0, -Constants.Bot.maxAcceleration, 0);
+    SlewRateLimiter accelerationLimiter = new SlewRateLimiter(Constants.Bot.maxAcceleration, -Constants.Bot.maxAcceleration, 0);
 
     public void setStates(SwerveModuleState state) {
         state.optimize(Rotation2d.fromDegrees(turnEncoder.getAbsolutePosition()));
