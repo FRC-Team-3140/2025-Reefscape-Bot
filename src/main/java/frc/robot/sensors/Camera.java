@@ -151,8 +151,8 @@ public class Camera extends SubsystemBase {
         frontEstimator.setReferencePose(curPose);
         backEstimator.setReferencePose(curPose);
 
-        Optional<EstimatedRobotPose> frontPoseOpt = frontResult.getBestTarget().getPoseAmbiguity() < 0.2 ? frontEstimator.update(frontResult) : null;
-        Optional<EstimatedRobotPose> backPoseOpt = backResult.getBestTarget().getPoseAmbiguity() < 0.2 ?  backEstimator.update(backResult) : null;
+        Optional<EstimatedRobotPose> frontPoseOpt = frontResult.getBestTarget().getPoseAmbiguity() < 0.2 ? frontEstimator.update(frontResult) : Optional.empty();
+        Optional<EstimatedRobotPose> backPoseOpt = backResult.getBestTarget().getPoseAmbiguity() < 0.2 ?  backEstimator.update(backResult) : Optional.empty();
 
         if (frontPoseOpt.isPresent() && backPoseOpt.isPresent()) {
           Pose2d frontPoseEstimation = frontPoseOpt.get().estimatedPose.toPose2d();
@@ -177,7 +177,7 @@ public class Camera extends SubsystemBase {
       } else if (frontResult.hasTargets()) {
         frontEstimator.setReferencePose(curPose);
 
-        Optional<EstimatedRobotPose> frontPoseOpt = frontResult.getBestTarget().getPoseAmbiguity() < 0.2 ? frontEstimator.update(frontResult) : null;
+        Optional<EstimatedRobotPose> frontPoseOpt = frontResult.getBestTarget().getPoseAmbiguity() < 0.2 ? frontEstimator.update(frontResult) : Optional.empty();
 
         if (frontPoseOpt.isPresent()) {
           estimatedPose = frontPoseOpt.get().estimatedPose.toPose2d();
@@ -191,7 +191,7 @@ public class Camera extends SubsystemBase {
       } else if (backResult.hasTargets()) {
         backEstimator.setReferencePose(curPose);
         
-        Optional<EstimatedRobotPose> backPoseOpt = backResult.getBestTarget().getPoseAmbiguity() < 0.2 ?  backEstimator.update(backResult) : null;
+        Optional<EstimatedRobotPose> backPoseOpt = backResult.getBestTarget().getPoseAmbiguity() < 0.2 ?  backEstimator.update(backResult) : Optional.empty();
 
         if (backPoseOpt.isPresent()) {
           estimatedPose = backPoseOpt.get().estimatedPose.toPose2d();
