@@ -233,9 +233,9 @@ public class PositionFromDash extends LoggedCommand {
     //         break;
     //     }
     int posint = switch(side) {
-      case "L" -> 0;
+      case "L" -> -1;
       case "R" -> 1;
-      default -> -1;
+      default -> 0;
     };
     finalPose = Constants.ReefPoses.getPose(reefSide, algae ? -1 : posint);
     System.out.println(finalPose.getX() + " " + finalPose.getY() + " " + finalPose.getRotation());

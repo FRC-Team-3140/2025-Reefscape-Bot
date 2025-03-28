@@ -259,7 +259,7 @@ public final class Constants {
     // public HashMap<Integer, Pose2d> reefAlgaePosesBlue = new HashMap<>();
     // public HashMap<Integer, Pose2d> reefCoralPosesRed = new HashMap<>();
     // public HashMap<Integer, Pose2d> reefAlgaePosesRed = new HashMap<>();
-    public static Pose2d getPose(int side, int pos) { // pos: -1 center, 0 left, 1 right
+    public static Pose2d getPose(int side, int pos) { // pos: -1 left, 0 center, 1 right
       double sideOffset = 0.1651;
       double backOffset = 0.4699;
       int id = switch (side) {
@@ -276,11 +276,11 @@ public final class Constants {
       Pose2d tagPose = FieldAprilTags.getInstance().getTagPose(id);
       double theta = tagPose.getRotation().getRadians();
       Translation2d offsetTranslation = tagPose.getTranslation();
-      if (pos != -1)
-        offsetTranslation = offsetTranslation.plus(new Translation2d(sideOffset * Math.cos(theta + Math.PI * pos),
-            sideOffset * Math.sin(theta + Math.PI * pos)));
+      if (pos != 0)
+        offsetTranslation = offsetTranslation.plus(new Translation2d(sideOffset * Math.cos(theta + Math.PI / 2 * pos),
+            sideOffset * Math.sin(theta + Math.PI / 2 * pos)));
       offsetTranslation = offsetTranslation.plus(
-          new Translation2d(backOffset * Math.cos(theta + Math.PI / 2), backOffset * Math.sin(theta + Math.PI / 2)));
+          new Translation2d(backOffset * Math.cos(theta), backOffset * Math.sin(theta)));
       return new Pose2d(offsetTranslation.getX(), offsetTranslation.getY(), new Rotation2d(theta + Math.PI));
     }
 
