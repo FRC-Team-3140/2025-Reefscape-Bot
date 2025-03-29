@@ -210,7 +210,7 @@ public final class Constants {
     public static final double reefCoralL3Height = 7.054625;
     public static final double reefCoralL4Height = maxiumum;
 
-    public static final double sourceIntake = 2.3; // orig 1.75
+    public static final double sourceIntake = 2.15; // orig 1.75
     // the above value was used at RCR
 
     public static final double processerHeight = 0;
@@ -281,62 +281,10 @@ public final class Constants {
             sideOffset * Math.sin(theta + Math.PI / 2 * pos)));
       offsetTranslation = offsetTranslation.plus(
           new Translation2d(backOffset * Math.cos(theta), backOffset * Math.sin(theta)));
-      return new Pose2d(offsetTranslation.getX(), offsetTranslation.getY(), new Rotation2d(theta + Math.PI));
+      return new Pose2d(offsetTranslation.getX(), offsetTranslation.getY(), new Rotation2d(theta - Math.PI));
     }
 
     public ReefPoses() {
-      /////////////////////////// Blue Alliance ///////////////////////////
-      /// Coral
-      // reefCoralPosesBlue.put(0, new Pose2d(3.915, 3.85, new
-      /////////////////////////// Rotation2d(Units.degreesToRadians(0))));
-      // reefCoralPosesBlue.put(1, new Pose2d(3.915, 4.18, new
-      /////////////////////////// Rotation2d(Units.degreesToRadians(0))));
-      // reefCoralPosesBlue.put(2, new Pose2d(3.683, 5.062, new
-      /////////////////////////// Rotation2d(Units.degreesToRadians(-60))));
-      // reefCoralPosesBlue.put(3, new Pose2d(3.978, 5.245, new
-      /////////////////////////// Rotation2d(Units.degreesToRadians(-60))));
-      // reefCoralPosesBlue.put(4, new Pose2d(4.994, 5.235, new
-      /////////////////////////// Rotation2d(Units.degreesToRadians(-120))));
-      // reefCoralPosesBlue.put(5, new Pose2d(5.299, 5.082, new
-      /////////////////////////// Rotation2d(Units.degreesToRadians(-120))));
-      // reefCoralPosesBlue.put(6, new Pose2d(5.7787, 4.18, new
-      /////////////////////////// Rotation2d(Units.degreesToRadians(180))));
-      // reefCoralPosesBlue.put(7, new Pose2d(5.7787, 3.85, new
-      /////////////////////////// Rotation2d(Units.degreesToRadians(180))));
-      // reefCoralPosesBlue.put(8, new Pose2d(5.289, 2.988, new
-      /////////////////////////// Rotation2d(Units.degreesToRadians(120))));
-      // reefCoralPosesBlue.put(9, new Pose2d(5, 2.805, new
-      /////////////////////////// Rotation2d(Units.degreesToRadians(120))));
-      // reefCoralPosesBlue.put(10, new Pose2d(3.967, 2.815, new
-      /////////////////////////// Rotation2d(Units.degreesToRadians(60))));
-      // reefCoralPosesBlue.put(11, new Pose2d(3.693, 2.978, new
-      /////////////////////////// Rotation2d(Units.degreesToRadians(60))));
-
-      // /// Algae
-      // reefAlgaePosesBlue.put(0, new Pose2d(
-      // FieldAprilTags.getInstance().blueReefTagsHash.get(0).pose.getX(),
-      // FieldAprilTags.getInstance().blueReefTagsHash.get(0).pose.getY(),
-      // new Rotation2d(Units.degreesToRadians(0))));
-      // reefAlgaePosesBlue.put(1, new Pose2d(
-      // FieldAprilTags.getInstance().blueReefTagsHash.get(1).pose.getX(),
-      // FieldAprilTags.getInstance().blueReefTagsHash.get(1).pose.getY(),
-      // new Rotation2d(Units.degreesToRadians(-60))));
-      // reefAlgaePosesBlue.put(2, new Pose2d(
-      // FieldAprilTags.getInstance().blueReefTagsHash.get(2).pose.getX(),
-      // FieldAprilTags.getInstance().blueReefTagsHash.get(2).pose.getY(),
-      // new Rotation2d(Units.degreesToRadians(-120))));
-      // reefAlgaePosesBlue.put(3, new Pose2d(
-      // FieldAprilTags.getInstance().blueReefTagsHash.get(3).pose.getX(),
-      // FieldAprilTags.getInstance().blueReefTagsHash.get(3).pose.getY(),
-      // new Rotation2d(Units.degreesToRadians(180))));
-      // reefAlgaePosesBlue.put(4, new Pose2d(
-      // FieldAprilTags.getInstance().blueReefTagsHash.get(4).pose.getX(),
-      // FieldAprilTags.getInstance().blueReefTagsHash.get(4).pose.getY(),
-      // new Rotation2d(Units.degreesToRadians(120))));
-      // reefAlgaePosesBlue.put(5, new Pose2d(
-      // FieldAprilTags.getInstance().blueReefTagsHash.get(5).pose.getX(),
-      // FieldAprilTags.getInstance().blueReefTagsHash.get(5).pose.getY(),
-      // new Rotation2d(Units.degreesToRadians(60))));
     }
   }
 }

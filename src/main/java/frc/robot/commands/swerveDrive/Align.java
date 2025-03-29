@@ -7,6 +7,9 @@ package frc.robot.commands.swerveDrive;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.odometry.Odometry;
 import frc.robot.libs.LoggedCommand;
@@ -50,6 +53,7 @@ public class Align extends LoggedCommand {
     yPID.setSetpoint(targetPose.getY());
     thetaPID.setSetpoint(targetPose.getRotation().getRadians());
 
+    thetaPID.enableContinuousInput(-Math.PI, Math.PI);
     addRequirements(swerveDrive);
   }
 
@@ -63,18 +67,24 @@ public class Align extends LoggedCommand {
     currentPose = odometry.getPose();
     double driveX = xPID.calculate(currentPose.getX());
     double driveY = yPID.calculate(currentPose.getY());
-    double driveTheta = thetaPID.calculate(currentPose.getRotation().getRadians());
+    double driveTheta = thetaPID.calculate(odometry.getRotation().getRadians());
+    System.out.println("Driving to " + thetaPID.getSetpoint() + " from " + odometry.getRotation().getRadians() + " by driving: " + driveTheta);
     swerveDrive.drive(driveX, driveY, driveTheta, true);
   }
 
   @Override
   public void end(boolean interrupted) {
     super.end(interrupted);
-    swerveDrive.drive(0, 0, 0, false);
+    swerveDrive.drive(0.7, 0, 0, false);
+    SequentialCommandGroup endCommand = new SequentialCommandGroup(new WaitCommand(1.5), new InstantCommand(()->{ 
+      swerveDrive.drive(0, 0, 0, false); }));
+      endCommand.addRequirements(swerveDrive);
+      endCommand.schedule();
   }
 
   @Override
   public boolean isFinished() {
+    
     if(startTime + 1 > Timer.getFPGATimestamp()) return false;
     if(startTime + 7 < Timer.getFPGATimestamp()) return true;
     if ((currentPose.getTranslation().getDistance(targetPose.getTranslation()) < transTolerance && 

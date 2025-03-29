@@ -74,8 +74,8 @@ public class EndEffector extends SubsystemBase {
   public void periodic() {
     armAngle = AlgaeArmEncoder.get();
     NetworkTableInstance.getDefault().getEntry("Endeffector").setDouble(armAngle);
-    AlgaeArmPID.setGoal(targetAngle);
-    algaeIntakeRotateMotorN.set(AlgaeArmPID.calculate(armAngle, targetAngle));
+    //AlgaeArmPID.setGoal(targetAngle);
+    //algaeIntakeRotateMotorN.set(AlgaeArmPID.calculate(armAngle, targetAngle));
   }
 
   public void setAlgaeIntakeAngle(double angle) {

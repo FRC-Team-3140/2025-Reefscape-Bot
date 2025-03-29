@@ -14,6 +14,7 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.compoundCommands.GoToSourceAndIntake;
+import frc.robot.commands.compoundCommands.PositionAndScoreCoral;
 import frc.robot.commands.compoundCommands.PositionFromDash;
 import frc.robot.commands.compoundCommands.SourceCoralIntake;
 import frc.robot.commands.elevator.ReturnToStowed;
@@ -51,7 +52,7 @@ public class Controller extends SubsystemBase {
     AUTO, MANUAL, OHNO_MANUAL
   }
 
-  private ControlMode curControlMode = ControlMode.MANUAL; // Default to auto when auto is implemented
+  private ControlMode curControlMode = ControlMode.AUTO; // Default to auto when auto is implemented
 
   public static Controller getInstance() {
     if (instance == null) {
@@ -181,15 +182,15 @@ public class Controller extends SubsystemBase {
     }
 
     if (primaryController.getAButtonPressed()) {
-      new PositionFromDash(NetworkTables.dashCoralLoc.getString("L_4"), true).schedule();
+      new PositionAndScoreCoral(NetworkTables.dashCoralLoc.getString("L_4"), true).schedule();
     }
 
     if (primaryController.getBButtonPressed()) {
-      new PositionFromDash(NetworkTables.dashCoralLoc.getString("L_4"), false).schedule();
+      new PositionAndScoreCoral(NetworkTables.dashCoralLoc.getString("L_4"), false).schedule();
     }
 
     if (primaryController.getRightBumperButton())
-      new GoToSourceAndIntake().schedule();
+      new SourceCoralIntake().schedule();//new GoToSourceAndIntake().schedule();
 
     if (primaryController.getPOV() == 180) {
       new ReturnToStowed().schedule();
@@ -251,6 +252,8 @@ public class Controller extends SubsystemBase {
     } else {
       endEffector.setAlgaeIntakeSpeed(0);
     }
+    if (secondaryController.getLeftBumperButtonPressed())
+    new EndEffectorScoreCoral(0.8).schedule();
 
     if (secondaryController.getRightTriggerAxis() > Constants.Controller.triggerThreshold) {
       // Score coral

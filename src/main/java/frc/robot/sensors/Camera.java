@@ -41,9 +41,9 @@ public class Camera extends SubsystemBase {
   private PhotonCamera front = new PhotonCamera("front");
   private PhotonCamera back = new PhotonCamera("back");
 
-  private Transform3d frontToBot = new Transform3d(0, Constants.CameraConstants.frontOffsetToCenter, 0,
+  private Transform3d frontToBot = new Transform3d(Constants.CameraConstants.frontOffsetToCenter, 0, 0,
       new Rotation3d(0, (5 * Math.PI / 36), 0));
-  private Transform3d backToBot = new Transform3d(0, Constants.CameraConstants.backOffsetToCenter,
+  private Transform3d backToBot = new Transform3d(Constants.CameraConstants.backOffsetToCenter, 0,
       Constants.CameraConstants.backOffsetToCenterVert, new Rotation3d(0, 0, Math.PI));
 
   private AprilTagFieldLayout layout = FieldAprilTags.getInstance().field;
