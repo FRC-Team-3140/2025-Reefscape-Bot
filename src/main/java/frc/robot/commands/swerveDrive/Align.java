@@ -40,8 +40,8 @@ public class Align extends LoggedCommand {
   private Odometry odometry = Odometry.getInstance();
 
   private double startTime;
-  // TODO: Unused V
-  // private double maxDuration = 7; 
+  
+  private double maxDuration = 7; 
 
   public  Align(Pose2d targetPose) {
     this.targetPose = targetPose; 
@@ -75,7 +75,7 @@ public class Align extends LoggedCommand {
   @Override
   public void end(boolean interrupted) {
     super.end(interrupted);
-    swerveDrive.drive(0.7, 0, 0, false);
+    swerveDrive.drive(0.7 * Math.cos(thetaPID.getSetpoint()), 0.7 * Math.sin(thetaPID.getSetpoint()), 0, false);
     SequentialCommandGroup endCommand = new SequentialCommandGroup(new WaitCommand(1.5), new InstantCommand(()->{ 
       swerveDrive.drive(0, 0, 0, false); }));
       endCommand.addRequirements(swerveDrive);
@@ -86,7 +86,7 @@ public class Align extends LoggedCommand {
   public boolean isFinished() {
     
     if(startTime + 1 > Timer.getFPGATimestamp()) return false;
-    if(startTime + 7 < Timer.getFPGATimestamp()) return true;
+    if(startTime + maxDuration < Timer.getFPGATimestamp()) return true;
     if ((currentPose.getTranslation().getDistance(targetPose.getTranslation()) < transTolerance && 
       Math.abs(currentPose.getRotation().getRadians() - currentPose.getRotation().getRadians()) < rotTolerance) || 
       !odometry.isMoving()) return true;

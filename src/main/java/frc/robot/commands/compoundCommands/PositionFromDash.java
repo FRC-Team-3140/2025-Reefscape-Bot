@@ -65,7 +65,6 @@ public class PositionFromDash extends LoggedCommand {
   @Override
   public void end(boolean interrupted) {
     super.end(interrupted);
-    //new SetHeight(level).schedule();
   }
 
   public boolean isFinished() {

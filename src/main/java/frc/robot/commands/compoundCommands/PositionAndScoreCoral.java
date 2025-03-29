@@ -72,7 +72,7 @@ public class PositionAndScoreCoral extends LoggedCommand {
         Constants.PathplannerConstants.pathplannerConstraints, 0.0)
         .andThen(
             new Align(finalPose)
-            .alongWith(new SetHeight(scoreHeight)), new EndEffectorScoreCoral(0.5));
+            .alongWith(new SetHeight(scoreHeight)), new EndEffectorScoreCoral(0.5)); // TODO: Why doesn't the end effector run???
     pathfindingCommand.schedule();
   }
 

@@ -95,8 +95,8 @@ public class SwerveModule extends SubsystemBase {
     // runs while the bot is running
     @Override
     public void periodic() {
-        setAngle(0);
-        turnPID.calculate(getTurnEncoder().getAbsolutePosition());
+        // setAngle(0);
+        // turnPID.calculate(getTurnEncoder().getAbsolutePosition());
         NetworkTableInstance.getDefault().getTable("Angle").getEntry(moduleID)
                 .setDouble(turnEncoder.getAbsolutePosition());
     }
