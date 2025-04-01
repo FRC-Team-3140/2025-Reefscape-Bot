@@ -47,6 +47,6 @@ public class EndEffectorScoreCoral extends LoggedCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return ejectTimestamp != 0 && (Timer.getFPGATimestamp() - ejectTimestamp) > 1;
+    return ejectTimestamp != 0 && (Timer.getFPGATimestamp() - ejectTimestamp) > 1 && !endEffector.hasCoral();
   }
 }

@@ -210,7 +210,7 @@ public final class Constants {
     public static final double reefCoralL3Height = 7.054625;
     public static final double reefCoralL4Height = maxiumum;
 
-    public static final double sourceIntake = 2.15; // orig 1.75
+    public static final double sourceIntake = 2.25; // orig 1.75
     // the above value was used at RCR
 
     public static final double processerHeight = 0;
@@ -260,7 +260,7 @@ public final class Constants {
     // public HashMap<Integer, Pose2d> reefCoralPosesRed = new HashMap<>();
     // public HashMap<Integer, Pose2d> reefAlgaePosesRed = new HashMap<>();
     public static Pose2d getPose(int side, int pos) { // pos: -1 left, 0 center, 1 right
-      double sideOffset = 0.1651;
+      double sideOffset = 0.17;
       double backOffset = 0.4699;
       int id = switch (side) {
         case 0, 7 -> 18;

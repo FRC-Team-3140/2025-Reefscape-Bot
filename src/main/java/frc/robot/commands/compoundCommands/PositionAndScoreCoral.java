@@ -9,19 +9,13 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.subsystems.EndEffector;
 import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.endeffector.EndEffectorScoreCoral;
 import frc.robot.commands.swerveDrive.Align;
 import frc.robot.libs.FieldAprilTags;
 import frc.robot.libs.LoggedCommand;
 import frc.robot.libs.NetworkTables;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.odometry.Odometry;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */

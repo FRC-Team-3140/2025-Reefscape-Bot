@@ -10,9 +10,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.Autos.CycleHorizontal;
 import frc.robot.commands.Autos.CycleVertical;
 import frc.robot.commands.compoundCommands.SourceCoralIntake;
@@ -104,103 +102,100 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    SequentialCommandGroup command = new SequentialCommandGroup(new InstantCommand(()->{swerveDrive.drive(1, 0, 0, false);}), new WaitCommand(3), new InstantCommand(()->{swerveDrive.drive(0, 0, 0, false);}));
-    command.addRequirements(swerveDrive);
-    return command;
-  //   String cycleDirectionSelected = cycleDirection.getSelected();
-  //   String reefSideSelected = reefSide.getSelected();
-  //   Integer reefLevelSelected = reefLevel.getSelected();
+    String cycleDirectionSelected = cycleDirection.getSelected();
+    String reefSideSelected = reefSide.getSelected();
+    Integer reefLevelSelected = reefLevel.getSelected();
 
-  //   ////////// Defaults //////////
-  //   if (cycleDirectionSelected == null) {
-  //     if (PathPlanner.getSelected() != null) {
-  //       System.out.println("Pathplanner");
-  //       return PathPlanner.getSelected();
-  //     }
+    ////////// Defaults //////////
+    if (cycleDirectionSelected == null) {
+      if (PathPlanner.getSelected() != null) {
+        System.out.println("Pathplanner");
+        return PathPlanner.getSelected();
+      }
 
-  //     cycleDirectionSelected = "Horizontal";
-  //   }
+      cycleDirectionSelected = "Horizontal";
+    }
 
-  //   if (reefSideSelected == null) {
-  //     if (PathPlanner.getSelected() != null) {
-  //       System.out.println("Pathplanner");
-  //       return PathPlanner.getSelected();
-  //     }
+    if (reefSideSelected == null) {
+      if (PathPlanner.getSelected() != null) {
+        System.out.println("Pathplanner");
+        return PathPlanner.getSelected();
+      }
 
-  //     reefSideSelected = "Closest";
-  //   }
+      reefSideSelected = "Closest";
+    }
 
-  //   if (reefLevelSelected == null) {
-  //     if (PathPlanner.getSelected() != null) {
-  //       System.out.println("Pathplanner");
-  //       return PathPlanner.getSelected();
-  //     }
+    if (reefLevelSelected == null) {
+      if (PathPlanner.getSelected() != null) {
+        System.out.println("Pathplanner");
+        return PathPlanner.getSelected();
+      }
 
-  //     reefLevelSelected = 4;
-  //   }
+      reefLevelSelected = 4;
+    }
 
-  //   //////////////////////////////
+    //////////////////////////////
 
-  //   if (cycleDirectionSelected.equals("Horizontal")) {
+    if (cycleDirectionSelected.equals("Horizontal")) {
 
-  //     int level = reefLevelSelected != null ? reefLevelSelected : 0;
+      int level = reefLevelSelected != null ? reefLevelSelected : 0;
 
-  //     switch (reefSideSelected) {
-  //       case "Closest":
-  //         return new CycleHorizontal(level, elevator, odometry);
+      switch (reefSideSelected) {
+        case "Closest":
+          return new CycleHorizontal(level, elevator, odometry);
 
-  //       case "Back":
-  //         return new CycleHorizontal(level, 0, elevator, odometry);
+        case "Back":
+          return new CycleHorizontal(level, 0, elevator, odometry);
 
-  //       case "Back Left":
-  //         return new CycleHorizontal(level, 1, elevator, odometry);
+        case "Back Left":
+          return new CycleHorizontal(level, 1, elevator, odometry);
 
-  //       case "Front Left":
-  //         return new CycleHorizontal(level, 2, elevator, odometry);
+        case "Front Left":
+          return new CycleHorizontal(level, 2, elevator, odometry);
 
-  //       case "Front":
-  //         return new CycleHorizontal(level, 3, elevator, odometry);
+        case "Front":
+          return new CycleHorizontal(level, 3, elevator, odometry);
 
-  //       case "Front Right":
-  //         return new CycleHorizontal(level, 4, elevator, odometry);
+        case "Front Right":
+          return new CycleHorizontal(level, 4, elevator, odometry);
 
-  //       case "Back Right":
-  //         return new CycleHorizontal(level, 5, elevator, odometry);
+        case "Back Right":
+          return new CycleHorizontal(level, 5, elevator, odometry);
 
-  //       default:
-  //         System.err.println("Somehow magically selected something impossible...");
-  //         return null;
-  //     }
-  //   } else if (cycleDirectionSelected.equals("Vertical")) {
-  //     switch (reefSideSelected) {
-  //       case "Closest":
-  //         return new CycleVertical(elevator, odometry);
+        default:
+          System.err.println("Somehow magically selected something impossible...");
+          return null;
+      }
+    } else if (cycleDirectionSelected.equals("Vertical")) {
+      switch (reefSideSelected) {
+        case "Closest":
+          return new CycleVertical(elevator, odometry);
 
-  //       case "Back":
-  //         return new CycleVertical(0, elevator, odometry);
+        case "Back":
+          return new CycleVertical(0, elevator, odometry);
 
-  //       case "Back Left":
-  //         return new CycleVertical(1, elevator, odometry);
+        case "Back Left":
+          return new CycleVertical(1, elevator, odometry);
 
-  //       case "Front Left":
-  //         return new CycleVertical(2, elevator, odometry);
+        case "Front Left":
+          return new CycleVertical(2, elevator, odometry);
 
-  //       case "Front":
-  //         return new CycleVertical(3, elevator, odometry);
+        case "Front":
+          return new CycleVertical(3, elevator, odometry);
 
-  //       case "Front Right":
-  //         return new CycleVertical(4, elevator, odometry);
+        case "Front Right":
+          return new CycleVertical(4, elevator, odometry);
 
-  //       case "Back Right":
-  //         return new CycleVertical(5, elevator, odometry);
+        case "Back Right":
+          return new CycleVertical(5, elevator, odometry);
 
-  //       default:
-  //         System.err.println("Somehow magically selected something impossible...");
-  //         return null;
-  //     }
-  //   } else {
-  //     System.err.println("Somehow magically selected something impossible...");
-  //     return null;
-  //   }
+        default:
+          System.err.println("Somehow magically selected something impossible...");
+          return null;
+      }
+    } else {
+      System.err.println("Somehow magically selected something impossible...");
+      return null;
+    }
   }
 }

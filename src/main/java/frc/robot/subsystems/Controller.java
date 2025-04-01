@@ -15,7 +15,6 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.compoundCommands.GoToSourceAndIntake;
 import frc.robot.commands.compoundCommands.PositionAndScoreCoral;
-import frc.robot.commands.compoundCommands.PositionFromDash;
 import frc.robot.commands.compoundCommands.SourceCoralIntake;
 import frc.robot.commands.elevator.ReturnToStowed;
 import frc.robot.commands.endeffector.EndEffectorIntakeAlgae;
@@ -190,13 +189,14 @@ public class Controller extends SubsystemBase {
     }
 
     if (primaryController.getRightBumperButton())
-      new SourceCoralIntake().schedule();//new GoToSourceAndIntake().schedule();
+      new GoToSourceAndIntake().schedule();
+
+    if (primaryController.getLeftBumperButtonPressed())
+      new EndEffectorScoreCoral(0.8).schedule();
 
     if (primaryController.getPOV() == 180) {
       new ReturnToStowed().schedule();
     }
-    if (primaryController.getLeftBumperButtonPressed())
-      new EndEffectorScoreCoral(0.8).schedule();
 
     secondarySetpointCommands();
   }
@@ -207,8 +207,12 @@ public class Controller extends SubsystemBase {
       return;
     }
 
-    if (primaryController.getLeftBumperButtonPressed()) {
+    if (secondaryController.getLeftBumperButtonPressed()) {
       new ScoreAlgae().schedule();
+    }
+
+    if (primaryController.getLeftBumperButtonPressed()) {
+      new EndEffectorScoreCoral(0.8).schedule();
     }
 
     secondarySetpointCommands();
@@ -253,7 +257,7 @@ public class Controller extends SubsystemBase {
       endEffector.setAlgaeIntakeSpeed(0);
     }
     if (secondaryController.getLeftBumperButtonPressed())
-    new EndEffectorScoreCoral(0.8).schedule();
+      new EndEffectorScoreCoral(0.8).schedule();
 
     if (secondaryController.getRightTriggerAxis() > Constants.Controller.triggerThreshold) {
       // Score coral
@@ -368,6 +372,7 @@ public class Controller extends SubsystemBase {
     if (primaryController.getStartButtonPressed()) {
       RobotContainer.odometry.recalibrateCameraPose();
     }
+
     switch (curControlMode) {
       case AUTO:
         NetworkTables.driveModeManual_b.setBoolean(false);
