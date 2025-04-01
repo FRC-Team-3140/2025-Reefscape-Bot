@@ -105,13 +105,13 @@ public final class Constants {
     public static final double elevatorEncoderDegreesToMeters = 0.001;
 
     // Swerve Module Base Angles
-    public static final double FLZeroOffset = 216.997730;//217.720;
+    public static final double FLZeroOffset = 216.997730;// 217.720;
 
-    public static final double FRZeroOffset = 136.602900;//228.319;
+    public static final double FRZeroOffset = 136.602900;// 228.319;
 
-    public static final double BLZeroOffset = 200.317267;//197.621;
+    public static final double BLZeroOffset = 200.317267;// 197.621;
 
-    public static final double BRZeroOffset = 310.841840;//312.425;
+    public static final double BRZeroOffset = 310.841840;// 312.425;
 
     public static final double[] lockedAngles = {
         45,
@@ -159,7 +159,7 @@ public final class Constants {
     public static final double backOffsetToCenter = -Units.inchesToMeters(13);
     public static final double backOffsetToCenterVert = -Units.inchesToMeters(19);
     // public static final double maxValidDistance = 3;
-    public static final double minAmbiguity = 0.2;
+    public static final double minAmbiguity = 0.1;
   }
 
   public static class PathplannerConstants {
@@ -193,7 +193,7 @@ public final class Constants {
     public static final double stowedAlgaeBottom = 0;
     public static final double groundIntake = 0.7;
     public static final double reefIntake = 0.8;
-    public static final double processorScoreBottom = 0.8;
+    public static final double processorScoreBottom = 0.75;
     public static final double processorScoreTop = stowedAlgaeTop;
   }
 
@@ -210,7 +210,7 @@ public final class Constants {
     public static final double reefCoralL3Height = 7.054625;
     public static final double reefCoralL4Height = maxiumum;
 
-    public static final double sourceIntake = 2.25; // orig 1.75
+    public static final double sourceIntake = 2; // orig 1.75
     // the above value was used at RCR
 
     public static final double processerHeight = 0;

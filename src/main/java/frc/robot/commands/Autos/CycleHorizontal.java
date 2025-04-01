@@ -40,12 +40,12 @@ public class CycleHorizontal extends SequentialCommandGroup {
     // time limit)
     for (int i = 0; i <= 5; i++) {
       addCommands(
-          new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + level), ((i + startingSide) % 6)),
+          // new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + level), ((i + startingSide) % 6)),
           // new Align(Odometry.getInstance().getPose()),
           new EndEffectorScoreCoral(speed),
           new ReturnToStowed(),
           new GoToSourceAndIntake(),
-          new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + level), ((i + startingSide) % 6)),
+          // new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + level), ((i + startingSide) % 6)),
           // new Align(Odometry.getInstance().getPose()),
           new EndEffectorScoreCoral(speed),
           new ReturnToStowed(),

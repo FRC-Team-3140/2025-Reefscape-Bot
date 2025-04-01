@@ -84,7 +84,7 @@ public class PoseOdometry extends Odometry {
 
         if (estimator == null) {
             estimator = new SwerveDrivePoseEstimator(drive.kinematics, getGyroRotation(), positions, new Pose2d());
-            estimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(15)));
+            estimator.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, Units.degreesToRadians(15)));
         }
         if (pose != null) {
             // System.out.println("Updating cam");

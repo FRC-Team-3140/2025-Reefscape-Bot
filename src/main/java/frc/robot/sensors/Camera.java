@@ -155,7 +155,7 @@ public class Camera extends SubsystemBase {
     }
     
   }
-  public Pose2d getPoseFromCamera() {
+  public Pose2d getPoseFromCamera(double distanceCuttoff) {
     if (connected) {
       Pose2d curPose = Odometry.getInstance().getPose();
 
@@ -166,8 +166,8 @@ public class Camera extends SubsystemBase {
         frontEstimator.setReferencePose(curPose);
         backEstimator.setReferencePose(curPose);
 
-        Optional<EstimatedRobotPose> frontPoseOpt = frontResult.getBestTarget().getPoseAmbiguity() < 0.2 ? frontEstimator.update(frontResult) : Optional.empty();
-        Optional<EstimatedRobotPose> backPoseOpt = backResult.getBestTarget().getPoseAmbiguity() < 0.2 ?  backEstimator.update(backResult) : Optional.empty();
+        Optional<EstimatedRobotPose> frontPoseOpt = frontResult.getBestTarget().getPoseAmbiguity() < Constants.CameraConstants.minAmbiguity ? frontEstimator.update(frontResult) : Optional.empty();
+        Optional<EstimatedRobotPose> backPoseOpt = backResult.getBestTarget().getPoseAmbiguity() < Constants.CameraConstants.minAmbiguity ?  backEstimator.update(backResult) : Optional.empty();
 
         if (frontPoseOpt.isPresent() && backPoseOpt.isPresent()) {
           Pose2d frontPoseEstimation = frontPoseOpt.get().estimatedPose.toPose2d();

@@ -194,6 +194,9 @@ public class Controller extends SubsystemBase {
     if (primaryController.getLeftBumperButtonPressed())
       new EndEffectorScoreCoral(0.8).schedule();
 
+    if (primaryController.getLeftTriggerAxis() > Constants.Controller.triggerThreshold)
+      new ScoreAlgae().schedule();
+
     if (primaryController.getPOV() == 180) {
       new ReturnToStowed().schedule();
     }
@@ -207,13 +210,8 @@ public class Controller extends SubsystemBase {
       return;
     }
 
-    if (secondaryController.getLeftBumperButtonPressed()) {
+    if (primaryController.getLeftTriggerAxis() > Constants.Controller.triggerThreshold)
       new ScoreAlgae().schedule();
-    }
-
-    if (primaryController.getLeftBumperButtonPressed()) {
-      new EndEffectorScoreCoral(0.8).schedule();
-    }
 
     secondarySetpointCommands();
   }

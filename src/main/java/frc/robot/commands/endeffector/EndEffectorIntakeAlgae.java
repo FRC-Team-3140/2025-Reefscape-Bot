@@ -4,6 +4,7 @@
 
 package frc.robot.commands.endeffector;
 
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
 import frc.robot.commands.LEDs.SetRainbow;
 import frc.robot.libs.LoggedCommand;
@@ -15,6 +16,8 @@ public class EndEffectorIntakeAlgae extends LoggedCommand {
   private EndEffector endEffector = null;
   private Elevator elevator = null;
   private final Level level;
+
+  private final double startTime = Timer.getFPGATimestamp();
 
   public enum Level {
     Ground,
@@ -76,6 +79,8 @@ public class EndEffectorIntakeAlgae extends LoggedCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return endEffector.getAlgaeIntakeCurrent() > Constants.Limits.EEAlgaeIntakeCurrentThreshold;
+    // Short delay to avoid large spikes in current when moving endeffector
+    return Timer.getFPGATimestamp() > startTime + 0.25
+        && endEffector.getAlgaeIntakeCurrent() > Constants.Limits.EEAlgaeIntakeCurrentThreshold;
   }
 }
