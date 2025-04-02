@@ -56,13 +56,22 @@ public class SwerveDriveManualControl extends LoggedCommand {
 
         if (!locked) {
             // Calculate the x speed based on the joystick input
-            final double xSpeed = -controller.getLeftY(Controller.controllers.PRIMARY) * maxSpeed;
+            final double xSpeed = controller.primaryController
+                    .getRightTriggerAxis() > Constants.Controller.triggerThreshold
+                            ? -controller.getLeftY(Controller.controllers.PRIMARY) * maxSpeed * 0.5
+                            : -controller.getLeftY(Controller.controllers.PRIMARY) * maxSpeed;
 
             // Calculate the y speed based on the joystick input
-            final double ySpeed = -controller.getLeftX(Controller.controllers.PRIMARY) * maxSpeed;
+            final double ySpeed = controller.primaryController
+                    .getRightTriggerAxis() > Constants.Controller.triggerThreshold
+                            ? -controller.getLeftX(Controller.controllers.PRIMARY) * maxSpeed * 0.5
+                            : -controller.getLeftX(Controller.controllers.PRIMARY) * maxSpeed;
 
             // Calculate the rotation speed based on the joystick input
-            final double rot = -controller.getRightX(Controller.controllers.PRIMARY) * maxChassisTurnSpeed;
+            final double rot = controller.primaryController
+                    .getRightTriggerAxis() > Constants.Controller.triggerThreshold
+                            ? -controller.getRightX(Controller.controllers.PRIMARY) * maxChassisTurnSpeed * 0.5
+                            : -controller.getRightX(Controller.controllers.PRIMARY) * maxChassisTurnSpeed;
 
             swerveDrive.drive(xSpeed, ySpeed, rot, fieldRelative); // Drive the swerve drive
         } else {

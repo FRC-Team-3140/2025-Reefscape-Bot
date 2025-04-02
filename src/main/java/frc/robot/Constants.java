@@ -158,7 +158,7 @@ public final class Constants {
     public static final double frontOffsetToCenter = Units.inchesToMeters(13);
     public static final double backOffsetToCenter = -Units.inchesToMeters(13);
     public static final double backOffsetToCenterVert = -Units.inchesToMeters(19);
-    // public static final double maxValidDistance = 3;
+    public static final double maxDistCutoff = 2;
     public static final double minAmbiguity = 0.1;
   }
 
