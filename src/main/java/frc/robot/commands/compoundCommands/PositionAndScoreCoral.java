@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
+import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.swerveDrive.SetSwerveStates;
 import frc.robot.libs.FieldAprilTags;
@@ -71,6 +72,29 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
       case "R":
         posint = -1;
         break;
+      default:
+        System.err.println("Somehow magically passed in invalid position...");
+        end(true);
+        break;
+    }
+
+    switch (Integer.parseInt(position)) {
+      case 1:
+        level = ElevatorHeights.reefCoralL1Height;
+        break;
+
+      case 2:
+        level = ElevatorHeights.reefCoralL2Height;
+        break;
+
+      case 3:
+        level = ElevatorHeights.reefCoralL3Height;
+        break;
+
+      case 4:
+        level = ElevatorHeights.reefCoralL4Height;
+        break;
+
       default:
         System.err.println("Somehow magically passed in invalid position...");
         end(true);
