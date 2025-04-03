@@ -5,7 +5,6 @@
 package frc.robot.commands.Autos;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.compoundCommands.GoToSourceAndIntake;
 import frc.robot.commands.compoundCommands.PositionAndScoreCoral;
@@ -47,7 +46,8 @@ public class CycleHorizontal extends SequentialCommandGroup {
           new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + level), ((i + startingSide) % 6)),
           // new Align(Odometry.getInstance().getPose()),
           new EndEffectorScoreCoral(speed),
-          new ParallelCommandGroup(new ReturnToStowed(), new GoToSourceAndIntake()));
+          new ReturnToStowed(),
+          new GoToSourceAndIntake());
     }
   }
 
@@ -75,7 +75,8 @@ public class CycleHorizontal extends SequentialCommandGroup {
           new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + level), ((i + startingSide) % 6)),
           // new Align(Odometry.getInstance().getPose()),
           new EndEffectorScoreCoral(speed),
-          new ParallelCommandGroup(new ReturnToStowed(), new GoToSourceAndIntake()));
+          new ReturnToStowed(),
+          new GoToSourceAndIntake());
     }
   }
 }
