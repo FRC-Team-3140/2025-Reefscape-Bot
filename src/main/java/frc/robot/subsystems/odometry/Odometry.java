@@ -36,7 +36,7 @@ abstract public class Odometry extends SubsystemBase {
   protected Odometry() {
     gyro = new AHRS(NavXComType.kMXP_SPI);
     resetGyro();
-    lastGyroAngle = gyro.getRotation2d().getRadians() + Math.PI;
+    lastGyroAngle = gyro.getRotation2d().getRadians();
     fieldEntry = new Field2d();
     SmartDashboard.putData(fieldEntry);
   }
@@ -62,21 +62,17 @@ abstract public class Odometry extends SubsystemBase {
   abstract public void recalibrateCameraPose();
 
   public Rotation2d getGyroRotation() {
-    return new Rotation2d(gyro.getRotation2d().getRadians() + Math.PI);
+    return new Rotation2d(gyro.getRotation2d().getRadians());
   }
 
-  public void resetGyro() {
-    double delta = caluclateRotationDelta();
-    gyro.reset();
-    lastGyroAngle = gyro.getRotation2d().getRadians() + Math.PI - delta;
-  }
+  abstract public void resetGyro();
 
   @Override
   public void periodic() {
   }
 
   protected double caluclateRotationDelta() {
-    double delta = gyro.getRotation2d().getRadians() + Math.PI - lastGyroAngle;
+    double delta = gyro.getRotation2d().getRadians() - lastGyroAngle;
     lastGyroAngle += delta;
     return delta;
   }
@@ -94,7 +90,7 @@ abstract public class Odometry extends SubsystemBase {
   }
 
   public void resetPose(Pose2d pose) {
-    double angle = gyro.getRotation2d().getRadians() + Math.PI;
+    double angle = gyro.getRotation2d().getRadians();
     gyro.reset();
     lastGyroAngle -= angle;
   }

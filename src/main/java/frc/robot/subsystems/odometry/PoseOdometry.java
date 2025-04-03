@@ -22,7 +22,7 @@ public class PoseOdometry extends Odometry {
     private Pose2d startingPose = null;
     private final int startingCameraPasses = 10;
     private int cameraPasses = 0;
-
+    private double angleOffset = 0;
     protected PoseOdometry() {
         super();
     }
@@ -69,6 +69,19 @@ public class PoseOdometry extends Odometry {
         return estimator == null ? nullPose : estimator.getEstimatedPosition();
     }
 
+    @Override
+    public Rotation2d getGyroRotation() {
+        return new Rotation2d(gyro.getRotation2d().getRadians() + angleOffset);
+    }
+
+    public void resetGyro() {
+        resetGyroCamera(0);
+    }
+
+    public void resetGyroCamera(double correctAngle) {
+        angleOffset = -gyro.getRotation2d().getRadians() + correctAngle;
+    }
+
     public void recalibrateCameraPose() {
         cameraPasses = 0;
     }
@@ -77,7 +90,8 @@ public class PoseOdometry extends Odometry {
         SwerveDrive drive = SwerveDrive.getInstance();
         Pose2d poseClipped = calculatePoseFromTags(false, false);
         Pose2d pose = calculatePoseFromTags(true, true);
-        if(pose == null) pose = poseClipped;
+        if (pose == null)
+            pose = poseClipped;
         // if (pose != null) {
         // System.out.println("Camera Pose: \n" + "X: " + pose.getX() + "\nY: " +
         // pose.getY() + "\nRot: "
@@ -89,20 +103,22 @@ public class PoseOdometry extends Odometry {
             estimator.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, Units.degreesToRadians(15)));
         }
         // System.out.println("Updating cam");
-        if(cameraPasses == 0) {
+        if (cameraPasses == 0) {
             startingPose = null;
             cameraPasses++;
         } else if (cameraPasses < startingCameraPasses) {
             if (pose != null) {
-                if(startingPose == null) startingPose = pose;
+                if (startingPose == null)
+                    startingPose = pose;
                 System.out.println("YIPPEEE");
                 startingPose = startingPose.interpolate(pose, 0.1);
                 cameraPasses++;
             }
         } else if (cameraPasses == startingCameraPasses) {
-            
+
             System.out.println("YIPPEEE DONE");
             estimator.resetPose(startingPose);
+            resetGyroCamera(startingPose.getRotation().getRadians());
             cameraPasses++;
         } else {
             if (poseClipped != null) {

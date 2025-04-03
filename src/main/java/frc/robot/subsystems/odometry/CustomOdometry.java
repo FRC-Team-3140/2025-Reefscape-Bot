@@ -101,11 +101,12 @@ public class CustomOdometry extends Odometry {
 
             //////////// FANCY CALCULUS BASED COMPLEX CODE (accurate (probably))
             delta = delta.add(new Vector2(
-                    da == 0 ? (vf-v0)/2 * tc * Math.cos(a0) :
-                    tc * (vf / da * Math.sin(af) - v0 / da * Math.sin(a0) + dv / (da * da) * (Math.cos(af) - Math.cos(a0))),
-                    da == 0 ? (vf-v0)/2 * tc * Math.sin(a0) :
-                    tc * (-vf / da * Math.cos(af) + v0 / da * Math.cos(a0) + dv / (da * da) * (Math.sin(af) -  Math.sin(a0)))
-            ));
+                    da == 0 ? (vf - v0) / 2 * tc * Math.cos(a0)
+                            : tc * (vf / da * Math.sin(af) - v0 / da * Math.sin(a0)
+                                    + dv / (da * da) * (Math.cos(af) - Math.cos(a0))),
+                    da == 0 ? (vf - v0) / 2 * tc * Math.sin(a0)
+                            : tc * (-vf / da * Math.cos(af) + v0 / da * Math.cos(a0)
+                                    + dv / (da * da) * (Math.sin(af) - Math.sin(a0)))));
         }
 
         lastStates = states;
@@ -129,6 +130,12 @@ public class CustomOdometry extends Odometry {
     @Override
     public Pose2d getPose() {
         return super.getPose();
+    }
+
+    public void resetGyro() {
+        double delta = caluclateRotationDelta();
+        gyro.reset();
+        lastGyroAngle = gyro.getRotation2d().getRadians() - delta;
     }
 
     public void updatePosition(SwerveModulePosition[] positions) {
