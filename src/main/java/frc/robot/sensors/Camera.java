@@ -4,7 +4,6 @@
 
 package frc.robot.sensors;
 
-import java.lang.StackWalker.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,7 +53,7 @@ public class Camera extends SubsystemBase {
   private PhotonPoseEstimator backEstimator = new PhotonPoseEstimator(layout, PoseStrategy.AVERAGE_BEST_TARGETS,
       backToBot);
 
-  //private boolean tooFar = false;
+  // private boolean tooFar = false;
   /**
    * Represents a distance measurement obtained from a camera sensor.
    */
@@ -143,21 +142,23 @@ public class Camera extends SubsystemBase {
       return null;
     }
   }
+
   private void setDebugPoses(boolean front, boolean back, Pose2d pose) {
-    if(front) {
+    if (front) {
       NetworkTables.frontCameraPose.setDoubleArray(new double[] {
-        pose.getX(),
-        pose.getY(),
-        pose.getRotation().getDegrees() });
+          pose.getX(),
+          pose.getY(),
+          pose.getRotation().getDegrees() });
     }
-    if(back) {
+    if (back) {
       NetworkTables.backCameraPose.setDoubleArray(new double[] {
-        pose.getX(),
-        pose.getY(),
-        pose.getRotation().getDegrees() });
+          pose.getX(),
+          pose.getY(),
+          pose.getRotation().getDegrees() });
     }
-    
+
   }
+
   public Pose2d getPoseFromCamera(double distanceCutoff, boolean ignoreRepeats) {
     if (connected) {
       Pose2d curPose = Odometry.getInstance().getPose();
@@ -165,22 +166,22 @@ public class Camera extends SubsystemBase {
       PhotonPipelineResult frontResult = front.getLatestResult();
       PhotonPipelineResult backResult = back.getLatestResult();
 
-
       if (frontResult.hasTargets()) {
-        double frontDistance = frontResult.getBestTarget().getBestCameraToTarget().getTranslation().getDistance(
-            new Translation3d(curPose.getTranslation().getX(), curPose.getTranslation().getY(), 0));
-        if(frontDistance > distanceCutoff) {frontResult = new PhotonPipelineResult(); }
-      } 
-      if (backResult.hasTargets()) {
-        double backDistance = backResult.getBestTarget().getBestCameraToTarget().getTranslation().getDistance(
-            new Translation3d(curPose.getTranslation().getX(), curPose.getTranslation().getY(), 0));
-        if(backDistance > distanceCutoff) backResult = new PhotonPipelineResult();
+        double frontDistance = FieldAprilTags.getInstance().getTagPose(frontResult.getBestTarget().getFiducialId()).getTranslation().getDistance(curPose.getTranslation());
+        if (frontDistance > distanceCutoff) {
+          frontResult = new PhotonPipelineResult();
+        }
+      }
+      if (backResult.hasTargets()) {        
+        double backDistance = FieldAprilTags.getInstance().getTagPose(backResult.getBestTarget().getFiducialId()).getTranslation().getDistance(curPose.getTranslation());
+
+        if (backDistance > distanceCutoff)
+          backResult = new PhotonPipelineResult();
       }
       if (frontResult.hasTargets() && backResult.hasTargets()) {
         frontEstimator.setReferencePose(curPose);
         backEstimator.setReferencePose(curPose);
 
-        
         Optional<EstimatedRobotPose> frontPoseOpt = Optional.empty();
         Optional<EstimatedRobotPose> backPoseOpt = Optional.empty();
         if (frontResult.getBestTarget().getPoseAmbiguity() < Constants.CameraConstants.minAmbiguity) {
@@ -221,7 +222,7 @@ public class Camera extends SubsystemBase {
       } else if (frontResult.hasTargets()) {
         frontEstimator.setReferencePose(curPose);
         Optional<EstimatedRobotPose> frontPoseOpt = Optional.empty();
-        
+
         if (frontResult.getBestTarget().getPoseAmbiguity() < Constants.CameraConstants.minAmbiguity) {
           frontPoseOpt = frontEstimator.update(frontResult);
           if (ignoreRepeats && frontPoseOpt.isEmpty()) {
@@ -277,7 +278,7 @@ public class Camera extends SubsystemBase {
 
     return null;
   }
-  
+
   public int[] getDetectedTags() {
     if (connected) {
       List<PhotonTrackedTarget> detectedTags = front.getLatestResult().targets;

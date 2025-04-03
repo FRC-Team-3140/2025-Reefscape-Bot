@@ -106,13 +106,16 @@ public class PoseOdometry extends Odometry {
             cameraPasses++;
         } else {
             if (poseClipped != null) {
+                System.out.println("Clipped pose found");
+
                 if (!knowsPosition) {
                     knowsPosition = true;
                     estimator.resetPose(poseClipped);
                 } else {
+                    System.out.println("Testing dist...");
                     if (estimator.getEstimatedPosition().getTranslation()
                             .getDistance(poseClipped.getTranslation()) < 0.5) {
-                        // System.out.println("VALID");
+                        System.out.println("VALID");
                         estimator.addVisionMeasurement(
                                 new Pose2d(poseClipped.getX(), poseClipped.getY(), getGyroRotation()),
                                 Timer.getFPGATimestamp());
