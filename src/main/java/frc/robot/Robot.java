@@ -7,6 +7,8 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.pathfinding.Pathfinder;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotController;
@@ -16,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.swerveDrive.SwerveDriveManualControl;
 import frc.robot.commands.swerveDrive.SetSwerveStates;
 import frc.robot.libs.NetworkTables;
+import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.TestRunner;
 import frc.robot.subsystems.odometry.Odometry;
 
@@ -44,12 +47,17 @@ public class Robot extends TimedRobot {
     m_testRunner = TestRunner.getInstance();
     m_robotContainer = RobotContainer.getInstance();
 
+
+    // Pose2d pose = Odometry.getInstance().getPose();
+
+    // Make sure the path planner config has been setup (which happens when swerve drive is initialized)
+    SwerveDrive.getInstance();
+
     // Get Pathplanner ready for autos
-    Pose2d pose = Odometry.getInstance().getPose();
     PathfindingCommand.warmupCommand()
-        .andThen(
-            AutoBuilder.pathfindToPose(new Pose2d(pose.getX() + 1, pose.getY(), pose.getRotation()),
-                Constants.PathplannerConstants.pathplannerConstraints))
+        // .andThen(
+        //     AutoBuilder.pathfindToPose(new Pose2d(pose.getX() + 1, pose.getY(), pose.getRotation()),
+        //         Constants.PathplannerConstants.pathplannerConstraints))
         .schedule();
   }
 

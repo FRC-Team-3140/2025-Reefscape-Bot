@@ -4,6 +4,7 @@
 
 package frc.robot.sensors;
 
+import java.lang.StackWalker.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +54,7 @@ public class Camera extends SubsystemBase {
   private PhotonPoseEstimator backEstimator = new PhotonPoseEstimator(layout, PoseStrategy.AVERAGE_BEST_TARGETS,
       backToBot);
 
+  //private boolean tooFar = false;
   /**
    * Represents a distance measurement obtained from a camera sensor.
    */
@@ -178,8 +180,21 @@ public class Camera extends SubsystemBase {
         frontEstimator.setReferencePose(curPose);
         backEstimator.setReferencePose(curPose);
 
-        Optional<EstimatedRobotPose> frontPoseOpt = frontResult.getBestTarget().getPoseAmbiguity() < Constants.CameraConstants.minAmbiguity ? frontEstimator.update(frontResult) : Optional.empty();
-        Optional<EstimatedRobotPose> backPoseOpt = backResult.getBestTarget().getPoseAmbiguity() < Constants.CameraConstants.minAmbiguity ?  backEstimator.update(backResult) : Optional.empty();
+        
+        Optional<EstimatedRobotPose> frontPoseOpt = Optional.empty();
+        Optional<EstimatedRobotPose> backPoseOpt = Optional.empty();
+        if (frontResult.getBestTarget().getPoseAmbiguity() < Constants.CameraConstants.minAmbiguity) {
+          frontPoseOpt = frontEstimator.update(frontResult);
+          if (ignoreRepeats && frontPoseOpt.isEmpty()) {
+            return lastPose;
+          }
+        }
+        if (backResult.getBestTarget().getPoseAmbiguity() < Constants.CameraConstants.minAmbiguity) {
+          backPoseOpt = backEstimator.update(backResult);
+          if (ignoreRepeats && backPoseOpt.isEmpty()) {
+            return lastPose;
+          }
+        }
 
         if (frontPoseOpt.isPresent() && backPoseOpt.isPresent()) {
           Pose2d frontPoseEstimation = frontPoseOpt.get().estimatedPose.toPose2d();
@@ -193,7 +208,7 @@ public class Camera extends SubsystemBase {
 
           estimatedPose = new Pose2d(avgX, avgY, new Rotation2d(avgRot));
 
-          if (estimatedPose.getX() != lastPose.getX() || ignoreRepeats) {
+          if (estimatedPose.getX() != lastPose.getX() || estimatedPose.getY() != lastPose.getY() || ignoreRepeats) {
             lastPose = estimatedPose;
             return estimatedPose;
           } else {
@@ -204,15 +219,21 @@ public class Camera extends SubsystemBase {
           return null;
         }
       } else if (frontResult.hasTargets()) {
+        frontEstimator.setReferencePose(curPose);
+        Optional<EstimatedRobotPose> frontPoseOpt = Optional.empty();
         
-        Optional<EstimatedRobotPose> frontPoseOpt = frontResult.getBestTarget().getPoseAmbiguity() < 0.2 ? frontEstimator.update(frontResult) : Optional.empty();
-        
-        
+        if (frontResult.getBestTarget().getPoseAmbiguity() < Constants.CameraConstants.minAmbiguity) {
+          frontPoseOpt = frontEstimator.update(frontResult);
+          if (ignoreRepeats && frontPoseOpt.isEmpty()) {
+            return lastPose;
+          }
+        }
+
         if (frontPoseOpt.isPresent()) {
 
           estimatedPose = frontPoseOpt.get().estimatedPose.toPose2d();
           setDebugPoses(true, false, estimatedPose);
-          if (estimatedPose.getX() != lastPose.getX() || ignoreRepeats) {
+          if (estimatedPose.getX() != lastPose.getX() || estimatedPose.getY() != lastPose.getY() || ignoreRepeats) {
 
             lastPose = estimatedPose;
             return estimatedPose;
@@ -223,14 +244,21 @@ public class Camera extends SubsystemBase {
         }
 
       } else if (backResult.hasTargets()) {
-        
-        Optional<EstimatedRobotPose> backPoseOpt = backResult.getBestTarget().getPoseAmbiguity() < 0.2 ?  backEstimator.update(backResult) : Optional.empty();
+        backEstimator.setReferencePose(curPose);
+        Optional<EstimatedRobotPose> backPoseOpt = Optional.empty();
+
+        if (backResult.getBestTarget().getPoseAmbiguity() < Constants.CameraConstants.minAmbiguity) {
+          backPoseOpt = backEstimator.update(backResult);
+          if (ignoreRepeats && backPoseOpt.isEmpty()) {
+            return lastPose;
+          }
+        }
 
         if (backPoseOpt.isPresent()) {
           estimatedPose = backPoseOpt.get().estimatedPose.toPose2d();
           setDebugPoses(true, false, estimatedPose);
 
-          if (estimatedPose.getX() != lastPose.getX() || ignoreRepeats) {
+          if (estimatedPose.getX() != lastPose.getX() || estimatedPose.getY() != lastPose.getY() || ignoreRepeats) {
             lastPose = estimatedPose;
             return estimatedPose;
           } else {
