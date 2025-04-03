@@ -89,7 +89,9 @@ public class PoseOdometry extends Odometry {
             estimator.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, Units.degreesToRadians(15)));
         }
         // System.out.println("Updating cam");
-        if (cameraPasses < startingCameraPasses) {
+        if(cameraPasses == 0) {
+            startingPose = null;
+        } else if (cameraPasses < startingCameraPasses) {
             if (pose != null) {
                 if(startingPose == null) startingPose = pose;
                 System.out.println("YIPPEEE");
