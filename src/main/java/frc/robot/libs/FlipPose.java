@@ -17,11 +17,12 @@ public class FlipPose {
         if (alliance.isPresent() && alliance.get() == edu.wpi.first.wpilibj.DriverStation.Alliance.Red) {
             // X must be flipped, but Y stays the same.
             double flippedX = PathplannerConstants.FieldLength - pose.getX();
+            double flippedY = PathplannerConstants.FieldWidth - pose.getY();
 
             // In Radians
             Rotation2d flippedRot = new Rotation2d(pose.getRotation().getRadians() + Math.PI);
 
-            return new Pose2d(flippedX, pose.getY(), flippedRot);
+            return new Pose2d(flippedX, flippedY, flippedRot);
         }
 
         return pose;

@@ -19,7 +19,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -167,13 +166,15 @@ public class Camera extends SubsystemBase {
       PhotonPipelineResult backResult = back.getLatestResult();
 
       if (frontResult.hasTargets()) {
-        double frontDistance = FieldAprilTags.getInstance().getTagPose(frontResult.getBestTarget().getFiducialId()).getTranslation().getDistance(curPose.getTranslation());
+        double frontDistance = FieldAprilTags.getInstance().getTagPose(frontResult.getBestTarget().getFiducialId())
+            .getTranslation().getDistance(curPose.getTranslation());
         if (frontDistance > distanceCutoff) {
           frontResult = new PhotonPipelineResult();
         }
       }
-      if (backResult.hasTargets()) {        
-        double backDistance = FieldAprilTags.getInstance().getTagPose(backResult.getBestTarget().getFiducialId()).getTranslation().getDistance(curPose.getTranslation());
+      if (backResult.hasTargets()) {
+        double backDistance = FieldAprilTags.getInstance().getTagPose(backResult.getBestTarget().getFiducialId())
+            .getTranslation().getDistance(curPose.getTranslation());
 
         if (backDistance > distanceCutoff)
           backResult = new PhotonPipelineResult();

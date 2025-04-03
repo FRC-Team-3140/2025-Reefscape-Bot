@@ -168,6 +168,7 @@ public final class Constants {
 
     // Field Dimensions
     public static final double FieldLength = 17.548;
+    public static final double FieldWidth = 8.052;
 
     // Translation PID Values
     public static final double TransP = 12;
