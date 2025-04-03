@@ -4,14 +4,14 @@
 
 package frc.robot.commands.swerveDrive;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.libs.LoggedCommand;
 import frc.robot.subsystems.SwerveDrive;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class Drive extends Command {
+public class Drive extends LoggedCommand {
   private final SwerveDrive swerve = SwerveDrive.getInstance();
 
-  private final double startTime = System.currentTimeMillis();
+  private double startTime;
 
   private final double duration;
   private final boolean fieldRel;
@@ -34,6 +34,8 @@ public class Drive extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    super.initialize();
+    startTime = System.currentTimeMillis();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -45,12 +47,13 @@ public class Drive extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    super.end(interrupted);
     swerve.drive(0, 0, 0, false);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return System.currentTimeMillis() - startTime > duration * 1000;
+    return System.currentTimeMillis() - startTime > duration;
   }
 }

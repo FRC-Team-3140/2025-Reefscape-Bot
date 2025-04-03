@@ -6,20 +6,22 @@ package frc.robot.commands.swerveDrive;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.odometry.Odometry;
+import frc.robot.libs.FieldAprilTags;
 import frc.robot.libs.LoggedCommand;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class Align extends SequentialCommandGroup {
   private final double transP = 8;
-  private final double transI = 1;
+  private final double transI = 0;
   private final double transD = 0;
 
   private final double rotP = 6;
-  private final double rotI = 1;
+  private final double rotI = 0;
   private final double rotD = 0;
 
   private final PIDController xPID;
@@ -53,7 +55,14 @@ public class Align extends SequentialCommandGroup {
     thetaPID.enableContinuousInput(-Math.PI, Math.PI);
 
     addCommands(new AlignCommand(targetPose),
-        new Drive(0.5, true, 0.7 * Math.cos(thetaPID.getSetpoint()), 0.7 * Math.sin(thetaPID.getSetpoint()), 0));
+        new Drive(1000, true, 0.7 * Math.cos(thetaPID.getSetpoint()), 0.7 * Math.sin(thetaPID.getSetpoint()), 0));
+  }
+
+  public Align() {
+    this(FieldAprilTags.getInstance().getTagPose(
+        FieldAprilTags.getInstance().getClosestReefAprilTag(
+            Odometry.getInstance().getPose(),
+            DriverStation.getAlliance().get()).aprilTag.ID));
   }
 
   private class AlignCommand extends LoggedCommand {

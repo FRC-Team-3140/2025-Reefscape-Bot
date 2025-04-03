@@ -1,5 +1,6 @@
 package frc.robot.commands.swerveDrive;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
 import frc.robot.libs.LoggedCommand;
 import frc.robot.libs.NetworkTables;
@@ -72,8 +73,8 @@ public class SwerveDriveManualControl extends LoggedCommand {
                     .getRightTriggerAxis() > Constants.Controller.triggerThreshold
                             ? -controller.getRightX(Controller.controllers.PRIMARY) * maxChassisTurnSpeed * 0.5
                             : -controller.getRightX(Controller.controllers.PRIMARY) * maxChassisTurnSpeed;
-
-            swerveDrive.drive(xSpeed, ySpeed, rot, fieldRelative); // Drive the swerve drive
+            int driveNegation = (((DriverStation.getAlliance().get() == DriverStation.Alliance.Red) && fieldRelative) ? -1 : 1);
+            swerveDrive.drive(xSpeed * driveNegation, ySpeed * driveNegation, rot, fieldRelative); // Drive the swerve drive
         } else {
             swerveDrive.setSwerveModuleStates(Constants.Bot.defaultSwerveStates, true);
         }

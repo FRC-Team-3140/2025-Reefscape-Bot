@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.Autos.CycleHorizontal;
 import frc.robot.commands.Autos.CycleVertical;
@@ -17,6 +18,7 @@ import frc.robot.commands.compoundCommands.SourceCoralIntake;
 import frc.robot.commands.elevator.ReturnToStowed;
 import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.endeffector.EndEffectorScoreCoral;
+import frc.robot.commands.swerveDrive.Align;
 import frc.robot.sensors.Camera;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.odometry.Odometry;
@@ -62,8 +64,10 @@ public class RobotContainer {
   private RobotContainer() {
     // Add Named Commands for Pathplanner override autos
     NamedCommands.registerCommand("Return To Stowed", new ReturnToStowed());
-    NamedCommands.registerCommand("Score L4", new SequentialCommandGroup(
-        new SetHeight(Constants.ElevatorHeights.reefCoralL4Height), new EndEffectorScoreCoral(0.8)));
+    NamedCommands.registerCommand("Align Score L4",
+        new SequentialCommandGroup(
+            new ParallelCommandGroup(new Align(), new SetHeight(Constants.ElevatorHeights.reefCoralL4Height)),
+            new EndEffectorScoreCoral(0.8)));
     NamedCommands.registerCommand("Intake", new SourceCoralIntake());
 
     // Configure the auto options
