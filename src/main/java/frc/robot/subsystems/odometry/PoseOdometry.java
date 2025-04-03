@@ -91,6 +91,7 @@ public class PoseOdometry extends Odometry {
         // System.out.println("Updating cam");
         if(cameraPasses == 0) {
             startingPose = null;
+            cameraPasses++;
         } else if (cameraPasses < startingCameraPasses) {
             if (pose != null) {
                 if(startingPose == null) startingPose = pose;
