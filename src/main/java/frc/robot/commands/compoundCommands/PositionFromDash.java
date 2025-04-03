@@ -13,7 +13,6 @@ import frc.robot.Constants;
 import frc.robot.commands.swerveDrive.Align;
 import frc.robot.libs.FieldAprilTags;
 import frc.robot.libs.LoggedCommand;
-import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.odometry.Odometry;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -45,12 +44,8 @@ public class PositionFromDash extends LoggedCommand {
       case "R" -> 1;
       default -> 0;
     };
-    finalPose = Constants.ReefPoses.getPose(reefSide, algae ? -1 : posint);
-    NetworkTables.pathplannerGoalPose.setDoubleArray(new double[] {
-        finalPose.getX(),
-        finalPose.getY(),
-        finalPose.getRotation().getDegrees() });
 
+    finalPose = Constants.ReefPoses.getPose(reefSide, algae ? -1 : posint);
   }
 
   @Override

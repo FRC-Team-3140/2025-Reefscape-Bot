@@ -13,6 +13,7 @@ import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.odometry.Odometry;
 import frc.robot.libs.FieldAprilTags;
 import frc.robot.libs.LoggedCommand;
+import frc.robot.libs.NetworkTables;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class Align extends SequentialCommandGroup {
@@ -20,7 +21,7 @@ public class Align extends SequentialCommandGroup {
   private final double transI = 0;
   private final double transD = 0;
 
-  private final double rotP = 6;
+  private final double rotP = 1;
   private final double rotI = 0;
   private final double rotD = 0;
 
@@ -50,7 +51,7 @@ public class Align extends SequentialCommandGroup {
 
     xPID.setSetpoint(targetPose.getX());
     yPID.setSetpoint(targetPose.getY());
-    thetaPID.setSetpoint(targetPose.getRotation().getRadians());
+    thetaPID.setSetpoint(targetPose.getRotation().getRadians() + (DriverStation.getAlliance().get() == DriverStation.Alliance.Red ? Math.PI : 0));
 
     thetaPID.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -73,6 +74,10 @@ public class Align extends SequentialCommandGroup {
     @Override
     public void initialize() {
       startTime = Timer.getFPGATimestamp();
+      NetworkTables.pathplannerGoalPose.setDoubleArray(new double[] {
+        targetPose.getX(),
+        targetPose.getY(),
+        targetPose.getRotation().getDegrees() });
       super.initialize();
     }
 
