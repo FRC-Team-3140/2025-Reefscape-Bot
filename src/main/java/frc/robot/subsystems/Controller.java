@@ -15,6 +15,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.compoundCommands.GoToSourceAndIntake;
 import frc.robot.commands.compoundCommands.PositionAndScoreCoral;
+import frc.robot.commands.compoundCommands.PositionFromDash;
 import frc.robot.commands.compoundCommands.SourceCoralIntake;
 import frc.robot.commands.elevator.ReturnToStowed;
 import frc.robot.commands.endeffector.EndEffectorIntakeAlgae;
@@ -181,11 +182,12 @@ public class Controller extends SubsystemBase {
     }
 
     if (primaryController.getAButtonPressed()) {
-      new PositionAndScoreCoral(NetworkTables.dashCoralLoc.getString("L_4"), true).schedule();
+      new PositionFromDash(NetworkTables.dashCoralLoc.getString("L_4"), true).schedule();
     }
 
     if (primaryController.getBButtonPressed()) {
-      new PositionAndScoreCoral(NetworkTables.dashCoralLoc.getString("L_4"), false).schedule();
+      new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf(NetworkTables.dashCoralLoc.getString("L_4")), -1)
+          .schedule();
     }
 
     if (primaryController.getRightBumperButton())

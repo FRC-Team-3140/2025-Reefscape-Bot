@@ -9,20 +9,36 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.commands.elevator.SetHeight;
-import frc.robot.commands.endeffector.EndEffectorScoreCoral;
-import frc.robot.commands.swerveDrive.Align;
+import frc.robot.commands.swerveDrive.SetSwerveStates;
 import frc.robot.libs.FieldAprilTags;
-import frc.robot.libs.LoggedCommand;
-import frc.robot.libs.NetworkTables;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.odometry.Odometry;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class PositionAndScoreCoral extends LoggedCommand {
-  private Pose2d finalPose = null;
+public class PositionAndScoreCoral extends SequentialCommandGroup {
+  private Elevator elevator = null;
+
+  public enum Position {
+    L_1,
+    L_2,
+    L_3,
+    L_4,
+    R_1,
+    R_2,
+    R_3,
+    R_4
+  }
+
+  private Position coralScorePos = null;
+
   private Command pathfindingCommand = null;
-  private double scoreHeight = Constants.ElevatorHeights.minimum;
+
+  private Double level = null;
+
   /**
    * Creates a new ScoreCoral.
    * 
@@ -31,51 +47,56 @@ public class PositionAndScoreCoral extends LoggedCommand {
    * @param Position
    * @param reefSide
    */
-  public PositionAndScoreCoral(String pos, boolean algae) {
+  public PositionAndScoreCoral(Position pos, int reefSide) {
+    this.elevator = Elevator.getInstance();
 
-    String[] posParts = pos.split("_");
+    coralScorePos = pos;
+
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(elevator);
+
+    Pose2d reefPose = null;
+
+    String[] posParts = coralScorePos.name().split("_");
     String side = posParts[0];
     String position = posParts[1];
     System.out.println("Side: " + side + ", Position: " + position);
-    
-    int reefSide = FieldAprilTags.getInstance().getClosestReefAprilTag(
-        Odometry.getInstance().getPose(),
-        DriverStation.getAlliance().get()).reefSide;
-    scoreHeight = switch(position) {
-        case "1" -> Constants.ElevatorHeights.reefCoralL1Height;
-        case "2" -> algae ? Constants.ElevatorHeights.reefAlgaeL1Height : Constants.ElevatorHeights.reefCoralL2Height;
-        case "3" -> algae ? Constants.ElevatorHeights.reefAlgaeL2Height : Constants.ElevatorHeights.reefCoralL3Height;
-        default -> Constants.ElevatorHeights.reefCoralL4Height; 
-    };
-    int posint = switch(side) {
-      case "L" -> -1;
-      case "R" -> 1;
-      default -> 0;
-    };
-    finalPose = Constants.ReefPoses.getPose(reefSide, algae ? -1 : posint);
-    NetworkTables.pathplannerGoalPose.setDoubleArray(new double[] {
-                finalPose.getX(),
-                finalPose.getY(),
-                finalPose.getRotation().getDegrees() });
 
-  }
-  @Override 
-  public void initialize() {
+    int posint = 0;
+
+    switch (side) {
+      case "L":
+        posint = 1;
+        break;
+      case "R":
+        posint = -1;
+        break;
+      default:
+        System.err.println("Somehow magically passed in invalid position...");
+        end(true);
+        break;
+    }
+
+    reefPose = Constants.ReefPoses.getPose(
+        // If reef side is -1 it will go to closest.
+        reefSide == -1
+            ? FieldAprilTags.getInstance().getClosestReefAprilTag(Odometry.getInstance().getPose(),
+                DriverStation.getAlliance().get()).reefSide
+            : reefSide,
+        posint);
+
+    System.out.println(reefPose.getX() + " " + reefPose.getY() + " " + reefPose.getRotation());
+
+    // Put the edge of the bot theoretically touching the apriltag
     pathfindingCommand = AutoBuilder.pathfindToPose(
-        finalPose,
-        Constants.PathplannerConstants.pathplannerConstraints, 0.0)
-        .andThen(
-            new Align(finalPose)
-            .alongWith(new SetHeight(scoreHeight)), new EndEffectorScoreCoral(0.5)); // TODO: Why doesn't the end effector run???
-    pathfindingCommand.schedule();
-  }
+        reefPose,
+        Constants.PathplannerConstants.pathplannerConstraints, 0.0);
 
-  @Override
-  public void end(boolean interrupted) {
-    super.end(interrupted);
-  }
-
-  public boolean isFinished() {
-    return pathfindingCommand != null ? pathfindingCommand.isFinished() : false;
+    // Schedule the pathfinding command to run along with this command that will
+    // handle the elevator
+    addCommands(
+        pathfindingCommand,
+        new SetSwerveStates(SwerveDrive.getInstance(), true),
+        new SetHeight(level));
   }
 }

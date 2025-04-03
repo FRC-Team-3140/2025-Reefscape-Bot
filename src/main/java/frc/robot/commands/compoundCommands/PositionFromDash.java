@@ -18,7 +18,6 @@ import frc.robot.subsystems.odometry.Odometry;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PositionFromDash extends LoggedCommand {
-  private Double level = null;
   private Pose2d finalPose = null;
   private Command pathfindingCommand = null;
 
@@ -41,19 +40,20 @@ public class PositionFromDash extends LoggedCommand {
         Odometry.getInstance().getPose(),
         DriverStation.getAlliance().get()).reefSide;
 
-    int posint = switch(side) {
+    int posint = switch (side) {
       case "L" -> -1;
       case "R" -> 1;
       default -> 0;
     };
     finalPose = Constants.ReefPoses.getPose(reefSide, algae ? -1 : posint);
     NetworkTables.pathplannerGoalPose.setDoubleArray(new double[] {
-                finalPose.getX(),
-                finalPose.getY(),
-                finalPose.getRotation().getDegrees() });
+        finalPose.getX(),
+        finalPose.getY(),
+        finalPose.getRotation().getDegrees() });
 
   }
-  @Override 
+
+  @Override
   public void initialize() {
     pathfindingCommand = AutoBuilder.pathfindToPose(
         finalPose,

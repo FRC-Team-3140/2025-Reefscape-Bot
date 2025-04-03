@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.libs.FieldAprilTags;
+import frc.robot.libs.FlipPose;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -255,20 +256,16 @@ public final class Constants {
   }
 
   public static class ReefPoses {
-    // public HashMap<Integer, Pose2d> reefCoralPosesBlue = new HashMap<>();
-    // public HashMap<Integer, Pose2d> reefAlgaePosesBlue = new HashMap<>();
-    // public HashMap<Integer, Pose2d> reefCoralPosesRed = new HashMap<>();
-    // public HashMap<Integer, Pose2d> reefAlgaePosesRed = new HashMap<>();
     public static Pose2d getPose(int side, int pos) { // pos: -1 left, 0 center, 1 right
       double sideOffset = 0.17;
       double backOffset = 0.4699;
       int id = switch (side) {
-        case 0, 7 -> 18;
-        case 1, 6 -> 19;
-        case 2, 11 -> 20;
-        case 3, 10 -> 21;
-        case 4, 9 -> 22;
-        case 5, 8 -> 17;
+        case 0 -> 18;
+        case 1 -> 19;
+        case 2 -> 20;
+        case 3 -> 21;
+        case 4 -> 22;
+        case 5 -> 17;
         default -> -1;
       };
       if (id == -1)
@@ -281,7 +278,9 @@ public final class Constants {
             sideOffset * Math.sin(theta + Math.PI / 2 * pos)));
       offsetTranslation = offsetTranslation.plus(
           new Translation2d(backOffset * Math.cos(theta), backOffset * Math.sin(theta)));
-      return new Pose2d(offsetTranslation.getX(), offsetTranslation.getY(), new Rotation2d(theta - Math.PI));
+      
+      Pose2d rawPose = new Pose2d(offsetTranslation.getX(), offsetTranslation.getY(), new Rotation2d(theta - Math.PI));
+      return FlipPose.flipIfRed(rawPose);
     }
 
     public ReefPoses() {

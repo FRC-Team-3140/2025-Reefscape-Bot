@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -155,13 +156,24 @@ public class Camera extends SubsystemBase {
     }
     
   }
-  public Pose2d getPoseFromCamera(double distanceCuttoff) {
+  public Pose2d getPoseFromCamera(double distanceCutoff) {
     if (connected) {
       Pose2d curPose = Odometry.getInstance().getPose();
 
       PhotonPipelineResult frontResult = front.getLatestResult();
       PhotonPipelineResult backResult = back.getLatestResult();
 
+
+      if (frontResult.hasTargets()) {
+        double frontDistance = frontResult.getBestTarget().getBestCameraToTarget().getTranslation().getDistance(
+            new Translation3d(curPose.getTranslation().getX(), curPose.getTranslation().getY(), 0));
+        if(frontDistance > distanceCutoff) frontResult = new PhotonPipelineResult();
+      } 
+      if (backResult.hasTargets()) {
+        double backDistance = backResult.getBestTarget().getBestCameraToTarget().getTranslation().getDistance(
+            new Translation3d(curPose.getTranslation().getX(), curPose.getTranslation().getY(), 0));
+        if(backDistance > distanceCutoff) backResult = new PhotonPipelineResult();
+      }
       if (frontResult.hasTargets() && backResult.hasTargets()) {
         frontEstimator.setReferencePose(curPose);
         backEstimator.setReferencePose(curPose);

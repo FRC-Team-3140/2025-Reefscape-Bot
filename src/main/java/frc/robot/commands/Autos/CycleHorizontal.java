@@ -5,13 +5,12 @@
 package frc.robot.commands.Autos;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.compoundCommands.GoToSourceAndIntake;
 import frc.robot.commands.compoundCommands.PositionAndScoreCoral;
-// import frc.robot.commands.compoundCommands.PositionAndScoreCoral;
 import frc.robot.commands.elevator.ReturnToStowed;
 import frc.robot.commands.endeffector.EndEffectorScoreCoral;
-import frc.robot.commands.swerveDrive.Align;
 import frc.robot.libs.FieldAprilTags;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.odometry.Odometry;
@@ -40,16 +39,15 @@ public class CycleHorizontal extends SequentialCommandGroup {
     // time limit)
     for (int i = 0; i <= 5; i++) {
       addCommands(
-          // new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + level), ((i + startingSide) % 6)),
+          new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + level), ((i + startingSide) % 6)),
           // new Align(Odometry.getInstance().getPose()),
           new EndEffectorScoreCoral(speed),
           new ReturnToStowed(),
           new GoToSourceAndIntake(),
-          // new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + level), ((i + startingSide) % 6)),
+          new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + level), ((i + startingSide) % 6)),
           // new Align(Odometry.getInstance().getPose()),
           new EndEffectorScoreCoral(speed),
-          new ReturnToStowed(),
-          new GoToSourceAndIntake());
+          new ParallelCommandGroup(new ReturnToStowed(), new GoToSourceAndIntake()));
     }
   }
 
@@ -69,16 +67,15 @@ public class CycleHorizontal extends SequentialCommandGroup {
     // time limit)
     for (int i = 0; i <= 5; i++) {
       addCommands(
-          // new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + level), ((i + startingSide) % 6)),
+          new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + level), ((i + startingSide) % 6)),
           // new Align(Odometry.getInstance().getPose()),
           new EndEffectorScoreCoral(speed),
           new ReturnToStowed(),
           new GoToSourceAndIntake(),
-          // new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + level), ((i + startingSide) % 6)),
+          new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + level), ((i + startingSide) % 6)),
           // new Align(Odometry.getInstance().getPose()),
           new EndEffectorScoreCoral(speed),
-          new ReturnToStowed(),
-          new GoToSourceAndIntake());
+          new ParallelCommandGroup(new ReturnToStowed(), new GoToSourceAndIntake()));
     }
   }
 }
