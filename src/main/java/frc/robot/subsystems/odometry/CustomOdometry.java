@@ -138,7 +138,7 @@ public class CustomOdometry extends Odometry {
 
         double deltaTime = Timer.getFPGATimestamp() - lastUpdateT;
         lastUpdateT += deltaTime;
-        Pose2d tagPose = calculatePoseFromTags();
+        Pose2d tagPose = calculatePoseFromTags(false);
 
         // if it found a camera position and it doesnt have a better position, use that
         if (tagPose != null && !knowsPosition) {

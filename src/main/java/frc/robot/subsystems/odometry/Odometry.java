@@ -41,8 +41,8 @@ abstract public class Odometry extends SubsystemBase {
     SmartDashboard.putData(fieldEntry);
   }
 
-  protected Pose2d calculatePoseFromTags() {
-    return Camera.getInstance().getPoseFromCamera(Constants.CameraConstants.maxDistCutoff);
+  protected Pose2d calculatePoseFromTags(boolean ignoreMaxDistance) {
+    return Camera.getInstance().getPoseFromCamera(ignoreMaxDistance ? 1000 : Constants.CameraConstants.maxDistCutoff);
   }
 
   abstract public double getX();

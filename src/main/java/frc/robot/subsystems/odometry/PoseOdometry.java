@@ -75,7 +75,8 @@ public class PoseOdometry extends Odometry {
 
     public void updatePosition(SwerveModulePosition[] positions) {
         SwerveDrive drive = SwerveDrive.getInstance();
-        Pose2d pose = calculatePoseFromTags();
+        Pose2d poseClipped = calculatePoseFromTags(false);
+        Pose2d pose = calculatePoseFromTags(true);
 
         // if (pose != null) {
         //     System.out.println("Camera Pose: \n" + "X: " + pose.getX() + "\nY: " + pose.getY() + "\nRot: "
@@ -99,9 +100,9 @@ public class PoseOdometry extends Odometry {
                     knowsPosition = true;
                     estimator.resetPose(pose);
                 } else {
-                    if (estimator.getEstimatedPosition().getTranslation().getDistance(pose.getTranslation()) < 0.5) {
+                    if (estimator.getEstimatedPosition().getTranslation().getDistance(poseClipped.getTranslation()) < 0.5) {
                         // System.out.println("VALID");
-                        estimator.addVisionMeasurement(new Pose2d(pose.getX(), pose.getY(), getGyroRotation()),
+                        estimator.addVisionMeasurement(new Pose2d(poseClipped.getX(), poseClipped.getY(), getGyroRotation()),
                                 Timer.getFPGATimestamp());
                     }
                 }
