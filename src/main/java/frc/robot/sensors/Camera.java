@@ -156,7 +156,7 @@ public class Camera extends SubsystemBase {
     }
     
   }
-  public Pose2d getPoseFromCamera(double distanceCutoff) {
+  public Pose2d getPoseFromCamera(double distanceCutoff, boolean ignoreRepeats) {
     if (connected) {
       Pose2d curPose = Odometry.getInstance().getPose();
 
@@ -167,7 +167,7 @@ public class Camera extends SubsystemBase {
       if (frontResult.hasTargets()) {
         double frontDistance = frontResult.getBestTarget().getBestCameraToTarget().getTranslation().getDistance(
             new Translation3d(curPose.getTranslation().getX(), curPose.getTranslation().getY(), 0));
-        if(frontDistance > distanceCutoff) frontResult = new PhotonPipelineResult();
+        if(frontDistance > distanceCutoff) {frontResult = new PhotonPipelineResult(); }
       } 
       if (backResult.hasTargets()) {
         double backDistance = backResult.getBestTarget().getBestCameraToTarget().getTranslation().getDistance(
@@ -193,32 +193,36 @@ public class Camera extends SubsystemBase {
 
           estimatedPose = new Pose2d(avgX, avgY, new Rotation2d(avgRot));
 
-          if (estimatedPose.getX() != lastPose.getX()) {
+          if (estimatedPose.getX() != lastPose.getX() || ignoreRepeats) {
             lastPose = estimatedPose;
             return estimatedPose;
           } else {
             return null;
           }
         } else {
+
           return null;
         }
       } else if (frontResult.hasTargets()) {
-        frontEstimator.setReferencePose(curPose);
-
+        
         Optional<EstimatedRobotPose> frontPoseOpt = frontResult.getBestTarget().getPoseAmbiguity() < 0.2 ? frontEstimator.update(frontResult) : Optional.empty();
-
+        
+        
         if (frontPoseOpt.isPresent()) {
+
           estimatedPose = frontPoseOpt.get().estimatedPose.toPose2d();
           setDebugPoses(true, false, estimatedPose);
-          if (estimatedPose.getX() != lastPose.getX()) {
+          if (estimatedPose.getX() != lastPose.getX() || ignoreRepeats) {
+
             lastPose = estimatedPose;
             return estimatedPose;
           } else {
+
             return null;
           }
         }
+
       } else if (backResult.hasTargets()) {
-        backEstimator.setReferencePose(curPose);
         
         Optional<EstimatedRobotPose> backPoseOpt = backResult.getBestTarget().getPoseAmbiguity() < 0.2 ?  backEstimator.update(backResult) : Optional.empty();
 
@@ -226,19 +230,23 @@ public class Camera extends SubsystemBase {
           estimatedPose = backPoseOpt.get().estimatedPose.toPose2d();
           setDebugPoses(true, false, estimatedPose);
 
-          if (estimatedPose.getX() != lastPose.getX()) {
+          if (estimatedPose.getX() != lastPose.getX() || ignoreRepeats) {
             lastPose = estimatedPose;
             return estimatedPose;
           } else {
+
             return null;
           }
         }
       } else {
+
         return null;
       }
     } else {
+
       return null;
     }
+
     return null;
   }
   

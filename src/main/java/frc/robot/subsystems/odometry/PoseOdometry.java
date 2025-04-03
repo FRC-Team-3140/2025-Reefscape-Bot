@@ -19,7 +19,7 @@ public class PoseOdometry extends Odometry {
     private boolean knowsPosition = false;
     private Pose2d nullPose = new Pose2d(0, 0, new Rotation2d(0));
 
-    private Pose2d startingPose = new Pose2d();
+    private Pose2d startingPose = null;
     private final int startingCameraPasses = 10;
     private int cameraPasses = 0;
 
@@ -75,34 +75,43 @@ public class PoseOdometry extends Odometry {
 
     public void updatePosition(SwerveModulePosition[] positions) {
         SwerveDrive drive = SwerveDrive.getInstance();
-        Pose2d poseClipped = calculatePoseFromTags(false);
-        Pose2d pose = calculatePoseFromTags(true);
-
+        Pose2d poseClipped = calculatePoseFromTags(false, false);
+        Pose2d pose = calculatePoseFromTags(true, true);
+        if(pose == null) pose = poseClipped;
         // if (pose != null) {
-        //     System.out.println("Camera Pose: \n" + "X: " + pose.getX() + "\nY: " + pose.getY() + "\nRot: "
-        //             + pose.getRotation().getDegrees());
+        // System.out.println("Camera Pose: \n" + "X: " + pose.getX() + "\nY: " +
+        // pose.getY() + "\nRot: "
+        // + pose.getRotation().getDegrees());
         // }
 
         if (estimator == null) {
             estimator = new SwerveDrivePoseEstimator(drive.kinematics, getGyroRotation(), positions, new Pose2d());
             estimator.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, Units.degreesToRadians(15)));
         }
-        if (pose != null && poseClipped != null) {
-            // System.out.println("Updating cam");
-            if (cameraPasses < startingCameraPasses) {
+        // System.out.println("Updating cam");
+        if (cameraPasses < startingCameraPasses) {
+            if (pose != null) {
+                if(startingPose == null) startingPose = pose;
+                System.out.println("YIPPEEE");
                 startingPose = startingPose.interpolate(pose, 0.1);
                 cameraPasses++;
-            } else if (cameraPasses == startingCameraPasses) {
-                estimator.resetPose(startingPose);
-                cameraPasses++;
-            } else {
+            }
+        } else if (cameraPasses == startingCameraPasses) {
+            
+            System.out.println("YIPPEEE DONE");
+            estimator.resetPose(startingPose);
+            cameraPasses++;
+        } else {
+            if (poseClipped != null) {
                 if (!knowsPosition) {
                     knowsPosition = true;
-                    estimator.resetPose(pose);
+                    estimator.resetPose(poseClipped);
                 } else {
-                    if (estimator.getEstimatedPosition().getTranslation().getDistance(poseClipped.getTranslation()) < 0.5) {
+                    if (estimator.getEstimatedPosition().getTranslation()
+                            .getDistance(poseClipped.getTranslation()) < 0.5) {
                         // System.out.println("VALID");
-                        estimator.addVisionMeasurement(new Pose2d(poseClipped.getX(), poseClipped.getY(), getGyroRotation()),
+                        estimator.addVisionMeasurement(
+                                new Pose2d(poseClipped.getX(), poseClipped.getY(), getGyroRotation()),
                                 Timer.getFPGATimestamp());
                     }
                 }
