@@ -89,8 +89,8 @@ public class PoseOdometry extends Odometry {
 
     public void updatePosition(SwerveModulePosition[] positions) {
         SwerveDrive drive = SwerveDrive.getInstance();
-        Pose2d poseClipped = calculatePoseFromTags(false, false);
-        Pose2d pose = calculatePoseFromTags(true, true);
+        Pose2d poseClipped = calculatePoseFromTags(false, false); // 1 These two lines
+        Pose2d pose = calculatePoseFromTags(true, true);          // 2 must be in this order.
         if (pose == null)
             pose = poseClipped;
         if (estimator == null) {
@@ -105,7 +105,7 @@ public class PoseOdometry extends Odometry {
                 if (startingPose == null)
                     startingPose = pose;
                 System.out.print("YIPPEEE");
-                startingPose = startingPose.interpolate(pose, 0.1);
+                startingPose = startingPose.interpolate(pose, 1 / startingCameraPasses);
                 cameraPasses++;
             }
         } else if (cameraPasses == startingCameraPasses) {
