@@ -51,7 +51,7 @@ public class Align extends SequentialCommandGroup {
 
     xPID.setSetpoint(targetPose.getX());
     yPID.setSetpoint(targetPose.getY());
-    thetaPID.setSetpoint(targetPose.getRotation().getRadians() + (DriverStation.getAlliance().get() == DriverStation.Alliance.Red ? Math.PI : 0));
+    thetaPID.setSetpoint(targetPose.getRotation().getRadians() + (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red ? Math.PI : 0));
 
     thetaPID.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -63,7 +63,7 @@ public class Align extends SequentialCommandGroup {
     this(FieldAprilTags.getInstance().getTagPose(
         FieldAprilTags.getInstance().getClosestReefAprilTag(
             Odometry.getInstance().getPose(),
-            DriverStation.getAlliance().get()).aprilTag.ID));
+            DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)).aprilTag.ID));
   }
 
   private class AlignCommand extends LoggedCommand {

@@ -54,7 +54,7 @@ public class FieldAprilTags {
     }
 
     private FieldAprilTags() {
-        field = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+        field = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
         aprilTags = field.getTags();
 
         for (AprilTag tag : aprilTags) {
