@@ -10,6 +10,7 @@ import frc.robot.commands.compoundCommands.GoToSourceAndIntake;
 import frc.robot.commands.compoundCommands.PositionAndScoreCoral;
 import frc.robot.commands.elevator.ReturnToStowed;
 import frc.robot.commands.endeffector.EndEffectorScoreCoral;
+import frc.robot.commands.swerveDrive.Align;
 import frc.robot.libs.FieldAprilTags;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.odometry.Odometry;
@@ -39,12 +40,12 @@ public class CycleVertical extends SequentialCommandGroup {
       for (int j = 4; j >= 1; j--) {
         addCommands(
             new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
-            // new Align(Odometry.getInstance().getPose()),
+            new Align(),
             new EndEffectorScoreCoral(speed),
             new ReturnToStowed(),
             new GoToSourceAndIntake(),
             new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
-            // new Align(Odometry.getInstance().getPose()),
+            new Align(),
             new EndEffectorScoreCoral(speed),
             new ReturnToStowed(),
             new GoToSourceAndIntake());
@@ -69,12 +70,12 @@ public class CycleVertical extends SequentialCommandGroup {
       for (int j = 4; j >= 1; j--) {
         addCommands(
             new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
-            // new Align(Odometry.getInstance().getPose()),
+            new Align(),
             new EndEffectorScoreCoral(speed),
             new ReturnToStowed(),
             new GoToSourceAndIntake(),
             new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
-            // new Align(Odometry.getInstance().getPose()),
+            new Align(),
             new EndEffectorScoreCoral(speed),
             new ReturnToStowed(),
             new GoToSourceAndIntake());

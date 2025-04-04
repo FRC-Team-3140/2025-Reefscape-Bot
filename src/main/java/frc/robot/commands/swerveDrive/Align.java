@@ -51,7 +51,9 @@ public class Align extends SequentialCommandGroup {
 
     xPID.setSetpoint(targetPose.getX());
     yPID.setSetpoint(targetPose.getY());
-    thetaPID.setSetpoint(targetPose.getRotation().getRadians() + (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red ? Math.PI : 0));
+    thetaPID.setSetpoint(targetPose.getRotation().getRadians()); // +
+                                                                 // (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
+                                                                 // == DriverStation.Alliance.Red ? Math.PI : 0)
 
     thetaPID.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -75,9 +77,9 @@ public class Align extends SequentialCommandGroup {
     public void initialize() {
       startTime = Timer.getFPGATimestamp();
       NetworkTables.pathplannerGoalPose.setDoubleArray(new double[] {
-        targetPose.getX(),
-        targetPose.getY(),
-        targetPose.getRotation().getDegrees() });
+          targetPose.getX(),
+          targetPose.getY(),
+          targetPose.getRotation().getDegrees() });
       super.initialize();
     }
 

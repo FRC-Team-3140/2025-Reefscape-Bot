@@ -2,7 +2,7 @@
   {
     "name": "/Elevator/PID/P",
     "type": "double",
-    "value": 1.0,
+    "value": 0.5,
     "properties": {
       "persistent": true
     }
@@ -19,6 +19,14 @@
     "name": "/Elevator/PID/D",
     "type": "double",
     "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Elevator/PID/RP",
+    "type": "double",
+    "value": 0.01,
     "properties": {
       "persistent": true
     }

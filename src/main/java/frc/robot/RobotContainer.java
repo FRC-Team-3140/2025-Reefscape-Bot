@@ -22,6 +22,7 @@ import frc.robot.commands.swerveDrive.Align;
 import frc.robot.sensors.Camera;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.odometry.Odometry;
+import frc.robot.tests.TestReefPoses;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -49,6 +50,8 @@ public class RobotContainer {
   private SendableChooser<String> cycleDirection = new SendableChooser<>();
   private SendableChooser<Integer> reefLevel = new SendableChooser<>();
   private SendableChooser<Command> PathPlanner = new SendableChooser<>();
+
+  private boolean testReefPoses = false;
 
   // Get the singleton instance or create it if it doesn't exist
   public static RobotContainer getInstance() {
@@ -106,6 +109,9 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    if (testReefPoses)
+      return new TestReefPoses();
+
     String cycleDirectionSelected = cycleDirection.getSelected();
     String reefSideSelected = reefSide.getSelected();
     Integer reefLevelSelected = reefLevel.getSelected();

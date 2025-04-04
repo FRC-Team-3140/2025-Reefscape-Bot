@@ -49,7 +49,6 @@ public class SwerveModule extends SubsystemBase {
     // realised the feedforward was off by a factor of .712, corrected it
     private TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(Constants.Bot.maxChassisSpeed,
             Constants.Bot.maxAcceleration);
-            
 
     // private State initialState = new TrapezoidProfile.State(0, 0);
     // private TrapezoidProfile trapezoidProfile;
@@ -63,7 +62,7 @@ public class SwerveModule extends SubsystemBase {
         this.baseAngle = baseAngle;
         this.turnMotorID = turnMotorID;
         this.driveMotorID = driveMotorID;
-                
+
         SparkMaxConfig motorConfig = new SparkMaxConfig();
 
         motorConfig.idleMode(IdleMode.kBrake).inverted(driveInverted).smartCurrentLimit(40);
@@ -94,14 +93,16 @@ public class SwerveModule extends SubsystemBase {
         drivePID.setTolerance(driveSetpointTolerance);
     }
 
-    // scales the maximum acceleration of the robot based on the height of the elevator to prevent toppling
+    // scales the maximum acceleration of the robot based on the height of the
+    // elevator to prevent toppling
     private double CalculateAccelScale(double elevHeight) {
         double minHeight = Constants.ElevatorHeights.minimum;
         double maxHeight = Constants.ElevatorHeights.maximum;
         double minAccelScale = 0.35;
         double height = Math.min(Math.max(elevHeight, minHeight), maxHeight);
-        double mappedHeight = (height - minHeight)/(maxHeight - minHeight); // the height remapped from 0-1 (min to max)
-        double scale = 1 - (mappedHeight)*(1-minAccelScale);
+        double mappedHeight = (height - minHeight) / (maxHeight - minHeight); // the height remapped from 0-1 (min to
+                                                                              // max)
+        double scale = 1 - (mappedHeight) * (1 - minAccelScale);
         return scale;
     }
 
@@ -110,21 +111,23 @@ public class SwerveModule extends SubsystemBase {
     public void periodic() {
         // setAngle(0);
         // turnPID.calculate(getTurnEncoder().getAbsolutePosition());
-        if(Elevator.getInstance().isMoving()) {
+        if (Elevator.getInstance().isMoving()) {
             double scale = CalculateAccelScale(Elevator.getInstance().getHeight());
-            accelerationLimiter = new SlewRateLimiter(Constants.Bot.maxAcceleration * scale, -Constants.Bot.maxAcceleration * scale, 0);   
-            constraints = new  TrapezoidProfile.Constraints(Constants.Bot.maxChassisSpeed, Constants.Bot.maxAcceleration * scale);
+            accelerationLimiter = new SlewRateLimiter(Constants.Bot.maxAcceleration * scale,
+                    -Constants.Bot.maxAcceleration * scale, 0);
+            constraints = new TrapezoidProfile.Constraints(Constants.Bot.maxChassisSpeed,
+                    Constants.Bot.maxAcceleration * scale);
             drivePID.setConstraints(constraints);
         }
         NetworkTableInstance.getDefault().getTable("Angle").getEntry(moduleID)
                 .setDouble(turnEncoder.getAbsolutePosition());
     }
 
-    SlewRateLimiter accelerationLimiter = new SlewRateLimiter(Constants.Bot.maxAcceleration, -Constants.Bot.maxAcceleration, 0);
-    
-    
+    SlewRateLimiter accelerationLimiter = new SlewRateLimiter(Constants.Bot.maxAcceleration,
+            -Constants.Bot.maxAcceleration, 0);
+
     public void setStates(SwerveModuleState state) {
-    
+
         state.optimize(Rotation2d.fromDegrees(turnEncoder.getAbsolutePosition()));
         setAngle(state.angle.getDegrees());
         setDriveSpeed(accelerationLimiter.calculate(state.speedMetersPerSecond));

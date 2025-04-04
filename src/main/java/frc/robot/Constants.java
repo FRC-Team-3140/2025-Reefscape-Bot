@@ -258,7 +258,7 @@ public final class Constants {
 
   public static class ReefPoses {
     public static Pose2d getPose(int side, int pos) { // pos: -1 left, 0 center, 1 right
-      double sideOffset = 0.17;
+      double sideOffset = 0.17 + (pos * 0.02);
       double backOffset = 0.4699;
       int id = switch (side) {
         case 0 -> 18;
@@ -279,7 +279,7 @@ public final class Constants {
             sideOffset * Math.sin(theta + Math.PI / 2 * pos)));
       offsetTranslation = offsetTranslation.plus(
           new Translation2d(backOffset * Math.cos(theta), backOffset * Math.sin(theta)));
-      
+
       Pose2d rawPose = new Pose2d(offsetTranslation.getX(), offsetTranslation.getY(), new Rotation2d(theta - Math.PI));
       return FlipPose.flipIfRed(rawPose);
     }
