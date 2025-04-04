@@ -35,7 +35,7 @@ public class TestElevator extends Test {
         switch (stage) {
             case 0:
                 // First section of code
-                elevator.setHeight(Constants.ElevatorHeights.maxiumum);
+                elevator.setHeight(Constants.ElevatorHeights.maximum);
                 break;
             case 1:
                 // Second section of code

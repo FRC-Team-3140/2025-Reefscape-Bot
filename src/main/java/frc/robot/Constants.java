@@ -201,7 +201,7 @@ public final class Constants {
 
   public static class ElevatorHeights {
     public static final double minimum = 0;
-    public static final double maxiumum = 10620 * Bot.elevatorEncoderDegreesToMeters;
+    public static final double maximum = 10620 * Bot.elevatorEncoderDegreesToMeters;
 
     public static final double groudAlgaeHeight = 2;
 
@@ -210,7 +210,7 @@ public final class Constants {
     public static final double reefCoralL1Height = 3.5;
     public static final double reefCoralL2Height = 4.5;
     public static final double reefCoralL3Height = 7.054625;
-    public static final double reefCoralL4Height = maxiumum;
+    public static final double reefCoralL4Height = maximum;
 
     public static final double sourceIntake = 2; // orig 1.75
     // the above value was used at RCR

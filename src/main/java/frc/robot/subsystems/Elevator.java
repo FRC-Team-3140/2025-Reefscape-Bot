@@ -160,7 +160,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setHeight(double height) {
-    target = Math.max(Math.min(height, Constants.ElevatorHeights.maxiumum), Constants.ElevatorHeights.minimum);
+    target = Math.max(Math.min(height, Constants.ElevatorHeights.maximum), Constants.ElevatorHeights.minimum);
   }
 
   public void setHeight(double height, boolean override) {
