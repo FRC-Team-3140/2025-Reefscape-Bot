@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.json.simple.parser.ContainerFactory;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -49,6 +51,7 @@ public class SwerveModule extends SubsystemBase {
     // realised the feedforward was off by a factor of .712, corrected it
     private TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(Constants.Bot.maxChassisSpeed,
             Constants.Bot.maxAcceleration);
+            
 
     // private State initialState = new TrapezoidProfile.State(0, 0);
     // private TrapezoidProfile trapezoidProfile;
@@ -62,7 +65,7 @@ public class SwerveModule extends SubsystemBase {
         this.baseAngle = baseAngle;
         this.turnMotorID = turnMotorID;
         this.driveMotorID = driveMotorID;
-
+                
         SparkMaxConfig motorConfig = new SparkMaxConfig();
 
         motorConfig.idleMode(IdleMode.kBrake).inverted(driveInverted).smartCurrentLimit(40);
@@ -89,6 +92,7 @@ public class SwerveModule extends SubsystemBase {
 
         // determined from a SYSID scan
         drivePID = new ProfiledPIDController(0.005, 0, 0.0005, constraints);
+        drivePID.setConstraints(constraints);
         drivePID.setTolerance(driveSetpointTolerance);
     }
 
@@ -97,13 +101,21 @@ public class SwerveModule extends SubsystemBase {
     public void periodic() {
         // setAngle(0);
         // turnPID.calculate(getTurnEncoder().getAbsolutePosition());
+        if(Elevator.getInstance().isMoving()) {
+            double scale = Math.min(Constants.ElevatorHeights.reefCoralL2Height + Elevator.getInstance().getHeight()/Constants.ElevatorHeights.maxiumum, Constants.ElevatorHeights.maxiumum);
+            accelerationLimiter = new SlewRateLimiter(Constants.Bot.maxAcceleration * scale, -Constants.Bot.maxAcceleration * scale, 0);   
+            constraints = new  TrapezoidProfile.Constraints(Constants.Bot.maxChassisSpeed, Constants.Bot.maxAcceleration * scale);
+            drivePID.setConstraints(constraints);
+        }
         NetworkTableInstance.getDefault().getTable("Angle").getEntry(moduleID)
                 .setDouble(turnEncoder.getAbsolutePosition());
     }
 
     SlewRateLimiter accelerationLimiter = new SlewRateLimiter(Constants.Bot.maxAcceleration, -Constants.Bot.maxAcceleration, 0);
-
+    
+    
     public void setStates(SwerveModuleState state) {
+    
         state.optimize(Rotation2d.fromDegrees(turnEncoder.getAbsolutePosition()));
         setAngle(state.angle.getDegrees());
         setDriveSpeed(accelerationLimiter.calculate(state.speedMetersPerSecond));
