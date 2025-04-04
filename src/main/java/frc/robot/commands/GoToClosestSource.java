@@ -14,6 +14,7 @@ import com.pathplanner.lib.util.FileVersionException;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.commands.swerveDrive.SetSwerveStates;
@@ -44,10 +45,10 @@ public class GoToClosestSource extends SequentialCommandGroup {
     if (alliance.isPresent()) {
       LeftSource = FieldAprilTags.getInstance()
           .getTagPose(
-              DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red ? 2 : 13);
+              DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red ? 1 : 13);
       RightSource = FieldAprilTags.getInstance()
           .getTagPose(
-              DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red ? 1 : 12);
+              DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red ? 2 : 12);
     } else {
       System.err.println("Driverstation alliance wasn't present when command was called.");
       return;
@@ -58,7 +59,7 @@ public class GoToClosestSource extends SequentialCommandGroup {
     double leftDist = Math.pow(LeftSource.getY() - curPose.getY(), 2) + Math.pow(LeftSource.getX() - curPose.getX(), 2);
     double rightDist = Math.pow(RightSource.getY() - curPose.getY(), 2) + Math.pow(RightSource.getX() - curPose.getX(), 2);
 
-    closestStation = (leftDist < rightDist) ? coralStations.LEFT : coralStations.RIGHT;
+    //closestStation = Boolean.logicalXor(leftDist < rightDist, DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red)  ? coralStations.LEFT : coralStations.RIGHT;
 
     try {
       addCommands(

@@ -201,7 +201,7 @@ public final class Constants {
 
   public static class ElevatorHeights {
     public static final double minimum = 0;
-    public static final double maxiumum = 10900 * Bot.elevatorEncoderDegreesToMeters;
+    public static final double maxiumum = 10620 * Bot.elevatorEncoderDegreesToMeters;
 
     public static final double groudAlgaeHeight = 2;
 
