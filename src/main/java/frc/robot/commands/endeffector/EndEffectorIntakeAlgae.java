@@ -73,7 +73,6 @@ public class EndEffectorIntakeAlgae extends LoggedCommand {
       new SetRainbow().schedule();
 
     endEffector.setAlgaeIntakeSpeed(-0.15);
-    System.out.println("EndEffectorIntakeAlgae ended");
   }
 
   // Returns true when the command should end.

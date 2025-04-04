@@ -55,13 +55,10 @@ public class GoToClosestSource extends SequentialCommandGroup {
 
     Pose2d curPose = odometry.getPose();
 
-    double leftDist = Math
-        .sqrt(Math.pow(LeftSource.getY() - curPose.getY(), 2) + Math.pow(LeftSource.getX() - curPose.getX(), 2));
-    double rightDist = Math
-        .sqrt(Math.pow(RightSource.getY() - curPose.getY(), 2) + Math.pow(RightSource.getX() - curPose.getX(), 2));
+    double leftDist = Math.pow(LeftSource.getY() - curPose.getY(), 2) + Math.pow(LeftSource.getX() - curPose.getX(), 2);
+    double rightDist = Math.pow(RightSource.getY() - curPose.getY(), 2) + Math.pow(RightSource.getX() - curPose.getX(), 2);
 
-    double minDist = Math.min(leftDist, rightDist);
-    closestStation = (minDist == leftDist) ? coralStations.LEFT : coralStations.RIGHT;
+    closestStation = (leftDist < rightDist) ? coralStations.LEFT : coralStations.RIGHT;
 
     try {
       addCommands(

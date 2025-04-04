@@ -93,17 +93,10 @@ public class PoseOdometry extends Odometry {
         Pose2d pose = calculatePoseFromTags(true, true);
         if (pose == null)
             pose = poseClipped;
-        // if (pose != null) {
-        // System.out.println("Camera Pose: \n" + "X: " + pose.getX() + "\nY: " +
-        // pose.getY() + "\nRot: "
-        // + pose.getRotation().getDegrees());
-        // }
-
         if (estimator == null) {
             estimator = new SwerveDrivePoseEstimator(drive.kinematics, getGyroRotation(), positions, new Pose2d());
             estimator.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, Units.degreesToRadians(15)));
         }
-        // System.out.println("Updating cam");
         if (cameraPasses == 0) {
             startingPose = null;
             cameraPasses++;
@@ -111,7 +104,7 @@ public class PoseOdometry extends Odometry {
             if (pose != null) {
                 if (startingPose == null)
                     startingPose = pose;
-                System.out.println("YIPPEEE");
+                System.out.print("YIPPEEE");
                 startingPose = startingPose.interpolate(pose, 0.1);
                 cameraPasses++;
             }

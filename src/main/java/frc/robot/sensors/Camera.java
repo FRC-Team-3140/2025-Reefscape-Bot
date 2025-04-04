@@ -109,9 +109,6 @@ public class Camera extends SubsystemBase {
     if (((Timer.getFPGATimestamp() - lastIteration)) > delayTime) {
       isConnected();
 
-      // System.out.println("Connected: " + connected + " Front: " +
-      // front.isConnected() + " Back: " + back.isConnected());
-
       lastIteration = Timer.getFPGATimestamp();
     }
   }

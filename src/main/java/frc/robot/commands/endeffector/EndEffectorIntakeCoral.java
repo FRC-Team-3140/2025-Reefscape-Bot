@@ -46,7 +46,6 @@ public class EndEffectorIntakeCoral extends LoggedCommand {
         new InstantCommand(
             () -> {
               endEffector.setManipulatorSpeed(0);
-              System.out.println("EndEffectorIntakeCoral ended");
             })).schedule();
   }
 
