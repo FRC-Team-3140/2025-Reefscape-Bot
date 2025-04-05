@@ -181,7 +181,7 @@ public class SwerveDrive extends SubsystemBase {
         // Angle, Velocity / Module
         if (swerveModuleStates[i] != null) {
           desiredStates.add(swerveModuleStates[i].angle != null ? swerveModuleStates[i].angle.getDegrees() : 0);
-          desiredStates.add(swerveModuleStates[i].speedMetersPerSecond);
+          desiredStates.add(-swerveModuleStates[i].speedMetersPerSecond);
         } else {
           desiredStates.add(0.0);
           desiredStates.add(0.0);
@@ -196,7 +196,7 @@ public class SwerveDrive extends SubsystemBase {
       for (int i = 0; i < modules.length; i++) {
         // Angle, Velocity / Module
         measuredStates.add(modules[i].getTurnEncoder().getAbsolutePosition());
-        measuredStates.add(modules[i].getVelocity());
+        measuredStates.add(-modules[i].getVelocity());
       }
 
       NetworkTables.measuredSwerveStates_da

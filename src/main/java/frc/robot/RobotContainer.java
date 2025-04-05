@@ -19,6 +19,7 @@ import frc.robot.commands.elevator.ReturnToStowed;
 import frc.robot.commands.elevator.SetHeight;
 import frc.robot.commands.endeffector.EndEffectorScoreCoral;
 import frc.robot.commands.swerveDrive.Align;
+import frc.robot.commands.swerveDrive.Drive;
 import frc.robot.sensors.Camera;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.odometry.Odometry;
@@ -51,7 +52,9 @@ public class RobotContainer {
   private SendableChooser<Integer> reefLevel = new SendableChooser<>();
   private SendableChooser<Command> PathPlanner = new SendableChooser<>();
 
+  // WARNING: These booleans will override auto selectiosn!
   private boolean testReefPoses = false;
+  private boolean pushAutoMode = false;
 
   // Get the singleton instance or create it if it doesn't exist
   public static RobotContainer getInstance() {
@@ -109,6 +112,9 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    if (pushAutoMode)
+      return new Drive(10000000, false, Constants.Bot.maxChassisSpeed / 2, 0, 0);
+
     if (testReefPoses)
       return new TestReefPoses();
 
