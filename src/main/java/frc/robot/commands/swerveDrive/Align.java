@@ -48,24 +48,18 @@ public class Align extends SequentialCommandGroup {
     xPID = new PIDController(transP, transI, transD);
     yPID = new PIDController(transP, transI, transD);
     thetaPID = new PIDController(rotP, rotI, rotD);
-
-    xPID.setSetpoint(targetPose.getX());
-    yPID.setSetpoint(targetPose.getY());
-    thetaPID.setSetpoint(targetPose.getRotation().getRadians()); // +
-                                                                 // (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
-                                                                 // == DriverStation.Alliance.Red ? Math.PI : 0)
+    // +
+    // (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
+    // == DriverStation.Alliance.Red ? Math.PI : 0)
 
     thetaPID.enableContinuousInput(-Math.PI, Math.PI);
 
     addCommands(new AlignCommand(targetPose),
-        new Drive(1000, true, 0.7 * Math.cos(thetaPID.getSetpoint()), 0.7 * Math.sin(thetaPID.getSetpoint()), 0));
+        new Drive(1000, false, 0.7, 0, 0), new SetSwerveStates(swerveDrive, true));
   }
 
   public Align() {
-    this(FieldAprilTags.getInstance().getTagPose(
-        FieldAprilTags.getInstance().getClosestReefAprilTag(
-            Odometry.getInstance().getPose(),
-            DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)).aprilTag.ID));
+    this(null);
   }
 
   private class AlignCommand extends LoggedCommand {
@@ -75,11 +69,23 @@ public class Align extends SequentialCommandGroup {
 
     @Override
     public void initialize() {
+      if (targetPose == null) {
+        targetPose = FieldAprilTags.getInstance().getTagPose(
+            FieldAprilTags.getInstance().getClosestReefAprilTag(
+                Odometry.getInstance().getPose(),
+                DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)).aprilTag.ID);
+      }
+
+      xPID.setSetpoint(targetPose.getX());
+      yPID.setSetpoint(targetPose.getY());
+      thetaPID.setSetpoint(targetPose.getRotation().getRadians());
       startTime = Timer.getFPGATimestamp();
+
       NetworkTables.pathplannerGoalPose.setDoubleArray(new double[] {
           targetPose.getX(),
           targetPose.getY(),
           targetPose.getRotation().getDegrees() });
+
       super.initialize();
     }
 
