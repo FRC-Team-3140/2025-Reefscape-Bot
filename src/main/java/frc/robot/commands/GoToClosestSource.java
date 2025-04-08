@@ -15,8 +15,6 @@ import com.pathplanner.lib.util.FileVersionException;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.commands.swerveDrive.SetSwerveStates;
@@ -36,18 +34,14 @@ public class GoToClosestSource extends SequentialCommandGroup {
     RIGHT
   }
 
-  private coralStations closestStation = null;
-
   /** Creates a new goToClosestSource. */
   public GoToClosestSource() {
     this.odometry = Odometry.getInstance();
 
     try {
       addCommands(
-          new InstantCommand(() -> setClosestStation()),
-          new PrintCommand("Closest station is: " + closestStation),
           AutoBuilder.pathfindThenFollowPath(
-              (closestStation == coralStations.LEFT ? PathPlannerPath.fromPathFile("Left Source Approach")
+              (getClosestStation() == coralStations.LEFT ? PathPlannerPath.fromPathFile("Left Source Approach")
                   : PathPlannerPath.fromPathFile("Right Source Approach")),
               Constants.PathplannerConstants.pathplannerConstraints),
           new SetSwerveStates(SwerveDrive.getInstance(), true));
@@ -63,7 +57,7 @@ public class GoToClosestSource extends SequentialCommandGroup {
     addCommands(new SetSwerveStates(SwerveDrive.getInstance()));
   }
 
-  private void setClosestStation() {
+  private coralStations getClosestStation() {
     // Figure out alliance and which stations to calculate from
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
@@ -77,7 +71,7 @@ public class GoToClosestSource extends SequentialCommandGroup {
                   : 12);
     } else {
       System.err.println("Driverstation alliance wasn't present when command was called.");
-      return;
+      return null;
     }
 
     Pose2d curPose = odometry.getPose();
@@ -87,10 +81,12 @@ public class GoToClosestSource extends SequentialCommandGroup {
     double rightDist = Math.pow(RightSource.getY() - curPose.getY(), 2)
         + Math.pow(RightSource.getX() - curPose.getX(), 2);
 
-    closestStation = Boolean.logicalXor(leftDist < rightDist,
+    coralStations pos = Boolean.logicalXor(leftDist < rightDist,
         DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) ? coralStations.LEFT
             : coralStations.RIGHT;
 
-    System.out.println("Closest station is: " + closestStation);
+    System.out.println(pos.name());
+
+    return pos;
   }
 }

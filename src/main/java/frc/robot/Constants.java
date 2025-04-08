@@ -160,7 +160,7 @@ public final class Constants {
     public static final double backOffsetToCenter = -Units.inchesToMeters(13);
     public static final double backOffsetToCenterVert = -Units.inchesToMeters(19);
     public static final double maxDistCutoff = 2;
-    public static final double minAmbiguity = 0.1;
+    public static final double minAmbiguity = 0.05;
   }
 
   public static class PathplannerConstants {
