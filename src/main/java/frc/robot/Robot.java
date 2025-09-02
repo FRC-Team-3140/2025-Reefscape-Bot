@@ -15,6 +15,7 @@ import frc.robot.commands.swerveDrive.SwerveDriveManualControl;
 import frc.robot.commands.swerveDrive.SetSwerveStates;
 import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.SwerveModule;
 import frc.robot.subsystems.TestRunner;
 
 /**
@@ -164,5 +165,18 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
+    for (SwerveModule module : SwerveDrive.getInstance().modules) {
+      double velocity = module.simDriveMotor.getAppliedOutput() * 6784;
+      // module.simDriveEncoder.setPosition(velocity);
+      module.simDriveMotor.iterate(velocity, 12, 0.02);
+      module.simDriveEncoder.iterate(velocity, 0.02);
+      // System.out.println(module.simDriveEncoder.getVelocity() + " - " + velocity);
+
+      double turnVelocity = module.simTurnMotor.getSetpoint() * 5676;
+      module.simTurnMotor.iterate(turnVelocity, 12, 0.02);
+      module.simTurnEncoder.iterate(turnVelocity, 0.02);
+
+      module.turnEncoder.setDistance(module.simTurnMotor.getPosition());
+    }
   }
 }

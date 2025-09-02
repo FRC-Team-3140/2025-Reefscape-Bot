@@ -1,6 +1,10 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.sim.SparkAbsoluteEncoderSim;
+import com.revrobotics.sim.SparkFlexSim;
+import com.revrobotics.sim.SparkMaxSim;
+import com.revrobotics.sim.SparkRelativeEncoderSim;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkFlex;
@@ -16,6 +20,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
@@ -30,11 +35,15 @@ public class SwerveModule extends SubsystemBase {
     public int turnMotorID;
     public double baseAngle;
     public SparkMax turnMotor;
+    public SparkMaxSim simTurnMotor;
     public SparkFlex driveMotor;
+    public SparkFlexSim simDriveMotor;
     public PIDController turnPID;
     public ProfiledPIDController drivePID;
     public AbsoluteEncoder turnEncoder;
+    public SparkAbsoluteEncoderSim simTurnEncoder;
     public RelativeEncoder driveEncoder;
+    public SparkRelativeEncoderSim simDriveEncoder;
 
     public double botMass = 24.4;
 
@@ -91,6 +100,12 @@ public class SwerveModule extends SubsystemBase {
         drivePID = new ProfiledPIDController(0.005, 0, 0.0005, constraints);
         drivePID.setConstraints(constraints);
         drivePID.setTolerance(driveSetpointTolerance);
+
+        simDriveEncoder = new SparkRelativeEncoderSim(driveMotor);
+        simDriveMotor = new SparkFlexSim(driveMotor, DCMotor.getNeoVortex(1));
+
+        simTurnEncoder = new SparkAbsoluteEncoderSim(turnMotor);
+        simTurnMotor = new SparkMaxSim(turnMotor, DCMotor.getNEO(1));
     }
 
     // scales the maximum acceleration of the robot based on the height of the
