@@ -4,15 +4,13 @@
 
 package frc.robot.commands.compoundCommands;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.commands.elevator.SetHeight;
+import frc.robot.commands.swerveDrive.PathfindFromCurrentPose;
 import frc.robot.commands.swerveDrive.SetSwerveStates;
 import frc.robot.libs.FieldAprilTags;
 import frc.robot.subsystems.Elevator;
@@ -35,8 +33,6 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
   }
 
   private Position coralScorePos = null;
-
-  private Command pathfindingCommand = null;
 
   private Double level = null;
 
@@ -111,15 +107,11 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
 
     System.out.println(reefPose.getX() + " " + reefPose.getY() + " " + reefPose.getRotation());
 
-    // Put the edge of the bot theoretically touching the apriltag
-    pathfindingCommand = AutoBuilder.pathfindToPose(
-        reefPose,
-        Constants.PathplannerConstants.pathplannerConstraints, 0.0);
-
     // Schedule the pathfinding command to run along with this command that will
     // handle the elevator
     addCommands(
-        pathfindingCommand,
+        // Put the edge of the bot theoretically touching the apriltag
+        new PathfindFromCurrentPose(reefPose, Constants.PathplannerConstants.pathplannerConstraints, 0.0),
         new SetSwerveStates(SwerveDrive.getInstance(), true),
         new SetHeight(level));
   }
