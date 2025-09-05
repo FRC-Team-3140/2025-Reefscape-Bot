@@ -92,7 +92,10 @@ public class NetworkTables {
   //     public static NetworkTableEntry camera2_requestedTimestamp = camera2.getEntry("target_timestamp");
   //     public static NetworkTableEntry camera2_requestedBearing = camera2.getEntry("target_bearing");
   //     public static NetworkTableEntry camera2_requestedDistance = camera2.getEntry("target_distance");
-  
+
+  private static NetworkTable Debug = dash.getSubTable(Constants.NetworktablePaths.Debug); 
+    public static NetworkTableEntry runningCommand = Debug.getEntry("Command");
+    
   private static NetworkTable misc = dash.getSubTable(Constants.NetworktablePaths.Misc);
     public static NetworkTableEntry driveModeManual_b = misc.getEntry("driveModeManual_b");
     public static NetworkTableEntry fieldOriented_b = misc.getEntry("fieldOriented_b");

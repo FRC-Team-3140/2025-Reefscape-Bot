@@ -30,4 +30,10 @@ public class NavXSim {
     public void update(double omegaRadiansPerSec, double dt) {
         yawRadians += omegaRadiansPerSec * dt;
     }
+
+    public boolean isMoving() {
+        // Assuming isMoving checks if yawRadians is changing
+        // TODO: Implement
+        return yawRadians != 0.0;
+    }
 }

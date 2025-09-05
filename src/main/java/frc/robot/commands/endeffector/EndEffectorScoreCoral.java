@@ -4,6 +4,7 @@
 
 package frc.robot.commands.endeffector;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.libs.LoggedCommand;
 import frc.robot.subsystems.EndEffector;
 
@@ -42,6 +43,8 @@ public class EndEffectorScoreCoral extends LoggedCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (RobotBase.isSimulation())
+      return true;
     return !endEffector.hasCoral();
   }
 }

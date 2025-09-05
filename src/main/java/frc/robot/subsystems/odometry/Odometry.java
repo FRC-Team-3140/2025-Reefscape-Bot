@@ -38,14 +38,20 @@ abstract public class Odometry extends SubsystemBase {
     if (!RobotBase.isSimulation()) {
       gyro = new AHRS(NavXComType.kMXP_SPI);
       resetGyro();
-      lastGyroAngle = gyro.getRotation2d().getRadians();
-    } else {
-      // in simulation, use NavXSim
-      lastGyroAngle = NavXSim.getInstance().getRotation2d().getRadians();
     }
+    lastGyroAngle = readRotationRaw();
 
     fieldEntry = new Field2d();
     SmartDashboard.putData(fieldEntry);
+  }
+
+  protected double readRotationRaw() {
+    if (!RobotBase.isSimulation()) {
+      return gyro.getRotation2d().getRadians();
+    }
+    {
+      return NavXSim.getInstance().getRotation2d().getRadians();
+    }
   }
 
   protected Pose2d calculatePoseFromTags(boolean ignoreMaxDistance, boolean ignoreRepeats) {
@@ -70,7 +76,7 @@ abstract public class Odometry extends SubsystemBase {
   abstract public void recalibrateCameraPose();
 
   public Rotation2d getGyroRotation() {
-    return new Rotation2d(gyro.getRotation2d().getRadians());
+    return new Rotation2d(readRotationRaw());
   }
 
   abstract public void resetGyro();
@@ -80,7 +86,7 @@ abstract public class Odometry extends SubsystemBase {
   }
 
   protected double caluclateRotationDelta() {
-    double delta = gyro.getRotation2d().getRadians() - lastGyroAngle;
+    double delta = readRotationRaw() - lastGyroAngle;
     lastGyroAngle += delta;
     return delta;
   }
@@ -98,8 +104,12 @@ abstract public class Odometry extends SubsystemBase {
   }
 
   public void resetPose(Pose2d pose) {
-    double angle = gyro.getRotation2d().getRadians();
-    gyro.reset();
+    double angle = readRotationRaw();
+    if (!RobotBase.isSimulation()) {
+      gyro.reset();
+    } else {
+      NavXSim.getInstance().reset();
+    }
     lastGyroAngle -= angle;
   }
 
@@ -112,7 +122,10 @@ abstract public class Odometry extends SubsystemBase {
   }
 
   public boolean isMoving() {
-    return getGyro().isMoving();
+    if (RobotBase.isSimulation())
+      return NavXSim.getInstance().isMoving();
+    else
+      return getGyro().isMoving();
   }
 
   abstract public void updatePosition(SwerveModulePosition[] positions);

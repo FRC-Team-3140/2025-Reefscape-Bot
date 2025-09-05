@@ -6,6 +6,7 @@ package frc.robot.subsystems.odometry;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
 import frc.robot.libs.Vector2;
@@ -54,10 +55,6 @@ public class CustomOdometry extends Odometry {
 
     public boolean knowsPose() {
         return position != null && angle != null;
-    }
-
-    public Rotation2d getGyroRotation() {
-        return gyro.getRotation2d();
     }
 
     public void recalibrateCameraPose() {
@@ -134,8 +131,12 @@ public class CustomOdometry extends Odometry {
 
     public void resetGyro() {
         double delta = caluclateRotationDelta();
-        gyro.reset();
-        lastGyroAngle = gyro.getRotation2d().getRadians() - delta;
+        if (!RobotBase.isSimulation()) {
+            gyro.reset();
+        } else {
+            NavXSim.getInstance().reset();
+        }
+        lastGyroAngle = readRotationRaw() - delta;
     }
 
     public void updatePosition(SwerveModulePosition[] positions) {

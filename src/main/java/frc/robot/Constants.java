@@ -237,6 +237,7 @@ public final class Constants {
     public static final String Pose = "Pose";
     public static final String Reef = "Reef";
     public static final String Test = "Dev";
+    public static final String Debug = "Debug";
     public static final String Misc = "Misc";
   }
 

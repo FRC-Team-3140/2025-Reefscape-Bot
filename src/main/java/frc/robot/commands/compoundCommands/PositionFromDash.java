@@ -53,11 +53,21 @@ public class PositionFromDash extends LoggedCommand {
     pathfindingCommand = AutoBuilder.pathfindToPose(
         finalPose,
         Constants.PathplannerConstants.pathplannerConstraints, 0.0).andThen(new Align(finalPose));
-    pathfindingCommand.schedule();
+    pathfindingCommand.initialize();
+  }
+
+  @Override
+  public void execute() {
+    if (pathfindingCommand != null) {
+      pathfindingCommand.execute();
+    }
   }
 
   @Override
   public void end(boolean interrupted) {
+    if (pathfindingCommand != null && interrupted) {
+      pathfindingCommand.cancel();
+    }
     super.end(interrupted);
   }
 

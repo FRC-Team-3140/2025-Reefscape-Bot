@@ -4,6 +4,7 @@
 
 package frc.robot.commands.endeffector;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -46,12 +47,15 @@ public class EndEffectorIntakeCoral extends LoggedCommand {
         new InstantCommand(
             () -> {
               endEffector.setManipulatorSpeed(0);
-            })).schedule();
+            }))
+        .schedule();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (RobotBase.isSimulation())
+      return true;
     return endEffector.hasCoral();
   }
 }

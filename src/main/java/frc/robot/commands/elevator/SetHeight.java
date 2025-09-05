@@ -5,6 +5,7 @@
 package frc.robot.commands.elevator;
 
 import frc.robot.libs.LoggedCommand;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.Elevator;
 
@@ -45,6 +46,9 @@ public class SetHeight extends LoggedCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (Timer.getFPGATimestamp() - startTStamp > 2) || ((Timer.getFPGATimestamp() - startTStamp > 0.2) && !elev.isMoving());
+    if (RobotBase.isSimulation())
+      return true;
+    return (Timer.getFPGATimestamp() - startTStamp > 2)
+        || ((Timer.getFPGATimestamp() - startTStamp > 0.2) && !elev.isMoving());
   }
 }

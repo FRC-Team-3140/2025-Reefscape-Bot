@@ -40,12 +40,12 @@ public class CycleVertical extends SequentialCommandGroup {
       for (int j = 4; j >= 1; j--) {
         addCommands(
             new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
-            new Align(),
+            // new Align(),
             new EndEffectorScoreCoral(speed),
             new ReturnToStowed(),
             new GoToSourceAndIntake(),
             new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
-            new Align(),
+            // new Align(),
             new EndEffectorScoreCoral(speed),
             new ReturnToStowed(),
             new GoToSourceAndIntake());
@@ -70,12 +70,12 @@ public class CycleVertical extends SequentialCommandGroup {
       for (int j = 4; j >= 1; j--) {
         addCommands(
             new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("R_" + j), ((i + startingSide) % 6)),
-            new Align(),
+            // new Align(),
             new EndEffectorScoreCoral(speed),
             new ReturnToStowed(),
             new GoToSourceAndIntake(),
             new PositionAndScoreCoral(PositionAndScoreCoral.Position.valueOf("L_" + j), ((i + startingSide) % 6)),
-            new Align(),
+            // new Align(),
             new EndEffectorScoreCoral(speed),
             new ReturnToStowed(),
             new GoToSourceAndIntake());

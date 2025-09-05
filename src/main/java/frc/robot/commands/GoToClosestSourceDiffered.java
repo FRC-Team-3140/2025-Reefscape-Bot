@@ -18,17 +18,23 @@ public class GoToClosestSourceDiffered extends Command {
   @Override
   public void initialize() {
     command = new GoToClosestSource();
-    command.schedule();
+    command.initialize();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    if (command != null) {
+      command.execute();
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    if (command != null && interrupted) {
+      command.cancel();
+    }
   }
 
   // Returns true when the command should end.

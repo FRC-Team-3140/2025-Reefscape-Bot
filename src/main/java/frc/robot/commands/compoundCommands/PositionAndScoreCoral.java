@@ -6,6 +6,7 @@ package frc.robot.commands.compoundCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorHeights;
@@ -112,7 +113,10 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
     addCommands(
         // Put the edge of the bot theoretically touching the apriltag
         new PathfindFromCurrentPose(reefPose, Constants.PathplannerConstants.pathplannerConstraints, 0.0),
+        new PrintCommand("Pathfinding complete"),
         new SetSwerveStates(SwerveDrive.getInstance(), true),
-        new SetHeight(level));
+        new PrintCommand("SetSwerveStates complete"),
+        new SetHeight(level),
+        new PrintCommand("Height Complete"));
   }
 }

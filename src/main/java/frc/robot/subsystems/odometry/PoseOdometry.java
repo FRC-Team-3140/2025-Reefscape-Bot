@@ -88,7 +88,7 @@ public class PoseOdometry extends Odometry {
 
     public void resetGyroCamera(double correctAngle) {
         if (!RobotBase.isSimulation())
-            angleOffset = -gyro.getRotation2d().getRadians() + correctAngle;
+            angleOffset = -readRotationRaw() + correctAngle;
     }
 
     public void recalibrateCameraPose() {

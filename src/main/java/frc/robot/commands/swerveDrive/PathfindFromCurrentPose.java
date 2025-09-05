@@ -8,6 +8,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.SwerveDrive;
 
 public class PathfindFromCurrentPose extends Command {
@@ -32,21 +35,21 @@ public class PathfindFromCurrentPose extends Command {
     pathfindCommand = AutoBuilder.pathfindToPose(targetPose, pathplannerconstraints, endVelocity);
 
     // Schedule the generated command
-    if (pathfindCommand != null) {
-      pathfindCommand.schedule();
-    }
+    pathfindCommand.initialize();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // The pathfindCommand handles execution internally
+    if (pathfindCommand != null) {
+      pathfindCommand.execute();
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    if (pathfindCommand != null) {
+    if (pathfindCommand != null && interrupted) {
       pathfindCommand.cancel();
     }
     SwerveDrive.getInstance().drive(0, 0, 0, false);
@@ -55,6 +58,6 @@ public class PathfindFromCurrentPose extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return pathfindCommand != null && pathfindCommand.isFinished();
+    return pathfindCommand.isFinished();
   }
 }
