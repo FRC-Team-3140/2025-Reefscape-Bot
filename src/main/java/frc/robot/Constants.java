@@ -86,7 +86,8 @@ public final class Constants {
   }
 
   public static class Bot {
-    public static final double gearRatio = 5.9;
+    public static final double gearRatio = 6.75;
+    public static final double steerGearRatio = 150 / 7;
     public static final double botMass = 48.988;
     public static final double wheelDiameter = Units.inchesToMeters(4);
     public static final double botLength = Units.inchesToMeters(29);
@@ -101,7 +102,7 @@ public final class Constants {
     // Max Speed divided by the circumference a circle determined by the distance of
     // the module from the center, divided by 2 pi to convert to radians
     public static final double maxChassisTurnSpeed = maxChassisSpeed / botRadius;
-    public static final double encoderRotationToMeters = 2 * Math.PI * ((wheelDiameter / 2) / gearRatio);
+    public static final double encoderRotationToMeters = Math.PI * wheelDiameter / gearRatio;
 
     public static final double elevatorEncoderDegreesToMeters = 0.001;
 

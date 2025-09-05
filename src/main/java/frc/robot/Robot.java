@@ -165,18 +165,38 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
+    final double dt = 0.02;
+    final double vbus = 12.0;
+
+    // motor free speeds (RPM)
+    final double vortexFreeRPM = 6784.0; // drive (Spark Flex + NEO Vortex)
+    final double neoFreeRPM = 5676.0; // steer (Spark MAX + NEO)
+
     for (SwerveModule module : SwerveDrive.getInstance().modules) {
-      double velocity = module.simDriveMotor.getAppliedOutput() * 6784;
-      // module.simDriveEncoder.setPosition(velocity);
-      module.simDriveMotor.iterate(velocity, 12, 0.02);
-      module.simDriveEncoder.iterate(velocity, 0.02);
-      // System.out.println(module.simDriveEncoder.getVelocity() + " - " + velocity);
 
-      double turnVelocity = module.simTurnMotor.getSetpoint() * 5676;
-      module.simTurnMotor.iterate(turnVelocity, 12, 0.02);
-      module.simTurnEncoder.iterate(turnVelocity, 0.02);
+      // --- DRIVE ---
+      double driveDuty = module.simDriveMotor.getAppliedOutput();
+      double driveRPM = driveDuty * vortexFreeRPM;
+      double driveRPS = driveRPM / 60.0;
+      module.simDriveMotor.iterate(driveRPM, vbus, dt);
+      module.simDriveEncoder.iterate(driveRPS, dt);
 
-      module.turnEncoder.setDistance(module.simTurnMotor.getPosition());
+      // --- STEER ---
+      double turnDuty = module.simTurnMotor.getAppliedOutput();
+      double turnRPM = turnDuty * neoFreeRPM;
+      double turnRPS = turnRPM / 60.0;
+      module.simTurnMotor.iterate(turnRPM, vbus, dt);
+      module.simTurnEncoder.iterate(turnRPS, dt);
+
+      // update custom absolute encoder (convert motor rotations → wheel degrees)
+      double wheelRotations = module.simTurnMotor.getPosition() / Constants.Bot.steerGearRatio;
+      module.turnEncoder.setDistance((wheelRotations * 360.0) % 360);
     }
+
+    // OPTIONAL but recommended: simple gyro sim (integrate chassis omega)
+    // If you have chassis speeds available (vx, vy, omega) from your drive command
+    // or kinematics,
+    // integrate omega to update your gyro sim backing 'gyro.getRotation2d()'.
+    // See the "GyroSim" classes or manually maintain an angle accumulator.
   }
 }
