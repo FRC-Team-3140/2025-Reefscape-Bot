@@ -7,6 +7,9 @@ package frc.robot;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.RobotConfig;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,6 +20,7 @@ import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveModule;
 import frc.robot.subsystems.TestRunner;
+import frc.robot.subsystems.odometry.NavXSim;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -190,13 +194,20 @@ public class Robot extends TimedRobot {
 
       // update custom absolute encoder (convert motor rotations → wheel degrees)
       double wheelRotations = module.simTurnMotor.getPosition() / Constants.Bot.steerGearRatio;
-      module.turnEncoder.setDistance((wheelRotations * 360.0) % 360);
+      double angleDeg = (wheelRotations * 360.0) % 360.0;
+
+      // normalize to [0, 360)
+      if (angleDeg < 0) {
+        angleDeg += 360.0;
+      }
+
+      module.turnEncoder.setDistance(angleDeg);
     }
 
-    // OPTIONAL but recommended: simple gyro sim (integrate chassis omega)
-    // If you have chassis speeds available (vx, vy, omega) from your drive command
-    // or kinematics,
-    // integrate omega to update your gyro sim backing 'gyro.getRotation2d()'.
-    // See the "GyroSim" classes or manually maintain an angle accumulator.
+    // --- SIMULATED GYRO ---
+    // compute chassis speeds from wheel positions
+    SwerveModuleState[] positions = SwerveDrive.getInstance().getModuleStates();
+    ChassisSpeeds speeds = SwerveDrive.getInstance().kinematics.toChassisSpeeds(positions);
+    NavXSim.getInstance().update(speeds.omegaRadiansPerSecond, dt);
   }
 }

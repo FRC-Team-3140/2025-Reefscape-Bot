@@ -10,6 +10,7 @@ import frc.robot.libs.Vector2;
 import frc.robot.subsystems.SwerveDrive;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -72,31 +73,50 @@ public class PoseOdometry extends Odometry {
 
     @Override
     public Rotation2d getGyroRotation() {
-        return new Rotation2d(gyro.getRotation2d().getRadians() + angleOffset);
+        if (!RobotBase.isSimulation())
+            return new Rotation2d(gyro.getRotation2d().getRadians() + angleOffset);
+        else
+            return NavXSim.getInstance().getRotation2d();
     }
 
     public void resetGyro() {
-        resetGyroCamera(0);
+        if (!RobotBase.isSimulation())
+            resetGyroCamera(0);
+        else
+            NavXSim.getInstance().reset();
     }
 
     public void resetGyroCamera(double correctAngle) {
-        angleOffset = -gyro.getRotation2d().getRadians() + correctAngle;
+        if (!RobotBase.isSimulation())
+            angleOffset = -gyro.getRotation2d().getRadians() + correctAngle;
     }
 
     public void recalibrateCameraPose() {
         cameraPasses = 0;
     }
 
+    @Override
     public void updatePosition(SwerveModulePosition[] positions) {
+        if (RobotBase.isSimulation()) {
+            updateSimulatedPosition(positions, NavXSim.getInstance().getRotation2d().getRadians());
+            return;
+        }
+
         SwerveDrive drive = SwerveDrive.getInstance();
-        Pose2d poseClipped = calculatePoseFromTags(false, false); // 1 These two lines
-        Pose2d pose = calculatePoseFromTags(true, true);          // 2 must be in this order.
+        Pose2d poseClipped = calculatePoseFromTags(false, false);
+        Pose2d pose = calculatePoseFromTags(true, true);
         if (pose == null)
             pose = poseClipped;
+
         if (estimator == null) {
-            estimator = new SwerveDrivePoseEstimator(drive.kinematics, getGyroRotation(), positions, new Pose2d());
+            estimator = new SwerveDrivePoseEstimator(
+                    drive.kinematics,
+                    getGyroRotation(),
+                    positions,
+                    new Pose2d());
             estimator.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, Units.degreesToRadians(15)));
         }
+
         if (cameraPasses == 0) {
             startingPose = null;
             cameraPasses++;
@@ -104,13 +124,10 @@ public class PoseOdometry extends Odometry {
             if (pose != null) {
                 if (startingPose == null)
                     startingPose = pose;
-                System.out.print("YIPPEEE");
-                startingPose = startingPose.interpolate(pose, 1 / startingCameraPasses);
+                startingPose = startingPose.interpolate(pose, 1.0 / startingCameraPasses);
                 cameraPasses++;
             }
         } else if (cameraPasses == startingCameraPasses) {
-
-            System.out.println("YIPPEEE DONE");
             estimator.resetPose(startingPose);
             resetGyroCamera(startingPose.getRotation().getRadians());
             cameraPasses++;
@@ -131,5 +148,17 @@ public class PoseOdometry extends Odometry {
         }
 
         estimator.update(getGyroRotation(), positions);
+    }
+
+    @Override
+    public void updateSimulatedPosition(SwerveModulePosition[] positions, double gyroAngleRad) {
+        if (estimator == null) {
+            estimator = new SwerveDrivePoseEstimator(
+                    SwerveDrive.getInstance().kinematics,
+                    new Rotation2d(gyroAngleRad),
+                    positions,
+                    new Pose2d());
+        }
+        estimator.update(new Rotation2d(gyroAngleRad), positions);
     }
 }

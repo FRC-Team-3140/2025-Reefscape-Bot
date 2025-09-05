@@ -142,11 +142,37 @@ public class SwerveModule extends SubsystemBase {
             -Constants.Bot.maxAcceleration, 0);
 
     public void setStates(SwerveModuleState state) {
+        double currentAngle = turnEncoder.getAbsolutePosition();
 
-        state.optimize(Rotation2d.fromDegrees(turnEncoder.getAbsolutePosition()));
+        NetworkTableInstance.getDefault().getTable("ModuleDebug").getEntry(moduleID + "/CurrentAngle")
+                .setDouble(currentAngle);
+        NetworkTableInstance.getDefault().getTable("ModuleDebug").getEntry(moduleID + "/DesiredAngleBeforeOptimize")
+                .setDouble(state.angle.getDegrees());
+        NetworkTableInstance.getDefault().getTable("ModuleDebug").getEntry(moduleID + "/DesiredSpeedBeforeOptimize")
+                .setDouble(state.speedMetersPerSecond);
+
+        double angle = (currentAngle + 180) % 360;
+        if (angle < 0) {
+            angle += 360;
+        }
+
+        state.optimize(new Rotation2d(Units.degreesToRadians(angle)));
+
+        NetworkTableInstance.getDefault().getTable("ModuleDebug").getEntry(moduleID + "/DesiredAngleAfterOptimize")
+                .setDouble(state.angle.getDegrees());
+        NetworkTableInstance.getDefault().getTable("ModuleDebug").getEntry(moduleID + "/DesiredSpeedAfterOptimize")
+                .setDouble(state.speedMetersPerSecond);
+
         setAngle(state.angle.getDegrees());
         setDriveSpeed(accelerationLimiter.calculate(state.speedMetersPerSecond));
+
+        setDriveSpeed(accelerationLimiter.calculate(state.speedMetersPerSecond));
         NetworkTableInstance.getDefault().getTable("Speed").getEntry(moduleID).setDouble(state.speedMetersPerSecond);
+
+        NetworkTableInstance.getDefault().getTable("ModuleDebug").getEntry(moduleID + "/TurnMotorPos")
+                .setDouble(simTurnMotor.getPosition());
+        NetworkTableInstance.getDefault().getTable("ModuleDebug").getEntry(moduleID + "/DriveMotorRPM")
+                .setDouble(simDriveMotor.getVelocity());
     }
 
     public void setAngle(double angle) {
@@ -155,15 +181,20 @@ public class SwerveModule extends SubsystemBase {
     }
 
     public void setDriveSpeed(double velocity) {
+        // velocity is desired wheel speed in meters/second
         drivePID.setGoal(new State(velocity, 0));
-        driveMotor.setVoltage(driveFeedforward.calculate(velocity)
-                + drivePID.calculate(driveEncoder.getVelocity() * Constants.Bot.encoderRotationToMeters));
+
+        // driveEncoder.getVelocity() returns RPM -> convert to meters/sec:
+        // measuredVelocity = (RPM / 60) * metersPerWheelRotation
+        double measuredVelocity = driveEncoder.getVelocity() * Constants.Bot.encoderRotationToMeters / 60.0;
+
+        // Feedforward (expects m/s) + PID (measurement in m/s)
+        double voltage = driveFeedforward.calculate(velocity) + drivePID.calculate(measuredVelocity);
+
+        driveMotor.setVoltage(voltage);
+
         NetworkTableInstance.getDefault().getTable(moduleID).getEntry("Set Speed").setDouble(velocity);
-        NetworkTableInstance.getDefault().getTable(moduleID).getEntry("Actual Speed")
-                .setDouble(driveEncoder.getVelocity() * Constants.Bot.encoderRotationToMeters);
-        // drivePID.calculate(driveEncoder.getVelocity()*Constants.Bot.encoderRotationToMeters));
-        // ///drivePID added too much
-        // instability
+        NetworkTableInstance.getDefault().getTable(moduleID).getEntry("Actual Speed").setDouble(measuredVelocity);
     }
 
     public void setTurnSpeed(double speed) {
@@ -173,17 +204,20 @@ public class SwerveModule extends SubsystemBase {
 
     public SwerveModulePosition getSwerveModulePosition() {
         double angle = turnEncoder.getAbsolutePosition();
+        // driveEncoder.getPosition() is in motor rotations -> encoderRotationToMeters
+        // is meters per wheel rotation.
+        // If encoderRotationToMeters is meters per wheel rotation, ensure
+        // encoder.getPosition() is wheel rotations
+        // (if not, make sure your constant matches motor->wheel ratio). This keeps
+        // behavior identical to real robot.
         double distance = driveEncoder.getPosition() * Constants.Bot.encoderRotationToMeters;
         return new SwerveModulePosition(distance, new Rotation2d(Units.degreesToRadians(angle)));
     }
 
     public double getVelocity() {
-        double wheelCircumference = Constants.Bot.wheelDiameter * Math.PI;
-        double gearRatio = Constants.Bot.gearRatio;
-        double velocityMetersPerSecond = (driveMotor.getEncoder().getVelocity() * wheelCircumference)
-                / (60 * gearRatio);
-
-        return velocityMetersPerSecond;
+        // Use driveEncoder (RPM) -> convert to meters/sec
+        double measuredVelocity = driveEncoder.getVelocity() * Constants.Bot.encoderRotationToMeters / 60.0;
+        return measuredVelocity;
     }
 
     public AbsoluteEncoder getTurnEncoder() {
@@ -195,7 +229,10 @@ public class SwerveModule extends SubsystemBase {
     }
 
     public SwerveModuleState getState() {
-        return new SwerveModuleState(driveEncoder.getVelocity() * Constants.Bot.encoderRotationToMeters,
+        // Return module state with wheel speed in meters/sec and module angle in
+        // radians
+        double speedMetersPerSecond = driveEncoder.getVelocity() * Constants.Bot.encoderRotationToMeters / 60.0;
+        return new SwerveModuleState(speedMetersPerSecond,
                 Rotation2d.fromDegrees(turnEncoder.getAbsolutePosition()));
     }
 }

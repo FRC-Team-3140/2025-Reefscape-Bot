@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -167,6 +168,16 @@ public class SwerveDrive extends SubsystemBase {
       states[i] = modules[i].getState();
     }
     return states;
+  }
+
+  public SwerveModulePosition[] getModulePositions() {
+    SwerveModulePosition[] positions = new SwerveModulePosition[4];
+    for (int i = 0; i < 4; i++) {
+      double distanceMeters = modules[i].driveEncoder.getPosition() * Constants.Bot.encoderRotationToMeters;
+      Rotation2d angle = Rotation2d.fromDegrees(modules[i].getTurnEncoder().getAbsolutePosition());
+      positions[i] = new SwerveModulePosition(distanceMeters, angle);
+    }
+    return positions;
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {

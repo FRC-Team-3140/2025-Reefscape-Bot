@@ -10,6 +10,7 @@ import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -34,15 +35,22 @@ abstract public class Odometry extends SubsystemBase {
   }
 
   protected Odometry() {
-    gyro = new AHRS(NavXComType.kMXP_SPI);
-    resetGyro();
-    lastGyroAngle = gyro.getRotation2d().getRadians();
+    if (!RobotBase.isSimulation()) {
+      gyro = new AHRS(NavXComType.kMXP_SPI);
+      resetGyro();
+      lastGyroAngle = gyro.getRotation2d().getRadians();
+    } else {
+      // in simulation, use NavXSim
+      lastGyroAngle = NavXSim.getInstance().getRotation2d().getRadians();
+    }
+
     fieldEntry = new Field2d();
     SmartDashboard.putData(fieldEntry);
   }
 
   protected Pose2d calculatePoseFromTags(boolean ignoreMaxDistance, boolean ignoreRepeats) {
-    return Camera.getInstance().getPoseFromCamera(ignoreMaxDistance ? Integer.MAX_VALUE : Constants.CameraConstants.maxDistCutoff, ignoreRepeats);
+    return Camera.getInstance().getPoseFromCamera(
+        ignoreMaxDistance ? Integer.MAX_VALUE : Constants.CameraConstants.maxDistCutoff, ignoreRepeats);
   }
 
   abstract public double getX();
@@ -108,4 +116,6 @@ abstract public class Odometry extends SubsystemBase {
   }
 
   abstract public void updatePosition(SwerveModulePosition[] positions);
+
+  abstract public void updateSimulatedPosition(SwerveModulePosition[] positions, double gyroAngleRad);
 }
