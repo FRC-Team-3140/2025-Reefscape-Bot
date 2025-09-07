@@ -21,7 +21,8 @@ public class SetHeight extends LoggedCommand {
     this.elev = Elevator.getInstance();
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(elev);
+    if (!this.getRequirements().contains(elev))
+      addRequirements(elev);
   }
 
   // Called when the command is initially scheduled.
@@ -48,7 +49,8 @@ public class SetHeight extends LoggedCommand {
   public boolean isFinished() {
     if (RobotBase.isSimulation())
       return true;
-    return (Timer.getFPGATimestamp() - startTStamp > 2)
-        || ((Timer.getFPGATimestamp() - startTStamp > 0.2) && !elev.isMoving());
+    else
+      return (Timer.getFPGATimestamp() - startTStamp > 2)
+          || ((Timer.getFPGATimestamp() - startTStamp > 0.2) && !elev.isMoving());
   }
 }

@@ -17,7 +17,10 @@ public class EndEffectorScoreCoral extends LoggedCommand {
   public EndEffectorScoreCoral(double speed) {
     this.endEffector = EndEffector.getInstance();
     this.speed = speed;
-    addRequirements(endEffector);
+
+    // Use addRequirements() here to declare subsystem dependencies.
+    if (!this.getRequirements().contains(endEffector))
+      addRequirements(endEffector);
   }
 
   // Called when the command is initially scheduled.

@@ -32,7 +32,8 @@ public class SetSwerveStates extends Command {
     this.swerve = swerve;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(swerve);
+    if (!this.getRequirements().contains(swerve))
+      addRequirements(swerve);
   }
 
   public SetSwerveStates(SwerveDrive swerve, boolean locked) {
@@ -40,7 +41,8 @@ public class SetSwerveStates extends Command {
     this.locked = locked;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(swerve);
+    if (!this.getRequirements().contains(swerve))
+      addRequirements(swerve);
   }
 
   /**
@@ -63,7 +65,8 @@ public class SetSwerveStates extends Command {
     }
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(swerve);
+    if (!this.getRequirements().contains(swerve))
+      addRequirements(swerve);
   }
 
   // Called when the command is initially scheduled.

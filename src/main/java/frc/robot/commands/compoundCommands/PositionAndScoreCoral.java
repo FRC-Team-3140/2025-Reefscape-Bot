@@ -51,7 +51,8 @@ public class PositionAndScoreCoral extends SequentialCommandGroup {
     coralScorePos = pos;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(elevator);
+    if (!this.getRequirements().contains(elevator))
+      addRequirements(elevator);
 
     Pose2d reefPose = null;
 

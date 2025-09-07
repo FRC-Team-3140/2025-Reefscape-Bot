@@ -8,9 +8,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import frc.robot.libs.NetworkTables;
 import frc.robot.subsystems.SwerveDrive;
 
 public class PathfindFromCurrentPose extends Command {
@@ -25,7 +22,8 @@ public class PathfindFromCurrentPose extends Command {
     this.pathplannerconstraints = pathplannerconstraints;
     this.endVelocity = endVelocity;
 
-    addRequirements(SwerveDrive.getInstance());
+    if (!this.getRequirements().contains(SwerveDrive.getInstance()))
+      addRequirements(SwerveDrive.getInstance());
   }
 
   // Called when the command is initially scheduled.

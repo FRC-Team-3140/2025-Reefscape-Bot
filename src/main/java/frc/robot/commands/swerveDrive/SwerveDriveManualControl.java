@@ -35,7 +35,8 @@ public class SwerveDriveManualControl extends LoggedCommand {
         this.maxChassisTurnSpeed = maxChassisTurnSpeed;
         this.fieldRelative = fieldRelative;
 
-        addRequirements(swerveDrive); // This command requires the swerve drive subsystem
+        if (!this.getRequirements().contains(swerveDrive))
+            addRequirements(swerveDrive); // This command requires the swerve drive subsystem
     }
 
     /**
@@ -73,8 +74,11 @@ public class SwerveDriveManualControl extends LoggedCommand {
                     .getRightTriggerAxis() > Constants.Controller.triggerThreshold
                             ? -controller.getRightX(Controller.controllers.PRIMARY) * maxChassisTurnSpeed * 0.5
                             : -controller.getRightX(Controller.controllers.PRIMARY) * maxChassisTurnSpeed;
-            int driveNegation = (((DriverStation.getAlliance().get() == DriverStation.Alliance.Red) && fieldRelative) ? -1 : 1);
-            swerveDrive.drive(xSpeed * driveNegation, ySpeed * driveNegation, rot, fieldRelative); // Drive the swerve drive
+            int driveNegation = (((DriverStation.getAlliance().get() == DriverStation.Alliance.Red) && fieldRelative)
+                    ? -1
+                    : 1);
+            swerveDrive.drive(xSpeed * driveNegation, ySpeed * driveNegation, rot, fieldRelative); // Drive the swerve
+                                                                                                   // drive
         } else {
             swerveDrive.setSwerveModuleStates(Constants.Bot.defaultSwerveStates, true);
         }

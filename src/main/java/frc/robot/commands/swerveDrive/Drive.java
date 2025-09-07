@@ -28,7 +28,8 @@ public class Drive extends LoggedCommand {
     this.rot = rot;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(swerve);
+    if (!this.getRequirements().contains(swerve))
+      addRequirements(swerve);
   }
 
   // Called when the command is initially scheduled.

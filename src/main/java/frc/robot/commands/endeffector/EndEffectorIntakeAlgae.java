@@ -31,7 +31,9 @@ public class EndEffectorIntakeAlgae extends LoggedCommand {
     this.elevator = Elevator.getInstance();
     this.level = level;
 
-    addRequirements(endEffector);
+    // Use addRequirements() here to declare subsystem dependencies.
+    if (!this.getRequirements().contains(endEffector))
+      addRequirements(endEffector);
   }
 
   // Called when the command is initially scheduled.

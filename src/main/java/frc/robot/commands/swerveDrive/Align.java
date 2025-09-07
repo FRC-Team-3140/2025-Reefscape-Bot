@@ -64,7 +64,8 @@ public class Align extends SequentialCommandGroup {
 
   private class AlignCommand extends LoggedCommand {
     public AlignCommand(Pose2d targetPose) {
-      addRequirements(swerveDrive);
+      if (!this.getRequirements().contains(swerveDrive))
+        addRequirements(swerveDrive);
     }
 
     @Override

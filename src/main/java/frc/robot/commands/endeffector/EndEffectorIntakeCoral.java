@@ -20,7 +20,9 @@ public class EndEffectorIntakeCoral extends LoggedCommand {
   public EndEffectorIntakeCoral() {
     this.endEffector = EndEffector.getInstance();
 
-    addRequirements(endEffector);
+    // Use addRequirements() here to declare subsystem dependencies.
+    if (!this.getRequirements().contains(endEffector))
+      addRequirements(endEffector);
   }
 
   // Called when the command is initially scheduled.

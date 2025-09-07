@@ -18,7 +18,8 @@ public class OuttakeAlgae extends LoggedCommand {
     this.endEffector = EndEffector.getInstance();
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(endEffector);
+    if (!this.getRequirements().contains(endEffector))
+      addRequirements(endEffector);
   }
 
   // Called when the command is initially scheduled.
