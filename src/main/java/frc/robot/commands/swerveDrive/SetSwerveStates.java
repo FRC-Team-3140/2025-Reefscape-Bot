@@ -6,12 +6,12 @@ package frc.robot.commands.swerveDrive;
 
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.libs.LoggedCommand;
 import frc.robot.subsystems.SwerveDrive;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class SetSwerveStates extends Command {
+public class SetSwerveStates extends LoggedCommand {
   private SwerveDrive swerve = null;
 
   private SwerveModuleState[] state = null;

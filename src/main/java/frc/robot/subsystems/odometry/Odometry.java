@@ -108,7 +108,7 @@ abstract public class Odometry extends SubsystemBase {
     if (!RobotBase.isSimulation()) {
       gyro.reset();
     } else {
-      NavXSim.getInstance().reset();
+      NavXSim.getInstance().reset(getPose().getRotation().getRadians());
     }
     lastGyroAngle -= angle;
   }

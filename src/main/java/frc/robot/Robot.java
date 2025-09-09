@@ -8,7 +8,6 @@ import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -54,12 +53,7 @@ public class Robot extends TimedRobot {
     SwerveDrive.getInstance();
 
     // Get Pathplanner ready for autos
-    PathfindingCommand.warmupCommand()
-        // .andThen(
-        // AutoBuilder.pathfindToPose(new Pose2d(pose.getX() + 1, pose.getY(),
-        // pose.getRotation()),
-        // Constants.PathplannerConstants.pathplannerConstraints))
-        .schedule();
+    PathfindingCommand.warmupCommand().schedule();
   }
 
   /**
@@ -194,12 +188,10 @@ public class Robot extends TimedRobot {
 
       // update custom absolute encoder (convert motor rotations → wheel degrees)
       double wheelRotations = module.simTurnMotor.getPosition() / Constants.Bot.steerGearRatio;
-      double angleDeg = (wheelRotations * 360.0) % 360.0;
+      double angleDeg = wheelRotations * 360.0;
 
       // normalize to [0, 360)
-      if (angleDeg < 0) {
-        angleDeg += 360.0;
-      }
+      angleDeg = ((angleDeg % 360.0) + 360.0) % 360.0;
 
       module.turnEncoder.setDistance(angleDeg);
     }

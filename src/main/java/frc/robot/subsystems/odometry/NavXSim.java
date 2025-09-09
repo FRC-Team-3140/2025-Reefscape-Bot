@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class NavXSim {
     private static NavXSim instance;
     private double yawRadians = 0.0;
+    private double angularVelocity = 0.0;
 
     private NavXSim() {
     }
@@ -16,8 +17,8 @@ public class NavXSim {
         return instance;
     }
 
-    public void reset() {
-        yawRadians = 0.0;
+    public void reset(double yawRadians) {
+        this.yawRadians = yawRadians;
     }
 
     public Rotation2d getRotation2d() {
@@ -27,13 +28,13 @@ public class NavXSim {
     /**
      * Integrate chassis angular velocity (rad/s) over dt seconds
      */
+
     public void update(double omegaRadiansPerSec, double dt) {
+        angularVelocity = omegaRadiansPerSec;
         yawRadians += omegaRadiansPerSec * dt;
     }
 
     public boolean isMoving() {
-        // Assuming isMoving checks if yawRadians is changing
-        // TODO: Implement
-        return yawRadians != 0.0;
+        return Math.abs(angularVelocity) > 1e-3;
     }
 }

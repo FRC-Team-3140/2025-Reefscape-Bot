@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.libs.Vector2;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.SwerveModule;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -60,10 +61,33 @@ public class PoseOdometry extends Odometry {
 
     @Override
     public void resetPose(Pose2d pose) {
-        super.resetPose(pose);
-        if (estimator != null) {
+        if (estimator == null) {
+            estimator = new SwerveDrivePoseEstimator(
+                    SwerveDrive.getInstance().kinematics,
+                    pose.getRotation(),
+                    SwerveDrive.getInstance().getModulePositions(),
+                    pose);
+        } else {
             estimator.resetPose(pose);
         }
+
+        if (RobotBase.isSimulation()) {
+            NavXSim.getInstance().reset(pose.getRotation().getRadians());
+
+            // Reset all the module encoders to 0
+            for (SwerveModule module : SwerveDrive.getInstance().modules) {
+                module.simDriveEncoder.setPosition(0);
+                module.simDriveMotor.setPosition(0);
+
+                module.simTurnEncoder.setPosition(0);
+                module.simTurnMotor.setPosition(0);
+            }
+
+            updateSimulatedPosition(SwerveDrive.getInstance().getModulePositions(),
+                    NavXSim.getInstance().getRotation2d().getRadians());
+        }
+
+        System.out.println("[Odometry] Reset Pose to " + pose);
     }
 
     @Override
@@ -83,7 +107,7 @@ public class PoseOdometry extends Odometry {
         if (!RobotBase.isSimulation())
             resetGyroCamera(0);
         else
-            NavXSim.getInstance().reset();
+            NavXSim.getInstance().reset(estimator.getEstimatedPosition().getRotation().getRadians());
     }
 
     public void resetGyroCamera(double correctAngle) {

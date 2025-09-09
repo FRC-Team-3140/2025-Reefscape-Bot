@@ -154,8 +154,10 @@ public class Camera extends SubsystemBase {
     }
 
   }
-  // ignoreRepeats should be true on any getPoseFromCamera call that is not the first call of the method within a rio loop.
-  public Pose2d getPoseFromCamera(double distanceCutoff, boolean ignoreRepeats) { 
+
+  // ignoreRepeats should be true on any getPoseFromCamera call that is not the
+  // first call of the method within a rio loop.
+  public Pose2d getPoseFromCamera(double distanceCutoff, boolean ignoreRepeats) {
     if (connected) {
       Pose2d curPose = Odometry.getInstance().getPose();
 

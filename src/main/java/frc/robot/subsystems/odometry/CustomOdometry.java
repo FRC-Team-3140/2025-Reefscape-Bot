@@ -134,7 +134,7 @@ public class CustomOdometry extends Odometry {
         if (!RobotBase.isSimulation()) {
             gyro.reset();
         } else {
-            NavXSim.getInstance().reset();
+            NavXSim.getInstance().reset(getPose().getRotation().getRadians());
         }
         lastGyroAngle = readRotationRaw() - delta;
     }
