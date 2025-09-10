@@ -25,6 +25,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.libs.AbsoluteEncoder;
@@ -101,11 +102,13 @@ public class SwerveModule extends SubsystemBase {
         drivePID.setConstraints(constraints);
         drivePID.setTolerance(driveSetpointTolerance);
 
-        simDriveEncoder = new SparkRelativeEncoderSim(driveMotor);
-        simDriveMotor = new SparkFlexSim(driveMotor, DCMotor.getNeoVortex(1));
+        if (RobotBase.isSimulation()) {
+            simDriveEncoder = new SparkRelativeEncoderSim(driveMotor);
+            simDriveMotor = new SparkFlexSim(driveMotor, DCMotor.getNeoVortex(1));
 
-        simTurnEncoder = new SparkAbsoluteEncoderSim(turnMotor);
-        simTurnMotor = new SparkMaxSim(turnMotor, DCMotor.getNEO(1));
+            simTurnEncoder = new SparkAbsoluteEncoderSim(turnMotor);
+            simTurnMotor = new SparkMaxSim(turnMotor, DCMotor.getNEO(1));
+        }
     }
 
     // scales the maximum acceleration of the robot based on the height of the
@@ -151,9 +154,14 @@ public class SwerveModule extends SubsystemBase {
         NetworkTableInstance.getDefault().getTable("ModuleDebug").getEntry(moduleID + "/DesiredSpeedBeforeOptimize")
                 .setDouble(state.speedMetersPerSecond);
 
-        double angle = (currentAngle + 180) % 360;
-        if (angle < 0) {
-            angle += 360;
+        double angle;
+        if (RobotBase.isSimulation()) {
+            angle = (currentAngle + 180) % 360;
+            if (angle < 0) {
+                angle += 360;
+            }
+        } else {
+            angle = currentAngle;
         }
 
         state.optimize(new Rotation2d(Units.degreesToRadians(angle)));
@@ -166,13 +174,14 @@ public class SwerveModule extends SubsystemBase {
         setAngle(state.angle.getDegrees());
         setDriveSpeed(accelerationLimiter.calculate(state.speedMetersPerSecond));
 
-        setDriveSpeed(accelerationLimiter.calculate(state.speedMetersPerSecond));
         NetworkTableInstance.getDefault().getTable("Speed").getEntry(moduleID).setDouble(state.speedMetersPerSecond);
 
-        NetworkTableInstance.getDefault().getTable("ModuleDebug").getEntry(moduleID + "/TurnMotorPos")
-                .setDouble(simTurnMotor.getPosition());
-        NetworkTableInstance.getDefault().getTable("ModuleDebug").getEntry(moduleID + "/DriveMotorRPM")
-                .setDouble(simDriveMotor.getVelocity());
+        if (RobotBase.isSimulation()) {
+            NetworkTableInstance.getDefault().getTable("ModuleDebug").getEntry(moduleID + "/TurnMotorPos")
+                    .setDouble(simTurnMotor.getPosition());
+            NetworkTableInstance.getDefault().getTable("ModuleDebug").getEntry(moduleID + "/DriveMotorRPM")
+                    .setDouble(simDriveMotor.getVelocity());
+        }
     }
 
     public void setAngle(double angle) {
