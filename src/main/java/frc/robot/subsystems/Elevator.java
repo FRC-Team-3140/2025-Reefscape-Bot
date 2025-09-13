@@ -18,6 +18,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class Elevator extends SubsystemBase {
   private static Elevator instance = null;
@@ -160,6 +161,8 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setHeight(double height) {
+    // In simulation, this function breaks the bot's driving capabilites
+    if(Robot.isSimulation()) return;
     target = Math.max(Math.min(height, Constants.ElevatorHeights.maximum), Constants.ElevatorHeights.minimum);
   }
 

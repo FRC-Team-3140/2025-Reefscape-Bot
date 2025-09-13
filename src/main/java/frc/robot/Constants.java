@@ -261,7 +261,7 @@ public final class Constants {
   public static class ReefPoses {
     public static Pose2d getPose(int side, int pos) { // pos: -1 left, 0 center, 1 right
       double sideOffset = 0.17 + (pos * 0.02);
-      double backOffset = 0.4699;
+      double backOffset = 0.5;
       int id = switch (side) {
         case 0 -> 18;
         case 1 -> 19;
