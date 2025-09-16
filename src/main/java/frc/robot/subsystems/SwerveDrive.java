@@ -12,6 +12,7 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -100,8 +101,8 @@ public class SwerveDrive extends SubsystemBase {
 
     // Configure AutoBuilder last
     AutoBuilder.configure(
-        odometry::getPose, // Robot pose supplier
-        odometry::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+        this::getPose, // Robot pose supplier
+        this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE
                                                               // ChassisSpeeds. Also optionally outputs individual
@@ -238,5 +239,11 @@ public class SwerveDrive extends SubsystemBase {
     } else {
       System.err.println("To many or too few swerve module states. NOT SETTING!");
     }
+  }
+  public Pose2d getPose() {
+    return odometry.getPose();
+  }
+  public void resetPose(Pose2d pose) {
+    odometry.resetPose(pose);
   }
 }

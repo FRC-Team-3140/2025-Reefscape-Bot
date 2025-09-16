@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
@@ -28,6 +31,8 @@ import frc.robot.libs.FlipPose;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final boolean replay = true;
+  //public static final Logger.SimulationMode simMode = Logger.SimulationMode.REPLAY;
   public static class MotorIDs {
     /* Swerve Drive Motors: */
     // FL
@@ -202,7 +207,7 @@ public final class Constants {
 
   public static class ElevatorHeights {
     public static final double minimum = 0;
-    public static final double maximum = 10620 * Bot.elevatorEncoderDegreesToMeters;
+    public static final double maximum = 10670 * Bot.elevatorEncoderDegreesToMeters;
 
     public static final double groudAlgaeHeight = 2;
 
