@@ -242,15 +242,15 @@ public class Controller extends SubsystemBase {
       elevator.setHeight(ElevatorHeights.reefCoralL2Height);
     }
 
-    if (secondaryController.getXButtonPressed()) {
-      // Elevator level reef 2
-      elevator.setHeight(ElevatorHeights.reefCoralL3Height);
-    }
+    // if (secondaryController.getXButtonPressed()) {
+    //   // Elevator level reef 2
+    //   elevator.setHeight(ElevatorHeights.reefCoralL3Height);
+    // }
 
-    if (secondaryController.getYButtonPressed()) {
-      // Elevator level reef 3
-      elevator.setHeight(ElevatorHeights.reefCoralL4Height);
-    }
+    // if (secondaryController.getYButtonPressed()) {
+    //   // Elevator level reef 3
+    //   elevator.setHeight(ElevatorHeights.reefCoralL4Height);
+    // }
 
     if (secondaryController.getLeftTriggerAxis() > Constants.Controller.triggerThreshold) {
       // Score coral
